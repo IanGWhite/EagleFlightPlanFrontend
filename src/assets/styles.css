@@ -1,0 +1,124 @@
+/* General styling */
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: "lightBrown";
+  }
+  
+  .container {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: "lightBrown";
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+  }
+  
+  /* Toolbar styling */
+  .v-toolbar {
+    background-color: "lightBlue"; /* Primary color */
+    color: #ffffff;
+    padding: 16px;
+  }
+  
+  .v-toolbar-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  /* Button styling */
+  .v-btn {
+    width: 150px;
+    font-size: 16px;
+    border-radius: 20px;
+    padding: 10px 20px;
+    transition: background-color 0.3s;
+    color: "lightBlue";
+  }
+  
+  .v-btn.light-blue {
+    background-color: "lightBlue";
+  }
+  
+  .v-btn.primary {
+    background-color: "blue";
+  }
+  
+  .v-btn:hover {
+    filter: brightness(1.1);
+  }
+  
+  /* Text field styling */
+  .v-text-field, .v-textarea {
+    width: 100%;
+    margin-bottom: 20px;
+  }
+  
+  .v-text-field input, .v-textarea textarea {
+    padding: 10px;
+    border: 1px solid "darkBlue";
+    border-radius: 4px;
+  }
+  
+  .v-text-field label, .v-textarea label {
+    color: "darkBrown";
+  }
+  
+  /* Container styling */
+  .v-container {
+    padding: 20px;
+    background-color: "lightBrown";
+  }
+  
+  .text-center {
+    text-align: center;
+  }
+  
+  .mt-5 {
+    margin-top: 50px;
+  }
+  
+  /* Table styling */
+  .v-table {
+    width: 100%;
+    border-collapse: collapse;
+    
+  }
+  
+  .v-table th, .v-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #dddddd;
+  }
+  
+  .v-table th {
+    background-color: "lightBrown";
+    font-weight: bold;
+  }
+  
+  .v-table td {
+    color: "darkBlue";
+  }
+  
+  /* Responsive row layout */
+  .row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+  }
+  
+  .buttons {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+  
+  .message {
+    text-align: center;
+    font-size: 1rem;
+    color: #333333;
+    margin-bottom: 20px;
+  }
+  
