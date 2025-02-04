@@ -24,10 +24,8 @@ const goToInfo = () => {
           <v-list-item></v-list-item>
           <v-card title="Upcoming Events" variant="tonal">
             
-          
-        
-          <v-list-item>
-            <v-row no-gutters>
+          <v-list-item class="card-list-item">
+            <v-row no-gutters >
               <v-col>
                 Event 1
               </v-col>
@@ -37,8 +35,8 @@ const goToInfo = () => {
             </v-row>
           </v-list-item>
 
-          <v-list-item>
-            <v-row no-gutters>
+          <v-list-item class="card-list-item">
+            <v-row no-gutters >
               <v-col>
                 Event 2
               </v-col>
@@ -47,19 +45,65 @@ const goToInfo = () => {
               </v-col>
             </v-row>
           </v-list-item>
-          
-          </v-card>
-              <v-list-item></v-list-item>
-            <v-card title="Experiences" variant="tonal">
-            <v-row no-gutters align="center">
+
+          <v-list-item class="card-list-item">
+            <v-row no-gutters>
               <v-col>
-                Left Text
+                Event 3
               </v-col>
               <v-col class="text-right">
-               Right Text
+                2/11
               </v-col>
             </v-row>
+          </v-list-item>
+
+          <v-card-text opacity="0.5" class="text-right">
+            <a href="www.google.com/" class="text-decoration-none">See full calendar</a>
+          </v-card-text>
+
           </v-card>
+          <v-list-item></v-list-item>
+          <v-card title="Experiences" variant="tonal">
+            
+            <v-list-item class="card-list-item">
+              <v-row no-gutters >
+                <v-col>
+                  Experience 1
+                </v-col>
+                <v-col class="text-right">
+                  1/19
+                </v-col>
+              </v-row>
+            </v-list-item>
+  
+            <v-list-item class="card-list-item">
+              <v-row no-gutters >
+                <v-col>
+                  Experience 2
+                </v-col>
+                <v-col class="text-right">
+                  2/1
+                </v-col>
+              </v-row>
+            </v-list-item>
+  
+            <v-list-item class="card-list-item">
+              <v-row no-gutters>
+                <v-col>
+                  Experience 3
+                </v-col>
+                <v-col class="text-right">
+                  2/11
+                </v-col>
+              </v-row>
+            </v-list-item>
+            
+            <v-card-text opacity="0.5" class="text-right">
+              <a href="www.google.com/" class="text-decoration-none">See all</a>
+            </v-card-text>
+  
+            </v-card>
+          
         </v-list>
       </v-navigation-drawer>
   
@@ -86,5 +130,7 @@ const goToInfo = () => {
 .v-btn {
   width: 150px;
 }
-
+.card-list-item{
+  min-height: 10px;
+}
 </style>
