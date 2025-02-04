@@ -661,7 +661,7 @@ const saveSkillDatabase = () =>{
       </template>
 
       <!-- Create Button -->
-      <v-btn class="mt-4" color="primary" @click="saveResume">Create</v-btn>
+      <v-btn class="mt-4" color="red" @click="saveResume">Create</v-btn>
     </v-container>
   </v-app>
 </template>

@@ -722,16 +722,16 @@ const AddHeader = (doc, currentY, title) => {
                     <span class="resume-name">{{ resume.name }}</span>
                   </v-col>
                   <v-col cols="4" class="text-right">
-                    <v-btn icon color="blue" @click="seeResumeComments(resume)">
+                    <v-btn icon color="red" @click="seeResumeComments(resume)">
                       <v-icon>mdi-comment</v-icon>
                     </v-btn>
-                    <v-btn icon color="blue" @click="downloadResume(resume)">
+                    <v-btn icon color="red" @click="downloadResume(resume)">
                       <v-icon>mdi-download</v-icon>
                     </v-btn>
-                    <v-btn icon color="blue" @click="editResume(resume)">
+                    <v-btn icon color="red" @click="editResume(resume)">
                       <v-icon>mdi-pencil</v-icon>
                     </v-btn>
-                    <v-btn icon color="blue" @click="deleteResume(resume.id)">
+                    <v-btn icon color="red" @click="deleteResume(resume.id)">
                       <v-icon>mdi-delete</v-icon>
                     </v-btn>
                   </v-col>
@@ -748,7 +748,7 @@ const AddHeader = (doc, currentY, title) => {
       <v-card-actions class="text-right mt-5">
         <v-btn
           class="add-resume-button"
-          color="blue"
+          color="red"
           @click="addNewResume"
         >
           <v-icon class="add-icon">mdi-plus</v-icon>

@@ -108,7 +108,7 @@ onMounted(() => {
             ></v-textarea>
 
             <div class="buttons">
-              <v-btn color="primary" @click="saveEducation">Save</v-btn>
+              <v-btn color="red" @click="saveEducation">Save</v-btn>
               <v-btn color="error" @click="cancel">Cancel</v-btn>
             </div>
           </v-form>
