@@ -697,7 +697,7 @@ const AddHeader = (doc, currentY, title) => {
 <template>
   <v-app>
     <v-container>
-      <v-toolbar color="blue">
+      <v-toolbar color="red">
         <v-toolbar-title class="text-h4">{{ resumeName }}</v-toolbar-title>
 
       </v-toolbar>

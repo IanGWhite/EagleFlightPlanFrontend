@@ -58,7 +58,7 @@ const createTemplate = () => {
         </v-row>
         <v-divider></v-divider>
         <div class="text-center my-4">
-          <v-btn color="blue" rounded @click="createTemplate">Create</v-btn>
+          <v-btn color="red" rounded @click="createTemplate">Create</v-btn>
         </div>
       </v-card>
     </v-container>

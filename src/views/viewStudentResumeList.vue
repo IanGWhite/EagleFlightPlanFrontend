@@ -53,7 +53,7 @@ const editResume = (resume) => {
         </v-expansion-panels>
       </v-card-text>
       <v-card-actions>
-        <v-btn color="primary" @click="addResume">Add</v-btn>
+        <v-btn color="red" @click="addResume">Add</v-btn>
       </v-card-actions>
     </v-card>
   </v-container>

@@ -700,7 +700,7 @@ const AddHeader = (doc, currentY, title) => {
 <template>
   <v-app>
     <v-container>
-      <v-toolbar color="blue">
+      <v-toolbar color="red">
         <v-toolbar-title class="text-h4">{{ resumeName }}</v-toolbar-title>
 
       </v-toolbar>
@@ -721,7 +721,7 @@ const AddHeader = (doc, currentY, title) => {
           ></v-text-field>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="blue" @click="addComment">Save</v-btn>
+          <v-btn color="red" @click="addComment">Save</v-btn>
         </v-card-actions>
       </v-card>
 

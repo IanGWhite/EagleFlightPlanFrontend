@@ -20,12 +20,12 @@ const goToInfo = () => {
     <!-- Main Content -->
     <v-container class="fill-height">
       <v-row align="center" justify="center">
-        <v-btn @click="goToInfo" color="light-blue" class="mb-5">
+        <v-btn @click="goToInfo" color="light-grey" class="mb-5">
           Info
         </v-btn>
       </v-row>
       <v-row align="center" justify="center">
-        <v-btn @click="goToResume" color="light-blue" class="mb-5">
+        <v-btn @click="goToResume" color="light-grey" class="mb-5">
           Resume
         </v-btn> 
       </v-row>
