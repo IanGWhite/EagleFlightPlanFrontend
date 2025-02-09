@@ -5,9 +5,9 @@ import Router from "../router.js";
 
 var baseurl = "";
 if (import.meta.env.DEV) {
-  baseurl = "http://localhost:3025/resume-t5/"
+  baseurl = "http://localhost:3035/flight-plan-t5/"
 } else {
-  baseurl = "/resume-t5/";
+  baseurl = "/flight-plan-t5/";
 }
 
 const apiClient = axios.create({
