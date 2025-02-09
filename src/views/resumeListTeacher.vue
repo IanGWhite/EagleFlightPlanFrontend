@@ -118,11 +118,11 @@ const addComment = (resumeId, studentId) => {
       <v-card flat >
         <div v-for="(resume, idx) in student.resumes" :key="idx" class="mb-2">
           
-          <div class="resume-text" color: blue>
+          <div class="resume-text" color: red>
             {{ resume.name }}
           </div>
           <v-btn
-            color="blue"
+            color="red"
             @click="addComment(resume.id, student.id)"
             class="comment-btn"
             icon="mdi-comment"
@@ -174,7 +174,7 @@ const addComment = (resumeId, studentId) => {
   display: inline-block; /* Ensures the container grows with the text */
   font-size: 16px; /* Base font size */
   font-weight: bold; /* Bold text for emphasis */
-  color: "blue"; /* Matches Vuetify's primary color */
+  color: "red"; /* Matches Vuetify's primary color */
   word-wrap: break-word; /* Ensures text wraps if it's too long */
 }
 

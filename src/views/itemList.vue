@@ -376,7 +376,7 @@ const fetchAward= () => {
         <v-text-field v-model="contactInfo.email" label="E-mail" />
       </v-card-text>
       <v-card-actions>
-        <v-btn color="blue" text @click="saveContactInfo">Save</v-btn>
+        <v-btn color="red" text @click="saveContactInfo">Save</v-btn>
       </v-card-actions>
     </v-card>
 
@@ -400,7 +400,7 @@ const fetchAward= () => {
         </v-btn>
       </v-col>
     </v-row>
-    <v-btn color="blue" text @click="addPersonalLink">+ Add Link</v-btn>
+    <v-btn color="red" text @click="addPersonalLink">+ Add Link</v-btn>
   </v-card-text>
 </v-card>
 
@@ -421,7 +421,7 @@ const fetchAward= () => {
         </v-btn>
       </v-col>
     </v-row>
-    <v-btn color="blue" text @click="addEducation">+ Add Education</v-btn>
+    <v-btn color="red" text @click="addEducation">+ Add Education</v-btn>
   </v-card-text>
 </v-card>
 
@@ -441,7 +441,7 @@ const fetchAward= () => {
         </v-btn>
       </v-col>
     </v-row>
-    <v-btn color="blue" text @click="addExperience">+ Add Experience</v-btn>
+    <v-btn color="red" text @click="addExperience">+ Add Experience</v-btn>
   </v-card-text>
 </v-card>
     
@@ -462,7 +462,7 @@ const fetchAward= () => {
           </v-btn>
         </v-col>
       </v-row>
-      <v-btn color="blue" text @click="addProject">+ Add</v-btn>
+      <v-btn color="red" text @click="addProject">+ Add</v-btn>
     </v-card-text>
   </v-card>
 
@@ -483,7 +483,7 @@ const fetchAward= () => {
        </v-btn> 
      </v-col>
    </v-row>
-   <v-btn color="blue" text @click="addSkill">+ Add Skill</v-btn>
+   <v-btn color="red" text @click="addSkill">+ Add Skill</v-btn>
  </v-card-text>
 </v-card>
 
@@ -503,7 +503,7 @@ const fetchAward= () => {
           </v-btn> 
         </v-col>
       </v-row>
-      <v-btn color="blue" text @click="addInterest">+ Add Interest</v-btn>
+      <v-btn color="red" text @click="addInterest">+ Add Interest</v-btn>
     </v-card-text>
   </v-card>
 
@@ -524,7 +524,7 @@ const fetchAward= () => {
           </v-btn> 
         </v-col>
       </v-row>
-      <v-btn color="blue" text @click="addAward">+ Add Award</v-btn>
+      <v-btn color="red" text @click="addAward">+ Add Award</v-btn>
     </v-card-text>
   </v-card>
   </v-container>

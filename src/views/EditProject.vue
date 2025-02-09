@@ -114,8 +114,8 @@ onMounted(() => {
             ></v-textarea>
 
             <div class="buttons">
-              <v-btn color="blue" @click="saveProject(route.params.id)">Save</v-btn>
-              <v-btn color="brown" @click="cancel">Cancel</v-btn>
+              <v-btn color="red" @click="saveProject(route.params.id)">Save</v-btn>
+              <v-btn color="grey" @click="cancel">Cancel</v-btn>
             </div>
           </v-form>
         </v-card-text>

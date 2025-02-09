@@ -105,7 +105,7 @@ onMounted(() => {
             ></v-textarea>
 
             <div class="buttons">
-              <v-btn color="primary" @click="saveExperience(route.params.id)">Save</v-btn>
+              <v-btn color="red" @click="saveExperience(route.params.id)">Save</v-btn>
               <v-btn color="error" @click="cancel">Cancel</v-btn>
             </div>
           </v-form>

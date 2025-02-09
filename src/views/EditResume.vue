@@ -46,7 +46,7 @@ const saveResume = () => {
             outlined
             dense
           ></v-text-field>
-          <v-btn @click="saveResume" color="primary">Save</v-btn>
+          <v-btn @click="saveResume" color="red">Save</v-btn>
         </v-card-text>
       </v-card>
 
@@ -74,7 +74,7 @@ const saveResume = () => {
               </v-col>
             </v-row>
           </div>
-          <v-btn @click="addPersonalLink" color="primary">Add Link</v-btn>
+          <v-btn @click="addPersonalLink" color="red">Add Link</v-btn>
         </v-card-text>
       </v-card>
 
@@ -107,7 +107,7 @@ const saveResume = () => {
                 ></v-text-field>
               </v-row>
             </div>
-            <v-btn @click="addSectionItem(sectionKey)" color="primary">
+            <v-btn @click="addSectionItem(sectionKey)" color="red">
               Add {{ sectionKey.charAt(0).toUpperCase() + sectionKey.slice(1, -1) }}
             </v-btn>
           </v-card-text>
@@ -115,7 +115,7 @@ const saveResume = () => {
       </template>
 
       <!-- Create Button -->
-      <v-btn class="mt-4" color="primary" @click="saveResume">Create</v-btn>
+      <v-btn class="mt-4" color="red" @click="saveResume">Create</v-btn>
     </v-container>
   </v-app>
 </template>

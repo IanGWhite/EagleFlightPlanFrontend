@@ -60,7 +60,7 @@ const fetchUser= () => {
 </script>
 
 <template>
-  <v-app-bar color="darkBlue" dark flat>
+  <v-app-bar color="red"  flat>
     <v-container class="d-flex justify-space-between align-center">
       <div class="d-flex align-center">
         <img src="../assets/logo.png" alt="Logo" class="logo mr-2" />
@@ -69,8 +69,8 @@ const fetchUser= () => {
       
       <div class="menu-buttons">
         <!-- <v-btn color="lightBlue" class="mx-2" @click="goToResume">Resume</v-btn> -->
-        <v-btn color="lightBlue" class="mx-2" @click="navigateTo('ResumeListStudents')">Resume</v-btn>
-        <v-btn color="lightBlue" class="mx-2" @click="navigateTo('StudentInfo')">Info</v-btn>
+        <v-btn color="grey" class="mx-2" @click="navigateTo('ResumeListStudents')">Resume</v-btn>
+        <v-btn color="grey" class="mx-2" @click="navigateTo('StudentInfo')">Info</v-btn>
 
         <!-- <v-avatar color="brown" size="40px" class="mx-2" @click="toggleDrawer"></v-avatar> -->
       </div>
