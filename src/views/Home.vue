@@ -13,6 +13,15 @@ const goToInfo = () => {
   router.push({ name: 'StudentInfo' });
 };
 
+const todoItems = ref(
+  [{ type: "Task 1", name: "Make a resume", points: "30" },
+  { type: "Task 2", name: "Make a cover letter", points: "20" }
+  ]);
+
+  const doneItems = ref(
+  [{ type: "Task 5", name: "Do a thing", points: "10" },
+  { type: "Task 6", name: "Do another thing", points: "40" }
+  ]);
 </script>
 
 <template>
@@ -152,14 +161,54 @@ const goToInfo = () => {
         </v-list>
       </v-navigation-drawer>
 
-  <!--            MAIN            -->
-      <v-main>
-       
+      <v-main> <!--            MAIN            -->
+        <v-list-item></v-list-item><!-- SPACE ABOVE TIMELINE -->
+        <v-card-title class="text-center">To-do</v-card-title>
         <v-card class="main-tasks" variant="tonal">
-          <v-timeline>
-            <v-timeline-item>
-              timeline 1
-            </v-timeline-item>
+          <v-timeline density="compact" align-start style="padding-left: 5%; padding-right: 5%;" line-thickness="7" >
+            
+            <v-timeline-item 
+          v-for="item in todoItems"
+          :key="item.type"
+          style="width: 100%;"
+        >
+        <!-- <v-row class="d-flex" justify="space-between" style="width: 100%;">
+      <v-col>
+        {{ item.name }}
+      </v-col>
+      <v-col class="text-right">
+        {{ item.points }} pts.
+      </v-col>
+    </v-row> -->
+
+    {{ item.name }}
+    {{ item.points }} pts.
+
+        </v-timeline-item>
+          </v-timeline>
+
+
+        <!-- COMPLETED TASKS -->
+        <v-timeline density="compact" align-start style="padding-left: 5%; padding-right: 5%;" line-thickness="7" >
+            <v-timeline-item 
+          v-for="item in doneItems"
+          :key="item.type"
+          dot-color="green"
+          
+        >
+    <!-- <v-row>
+      <v-col>
+        {{ item.name }}
+      </v-col>
+      <v-col class="text-right">
+        {{ item.points }} pts.
+      </v-col>
+    </v-row> -->
+    {{ item.name }}
+    {{ item.points }} pts.
+
+
+        </v-timeline-item>
           </v-timeline>
 
         </v-card>
@@ -207,6 +256,8 @@ const goToInfo = () => {
   max-height:10%;
 }
 .main-tasks{
-
+  
 }
+
+
 </style>
