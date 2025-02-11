@@ -22,6 +22,7 @@ import commentStudentResume from "./views/commentStudentResume.vue";
 import ResumeListTeacher from "./views/resumeListTeacher.vue";
 import studentViewCommentsResume from "./views/studentViewCommentsResume.vue";
 import Home from "./views/Home.vue";
+import StudentProfile from "./views/StudentProfile.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -139,6 +140,12 @@ const router = createRouter({
       path: "/Home",
       name: "Home",
       component: Home,
+    },
+    {
+      path: "/StudentProfile",
+      name: "StudentProfile",
+      component: StudentProfile,
+      props: true,
     },
   ],
 });

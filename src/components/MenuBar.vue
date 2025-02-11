@@ -64,11 +64,11 @@ const fetchUser= () => {
     <v-container class="d-flex justify-space-between align-center">
       <div class="d-flex align-center">
         <router-link to="/">
-          <v-img src="../src/assets/logo.png" width="80" alt="Logo"></v-img>
+          <v-img src="../src/assets/oc-logo.png" width="80" alt="Logo"></v-img>
         </router-link>
         
         
-        <h1 class="title">Resume Machine</h1>
+        <h1 class="title">Eagle Flight Plan</h1>
       </div>
       
       <div class="menu-buttons">
