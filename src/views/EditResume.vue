@@ -867,6 +867,10 @@ const saveSkillDatabase = () =>{
       }
     
   };
+
+  const cancel = () => {
+    router.push({ name: 'ResumeListStudents' }); // route for cancel action
+  };
 </script>
 
 <template>
@@ -921,6 +925,7 @@ const saveSkillDatabase = () =>{
 
       <!-- Create Button -->
       <v-btn class="mt-4" color="red" @click="saveResume">Create</v-btn>
+      <v-btn class="mt-4" color="red" @click="cancel">cancel</v-btn>
     </v-container>
   </v-app>
 </template>
