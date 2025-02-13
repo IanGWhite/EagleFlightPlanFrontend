@@ -12,10 +12,13 @@ const goToResume = () => {
 const goToInfo = () => {
   router.push({ name: 'StudentInfo' });
 };
+const dialog = ref(false);
+const currentItem = ref(0);
 
 const todoItems = ref(
-  [{ type: "Task 1", name: "Make a resume", points: "30" },
-  { type: "Task 2", name: "Make a cover letter", points: "20" }
+  [{ type: "Task 1", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
+  { type: "Task 2", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true },
+  
   ]);
 
   const doneItems = ref(
@@ -168,9 +171,11 @@ const todoItems = ref(
           <v-timeline density="compact" align-start style="padding-left: 5%; padding-right: 5%;" line-thickness="7" >
             
             <v-timeline-item 
-          v-for="item in todoItems"
-          :key="item.type"
-          style="width: 100%;"
+              v-for="(item, index) in todoItems"
+              :key="item.type"
+              style="width: 100%;"
+              @click="dialog = true; currentItem = index"
+              class="cursor-pointer"
         >
         <!-- <v-row class="d-flex" justify="space-between" style="width: 100%;">
       <v-col>
@@ -180,8 +185,10 @@ const todoItems = ref(
         {{ item.points }} pts.
       </v-col>
     </v-row> -->
-
+    
     {{ item.name }}
+    <!-- {{ item.name }}  -->
+    <v-spacer></v-spacer>
     {{ item.points }} pts.
 
         </v-timeline-item>
@@ -194,17 +201,9 @@ const todoItems = ref(
           v-for="item in doneItems"
           :key="item.type"
           dot-color="green"
-          
         >
-    <!-- <v-row>
-      <v-col>
-        {{ item.name }}
-      </v-col>
-      <v-col class="text-right">
-        {{ item.points }} pts.
-      </v-col>
-    </v-row> -->
     {{ item.name }}
+    <v-spacer></v-spacer>
     {{ item.points }} pts.
 
 
@@ -213,9 +212,43 @@ const todoItems = ref(
 
         </v-card>
 
+        
+        <v-dialog v-model="dialog" width="auto">
+      <v-card
+        max-width="600"
+        min-width="400"
+      >
+          <v-card-title class="text-center">
+            {{todoItems[currentItem].name}}
+          </v-card-title>
+          <v-card-subtitle class="text-center">
+            {{todoItems[currentItem].points}} pts.
+          </v-card-subtitle>
+          <v-card-text>
+            {{todoItems[currentItem].description}}
+          </v-card-text>
+          <v-card-text>
+            {{todoItems[currentItem].rationale}}
+          </v-card-text>
+
+          <v-card-text v-if="todoItems[currentItem].canUpload">
+            <v-file-input clearable label="File input" density="compact"></v-file-input>
+          </v-card-text>
+          
+      
+        <template v-slot:actions>
+          <v-btn class="ms-auto" text="Cancel" @click="dialog = false"></v-btn>
+        </template>
+      </v-card>
+    </v-dialog>
+
       </v-main>
+
+      
     </v-app>
   </template>
+
+  
 
 <style scoped>
 .fill-height {

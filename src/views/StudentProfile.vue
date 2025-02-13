@@ -14,6 +14,8 @@ const tab = ref('option-1');
 
 const majors = ref(['Computer Science', 'Art', 'English']);
 
+const studentStrengths = ref([{ strength: 'Foo' }, { strength: 'two' }, { strength: 'three' }, { strength: 'for' }, { strength: 'fiv' }]);
+
 const award = ref({
   organization: "",
   title: "",
@@ -21,6 +23,20 @@ const award = ref({
   endDate: "",
   description: ""
 });
+
+const pointLog = ref([{
+  type: 'Badge',
+  approvedBy: 'David North',
+  pointDifference: 10,
+  date: '10-12-25',
+},
+{
+  type: 'Shop',
+  approvedBy: 'Admin name',
+  pointDifference: -20,
+  date: '10-12-25',
+},
+]);
 const message = ref("test");
 
 const saveAward = (id) => {
@@ -46,12 +62,12 @@ const getAwards = async (id) => {
 
 onMounted(() => {
   user.value = Utils.getStore('user')
-  console.log(user.value)
+  // console.log(user.value)
   const awardId = route.params.id;
       if (awardId) {
         getAwards(awardId);
       } else {
-        console.error('No Award ID provided in route');
+        // console.error('No Award ID provided in route');
       }
 })
 </script>
@@ -74,6 +90,7 @@ onMounted(() => {
         ></v-tab>
       </v-tabs>
       <v-tabs-window v-model="tab">
+        <!-- PERSONAL INFO -->
         <v-tabs-window-item value="option-1">
         <v-card-text>
           <!-- <v-form @submit.prevent="saveAward"> -->
@@ -85,33 +102,48 @@ onMounted(() => {
               :items=majors
             ></v-autocomplete>
 
+            
             <v-text-field
-              v-model="award.title"
-              label="Award Title"
+              label="Estimated Graduation"
+              type="date"
               required
             ></v-text-field>
-
-            <v-container>
+            <!-- <v-container>
               <v-date-picker view-mode="months"></v-date-picker>
-            </v-container>
+            </v-container> -->
 
-            <v-textarea
-              v-model="award.description"
-              label="Description"
-              rows="4"
-            ></v-textarea>
+
+            <v-card style="width: 40%;">
+              <v-card-title>Top 5 Clifton Strengths</v-card-title>
+              <v-text-field 
+                v-for="(strength, index) in studentStrengths"
+                :key="index"
+                v-model="studentStrengths[index].strength"
+                hide-details="auto"
+                style="margin-bottom: 0%;"
+                variant="solo"
+              >
+                {{ index + 1 }}. 
+              </v-text-field>
+            </v-card>
 
             <div class="buttons">
-              <v-btn color="red" @click="saveAward(route.params.id)">Save</v-btn>
+              <v-btn color="red" @click="saveAward(route.params.id)">Save</v-btn> <!-- EDIT BUTTON -->
             </div>
           </v-form>
         </v-card-text>
       </v-tabs-window-item>
+      <!--        BADGES         -->
       <v-tabs-window-item value="option-2">
-        <p >hello</p>
+        <v-card-text>
+          WIP
+        </v-card-text>
       </v-tabs-window-item>
+      <!--        POINT TRANSACTION HISTORY         -->
       <v-tabs-window-item value="option-3">
-        <p >history</p>
+        <v-container>
+          <v-data-table :items="pointLog"></v-data-table>
+        </v-container>
       </v-tabs-window-item>
       </v-tabs-window>
       </div>

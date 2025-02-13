@@ -38,7 +38,7 @@
     border-radius: 20px;
     padding: 10px 20px;
     transition: background-color 0.3s;
-    color: #f4ecd0;
+    /* color: #f4ecd0; */
   }
   
   .v-btn.light-blue {
