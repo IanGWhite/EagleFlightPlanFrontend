@@ -46,6 +46,7 @@ const addNewResume = () => {
 
 const editResume = (resume) => {
   console.log("Editing resume:", resume);
+  router.push({ name: 'EditResume' , params: {id: resume.id}});
 };
 
 const deleteResume =  (resumeId) => {
