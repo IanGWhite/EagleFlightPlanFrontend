@@ -132,7 +132,7 @@ const todoItems = ref(
           </v-card-text>
 
           <v-card-text class="card-link-text-wrapper">
-            <a href="www.google.com/" class="card-link-text">See Shop</a>
+            <a href="StudentShop" class="card-link-text">See Shop</a>
           </v-card-text>
 
           </v-card>
