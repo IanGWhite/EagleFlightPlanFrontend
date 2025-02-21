@@ -14,6 +14,6 @@ export default {
     return apiClient.put(`/students/${studentId}/links/${id}`, data);
   },
   deleteResumeLink(studentId, resumeId, id) {
-    return apiClient.delete(`/students/${studentId}/${resumeId}/links/${id}`);
+    return apiClient.delete(`/students/${studentId}/${resumeId}/resumeLinks/${id}`);
   },
 };
