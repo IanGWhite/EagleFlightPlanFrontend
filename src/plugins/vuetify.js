@@ -33,6 +33,7 @@ const vuetify = createVuetify({
   icons: {
     defaultSet: "mdi",
   },
+  tab: 'option-1',
 });
 
 export default vuetify;

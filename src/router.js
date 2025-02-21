@@ -21,6 +21,9 @@ import ViewStudentResume from "./views/viewStudentResumeList.vue";
 import commentStudentResume from "./views/commentStudentResume.vue";
 import ResumeListTeacher from "./views/resumeListTeacher.vue";
 import studentViewCommentsResume from "./views/studentViewCommentsResume.vue";
+import Home from "./views/Home.vue";
+import StudentProfile from "./views/StudentProfile.vue";
+import StudentShop from "./views/StudentShop.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -133,6 +136,23 @@ const router = createRouter({
       name: "studentViewCommentsResume",
       component: studentViewCommentsResume,
       props: true
+    },
+    {
+      path: "/Home",
+      name: "Home",
+      component: Home,
+    },
+    {
+      path: "/StudentProfile",
+      name: "StudentProfile",
+      component: StudentProfile,
+      props: true,
+    },
+    {
+      path: "/StudentShop",
+      name: "StudentShop",
+      component: StudentShop,
+      props: true,
     },
   ],
 });
