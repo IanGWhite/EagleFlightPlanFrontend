@@ -75,7 +75,7 @@
   /* Container styling */
   .v-container {
     padding: 20px;
-    background-color: "lightGrey";
+    
   }
   
   .text-center {
@@ -129,7 +129,12 @@
     margin-bottom: 20px;
   }
 
- 
+ .page-title
+ {
+  text-align: center;
+  font-size: x-large;
+  font-weight: bolder;
+ }
 
  
   

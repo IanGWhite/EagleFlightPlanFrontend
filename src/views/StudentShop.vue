@@ -13,6 +13,7 @@ const shopItems = ref(
   [{ name: "White Dress Shirt", points: "100", description: "White button up dress shirt with collar", imageLink:"src/assets/shop/white-dress-shirt.png"},
   { name: "Light Blue Dress Shirt", points: "130", description: "Light blue button up dress shirt with chest pocket", imageLink:"src/assets/shop/blue-dress-shirt.png"},
   { name: "Black Tie", points: "50", description: "Black neck tie", imageLink:"src/assets/shop/black-dress-tie.png"},
+  { name: "White Dress Shirt", points: "100", description: "White button up dress shirt with collar", imageLink:"src/assets/shop/white-dress-shirt.png"},
   
   ]);
 
@@ -22,9 +23,9 @@ const shopItems = ref(
     <v-app class="rounded rounded-md">
       <v-main> <!--            MAIN            -->
         <v-list-item></v-list-item><!-- SPACE ABOVE TIMELINE -->
-        <v-card-title class="text-center">Shop</v-card-title>
-        <v-card variant="tonal">
-          <v-container width="70%" fluid>
+        <v-card-title class="page-title">Shop</v-card-title>
+        <!-- <v-card > -->
+          <v-container width="70%" fluid style="background: lightgray; height:100%;">
             
             <v-row justify="left">
               <v-col
@@ -33,16 +34,24 @@ const shopItems = ref(
                 cols="12"
                 sm="6"
               >
-                <v-card variant="tonal" class="d-flex ga-4" style="padding: 5%;">
-                  <v-card variant="outlined">
+                <v-card variant="text" elevation="5" class="d-flex ga-4" style="padding: 5%; background: white">
+                  <v-card variant="outlined" style="background: white;">
                     <v-img
                     :src="`${shopItem.imageLink}`"
-                    width="100"
+                    width="110"
+                    height="120"
+                    cover
+                    
                     ></v-img>
                   </v-card>
-                    <v-card-title>{{shopItem.name}}
-                      <v-card-subtitle style="padding: 0%;">{{shopItem.points}}</v-card-subtitle>
-                    </v-card-title>
+                  <v-card variant="text" style="padding: 0%;">
+                    <v-card-title>{{shopItem.name}}</v-card-title>
+                      <v-card-subtitle >{{shopItem.points}} pts.</v-card-subtitle>
+                      <v-card-text >{{shopItem.description}}</v-card-text>
+                    
+                  </v-card>
+                    
+                    
                     
                 </v-card>
               </v-col>
@@ -53,7 +62,7 @@ const shopItems = ref(
         
         
 
-        </v-card>
+        <!-- </v-card> -->
 
 
       </v-main>
