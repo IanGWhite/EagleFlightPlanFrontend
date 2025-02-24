@@ -3,11 +3,10 @@ import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 // import MenuBar from "../components/MenuBar.vue";
 import { VCalendar } from 'vuetify/labs/VCalendar';
-
-const luxon = new LuxonAdapter({ locale: "en" });
+import { useDate } from 'vuetify';
 
 const router = useRouter();
-
+const formatter = useDate();
 
 const calDialog = ref(true);
 const currentItem = ref(0);
@@ -71,8 +70,10 @@ const events = ref(
                   {{events[currentItem].description}}
                 </v-card-text>
                 <v-card-text>
-                  {{events[currentItem].start}}, {{events[currentItem].start.getDate()}}
-                  {{luxon.format(events[currentItem].start, "shortDate")}}
+                  {{formatter.format(events[currentItem].start, 'shortDate')}}, 
+                  {{formatter.format(events[currentItem].start, 'fullTime12h')}} - 
+                  {{formatter.format(events[currentItem].end, 'fullTime12h')}}
+                  
                 </v-card-text>
                 <v-card-text>
                   {{events[currentItem].start.getUTCDate()}}
