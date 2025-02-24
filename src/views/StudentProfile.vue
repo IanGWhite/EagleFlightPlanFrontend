@@ -13,6 +13,7 @@ const user = ref({});
 const tab = ref('option-1');
 
 const majors = ref(['Computer Science', 'Art', 'English']);
+const semesters = ref(['Fall 2025', 'Spring 2026', 'Fall 2026', 'Spring 2026', 'Fall 2027', 'Spring 2027']);
 
 const studentStrengths = ref([{ strength: 'Foo' }, { strength: 'two' }, { strength: 'three' }, { strength: 'for' }, { strength: 'fiv' }]);
 
@@ -51,14 +52,7 @@ const saveAward = (id) => {
 };
 
 
-const getAwards = async (id) => {
-      try {
-        const response = await AwardServices.getAwards(user.value.studentId, id);
-        award.value = response.data;
-      } catch (error) {
-        console.error('Failed to retrieve award data:');
-      }
-    };
+
 
 onMounted(() => {
   user.value = Utils.getStore('user')
@@ -77,10 +71,10 @@ onMounted(() => {
     <v-container>
 
       <v-card>
-        <div class="flex-row">
+        
       <v-tabs v-model="tab">
-        <v-tab
-          text="Personal Info"
+        <v-tab 
+          text="My Info"
           value="option-1"
         ></v-tab>
         <v-tab text="Badges" value="option-2"></v-tab>
@@ -92,46 +86,47 @@ onMounted(() => {
       <v-tabs-window v-model="tab">
         <!-- PERSONAL INFO -->
         <v-tabs-window-item value="option-1">
-        <v-card-text>
-          <!-- <v-form @submit.prevent="saveAward"> -->
-            <v-form>
-            <!-- add v-model -->
-            <v-autocomplete
-              
-              label="Major"
-              :items=majors
-            ></v-autocomplete>
+          <v-sheet class="pa-3">
+            <!-- <v-form @submit.prevent="saveAward"> -->
+              <v-form>
+              <!-- add v-models to autocomplete forms -->
+               <v-sheet >
+                <v-autocomplete 
+                  
+                  label="Major"
+                  :items=majors
+                ></v-autocomplete>
+               </v-sheet>
+                
+                <v-sheet>
+                  <v-autocomplete 
+                  
+                    label="Estimated Grad Semester"
+                    :items=semesters
+                  ></v-autocomplete>
+                </v-sheet>
+                
 
-            
-            <v-text-field
-              label="Estimated Graduation"
-              type="date"
-              required
-            ></v-text-field>
-            <!-- <v-container>
-              <v-date-picker view-mode="months"></v-date-picker>
-            </v-container> -->
 
+                <v-card style="width: 40%;">
+                  <v-card-title>Top 5 Clifton Strengths</v-card-title>
+                  <v-text-field 
+                    v-for="(strength, index) in studentStrengths"
+                    :key="index"
+                    v-model="studentStrengths[index].strength"
+                    hide-details="auto"
+                    style="margin-bottom: 0%;"
+                    variant="solo"
+                  >
+                    {{ index + 1 }}. 
+                  </v-text-field>
+                </v-card>
 
-            <v-card style="width: 40%;">
-              <v-card-title>Top 5 Clifton Strengths</v-card-title>
-              <v-text-field 
-                v-for="(strength, index) in studentStrengths"
-                :key="index"
-                v-model="studentStrengths[index].strength"
-                hide-details="auto"
-                style="margin-bottom: 0%;"
-                variant="solo"
-              >
-                {{ index + 1 }}. 
-              </v-text-field>
-            </v-card>
-
-            <div class="buttons">
-              <v-btn color="red" @click="saveAward(route.params.id)">Save</v-btn> <!-- EDIT BUTTON -->
-            </div>
-          </v-form>
-        </v-card-text>
+                <div class="buttons">
+                  <v-btn color="red" @click="saveAward(route.params.id)">Save</v-btn> <!-- EDIT BUTTON -->
+                </div>
+            </v-form>
+          </v-sheet>
       </v-tabs-window-item>
       <!--        BADGES         -->
       <v-tabs-window-item value="option-2">
@@ -146,7 +141,7 @@ onMounted(() => {
         </v-container>
       </v-tabs-window-item>
       </v-tabs-window>
-      </div>
+     
       </v-card>
     </v-container>
   </v-app>
