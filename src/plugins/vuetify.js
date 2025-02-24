@@ -6,6 +6,7 @@ import { createVuetify } from "vuetify";
 // Misc
 import { loadFonts } from "./webfontloader";
 loadFonts();
+import LuxonAdapter from "@date-io/luxon";
 
 // Styles
 import "vuetify/styles";
@@ -34,6 +35,9 @@ const vuetify = createVuetify({
     defaultSet: "mdi",
   },
   tab: 'option-1',
+  date: {
+    adapter: LuxonAdapter,
+  },
 });
 
 export default vuetify;

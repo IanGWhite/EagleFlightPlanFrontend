@@ -1,21 +1,32 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref } from 'vue';
-import MenuBar from "../components/MenuBar.vue";
+// import MenuBar from "../components/MenuBar.vue";
+import { VCalendar } from 'vuetify/labs/VCalendar';
+
+const luxon = new LuxonAdapter({ locale: "en" });
 
 const router = useRouter();
 
 
-const dialog = ref(false);
+const calDialog = ref(true);
 const currentItem = ref(0);
 
-const shopItems = ref(
-  [{ name: "White Dress Shirt", points: "100", description: "White button up dress shirt with collar", imageLink:"src/assets/shop/white-dress-shirt.png"},
-  { name: "Light Blue Dress Shirt", points: "130", description: "Light blue button up dress shirt with chest pocket", imageLink:"src/assets/shop/blue-dress-shirt.png"},
-  { name: "Black Tie", points: "50", description: "Black neck tie", imageLink:"src/assets/shop/black-dress-tie.png"},
-  { name: "White Dress Shirt", points: "100", description: "White button up dress shirt with collar", imageLink:"src/assets/shop/white-dress-shirt.png"},
+const events = ref(
+  [{ name: "Birthday", description: "Celebrate this months birthday", category:"Math", 
+      title: "birthday",
+      start: new Date('Feb 1, 2025 12:00 PM'),
+      end: new Date('Feb 1, 2025 12:10 PM'),
+      color: 'blue',
+  },
+  
   
   ]);
+
+  const SelectDay = () =>
+  {
+    calDialog = true;
+  }
 
 </script>
 
@@ -25,15 +36,54 @@ const shopItems = ref(
         <v-card-title class="page-title">Event Calendar</v-card-title>
         <!-- <v-card > -->
           <v-container width="90%" fluid style="background: lightgray; height:100%;">
-
+            <v-row class="fill-height">
+              <v-col>
+                <v-sheet height="600">
+                  <v-calendar
+                    ref="calendar"
+                    :events="events"
+                    type="month"
+                    @click:date="SelectDay()"
+                    
+                  ></v-calendar>
+                </v-sheet>
+              </v-col>
+            </v-row>
           </v-container>
           
 
         
         
 
-        <!-- </v-card> -->
+        
+          <v-dialog v-model="calDialog" width="auto">
+            <v-card
+              max-width="600"
+              min-width="400"
+            >
+                <v-card-title class="text-center">
+                  {{events[currentItem].name}}
+                </v-card-title>
+                <v-card-subtitle class="text-center">
+                  {{events[currentItem].category}}
+                </v-card-subtitle>
+                <v-card-text>
+                  {{events[currentItem].description}}
+                </v-card-text>
+                <v-card-text>
+                  {{events[currentItem].start}}, {{events[currentItem].start.getDate()}}
+                  {{luxon.format(events[currentItem].start, "shortDate")}}
+                </v-card-text>
+                <v-card-text>
+                  {{events[currentItem].start.getUTCDate()}}
+                </v-card-text>
 
+            
+              <template v-slot:actions>
+                <v-btn class="ms-auto" text="Cancel" @click="calDialog = false"></v-btn>
+              </template>
+            </v-card>
+          </v-dialog>
 
       </v-main>
 
