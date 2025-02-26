@@ -7,6 +7,8 @@ import { createVuetify } from "vuetify";
 import { loadFonts } from "./webfontloader";
 loadFonts();
 
+import 'vue-cal/dist/vuecal.css'
+
 // Styles
 import "vuetify/styles";
 import "@mdi/font/css/materialdesignicons.css";
@@ -20,6 +22,9 @@ const myCustomLightTheme = {
     lightBlue: "#5bc0eb",
     red: "#811429",
     darkRed: "#48111c",
+    niceBlue: "#4287f5",
+    niceRed: "#f54242"
+    
   },
 };
 
