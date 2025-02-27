@@ -96,8 +96,8 @@ const events = ref(
                 <v-card-actions >
                   <v-btn 
                 v-if="isAdmin"
-                class="ms-auto" text="Edit" @click="EditEvent"></v-btn>
-                <v-btn class="ms-auto" text="Close" @click="calDialog = false"></v-btn>
+                class="popup" variant="tonal" text="Edit" @click="EditEvent"></v-btn>
+                <v-btn class="popup" variant="tonal" text="Close" @click="calDialog = false"></v-btn>
                 </v-card-actions>
             </v-card>
           </v-dialog>
@@ -110,6 +110,7 @@ const events = ref(
         text="Add Event"
         @click="EditEvent"
         prepend-icon="mdi-plus"
+        color="red"
         ></v-btn>
     </v-app>
   </template>
@@ -118,7 +119,9 @@ const events = ref(
 
 <style scoped>
 
-
+.popup{
+  width: auto;
+}
 
 
 

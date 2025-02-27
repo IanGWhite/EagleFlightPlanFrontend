@@ -24,7 +24,7 @@ import studentViewCommentsResume from "./views/studentViewCommentsResume.vue";
 import Home from "./views/Home.vue";
 import StudentProfile from "./views/StudentProfile.vue";
 import StudentShop from "./views/StudentShop.vue";
-import StudentCalendar from "./views/StudentCalendar.vue";
+import Calendar from "./views/Calendar.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -156,9 +156,9 @@ const router = createRouter({
       props: true,
     },
     {
-      path: "/StudentCalendar",
-      name: "StudentCalendar",
-      component: StudentCalendar,
+      path: "/Calendar",
+      name: "Calendar",
+      component: Calendar,
       props: true,
     },
   ],
