@@ -22,7 +22,11 @@ const events = ref(
       class: 'leisure',
   },
   
-  
+  { name: "Career Fair", description: "We believe you have been created with purpose and calling. OC's Career Services office is committed to walking beside you as you uncover your unique calling and embark on a fulfilling career journey.", category:"All", location: "Garvey Center",
+      title: "Career Fair",
+      start: new Date('Mar 1, 2025 10:00 AM'),
+      end: new Date('Mar 1, 2025 5:30 PM'),
+  },
   ]);
 
   const OnEventClick = (event, e) => {
@@ -88,13 +92,13 @@ const events = ref(
                   <v-icon>mdi-shape</v-icon>
                   {{selectedEvent.category}}
                 </v-card-text>
-              <template v-slot:actions>
 
-                <v-btn 
+                <v-card-actions >
+                  <v-btn 
                 v-if="isAdmin"
                 class="ms-auto" text="Edit" @click="EditEvent"></v-btn>
                 <v-btn class="ms-auto" text="Close" @click="calDialog = false"></v-btn>
-              </template>
+                </v-card-actions>
             </v-card>
           </v-dialog>
 
