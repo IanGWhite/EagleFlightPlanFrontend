@@ -24,6 +24,7 @@ import studentViewCommentsResume from "./views/studentViewCommentsResume.vue";
 import Home from "./views/Home.vue";
 import StudentProfile from "./views/StudentProfile.vue";
 import StudentShop from "./views/StudentShop.vue";
+import Calendar from "./views/Calendar.vue";
 import AddTask from "./views/AddTask.vue";
 
 const router = createRouter({
@@ -153,6 +154,12 @@ const router = createRouter({
       path: "/StudentShop",
       name: "StudentShop",
       component: StudentShop,
+      props: true,
+    },
+    {
+      path: "/Calendar",
+      name: "Calendar",
+      component: Calendar,
       props: true,
     },
     {

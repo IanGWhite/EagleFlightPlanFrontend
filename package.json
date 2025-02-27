@@ -20,6 +20,7 @@
     "jspdf": "^2.5.2",
     "vite-plugin-vuetify": "^1.0.0",
     "vue": "^3.2.47",
+    "vue-cal": "^4.10.2",
     "vue-router": "^4.1.6",
     "vuetify": "^3.0.1",
     "vuex": "^4.0.2",

@@ -64,7 +64,6 @@
   
   .v-text-field input, .v-textarea textarea {
     padding: 10px;
-    border: 1px solid #48111c;
     border-radius: 4px;
   }
   
@@ -136,5 +135,18 @@
   font-weight: bolder;
  }
 
+ /* VUECAL */
+ .vuecal__event
+ {
+  cursor: pointer;
+  background-color: #4287f5;
+  color:#ffffff;
+}
+
+.vuecal__event-title {
+  font-size: 1.2em;
+  font-weight: bold;
+  margin: 4px 0 8px;
+}
  
   
