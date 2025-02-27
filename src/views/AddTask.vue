@@ -1,7 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
-//import TaskServices from "../services/taskServices";
+import TaskServices from "../services/eagleTaskServices";
 import MenuBar from "../components/MenuBar.vue";
 import Utils from "../config/utils.js";
 
@@ -26,9 +26,9 @@ const task = ref({
   hyperLink: "",
 });
 
-/*
+
 const saveTask = () => {
-  TaskServices.createTask(task.value)
+  eagleTaskServices.createTask(task.value)
     .then(() => {
       message.value = "Task saved successfully";
       router.push({ name: "Home" }); // hypothetical route name for education list
@@ -38,7 +38,7 @@ const saveTask = () => {
     });
 };
 
-*/
+
 const cancel = () => {
   router.push({ name: "Home" }); // hypothetical route for cancel action
 };
@@ -131,8 +131,8 @@ onMounted(() => {
                                 ></v-text-field>
 
                                 <div class="buttons">
-                                <v-btn color="red" @click="confirmTask">confirm</v-btn>
                                 <v-btn color="error" @click="cancel">Cancel</v-btn>
+                                <v-btn color="red" @click="saveTask">confirm</v-btn>
                                 </div>
                     </v-form>
               </v-col>
