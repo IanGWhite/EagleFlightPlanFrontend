@@ -1,10 +1,12 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+//import TaskServices from "../services/taskServices";
 import MenuBar from "../components/MenuBar.vue";
+import Utils from "../config/utils.js";
 
 const router = useRouter();
-
+const user = ref({});
 
 const dialog = ref(false);
 const currentItem = ref(0);
@@ -23,6 +25,28 @@ const task = ref({
   prereqName: "",
   hyperLink: "",
 });
+
+/*
+const saveTask = () => {
+  TaskServices.createTask(task.value)
+    .then(() => {
+      message.value = "Task saved successfully";
+      router.push({ name: "Home" }); // hypothetical route name for education list
+    })
+    .catch((e) => {
+      message.value =  "An error occurred";
+    });
+};
+
+*/
+const cancel = () => {
+  router.push({ name: "Home" }); // hypothetical route for cancel action
+};
+
+onMounted(() => {
+  user.value = Utils.getStore('user')
+  console.log(user.value)
+})
 
 </script>
 
