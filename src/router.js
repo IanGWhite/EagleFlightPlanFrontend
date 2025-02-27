@@ -22,6 +22,7 @@ import commentStudentResume from "./views/commentStudentResume.vue";
 import ResumeListTeacher from "./views/resumeListTeacher.vue";
 import studentViewCommentsResume from "./views/studentViewCommentsResume.vue";
 import Home from "./views/Home.vue";
+import AdminHome from "./views/AdminHome.vue";
 import StudentProfile from "./views/StudentProfile.vue";
 import StudentShop from "./views/StudentShop.vue";
 import AddTask from "./views/AddTask.vue";
@@ -142,6 +143,11 @@ const router = createRouter({
       path: "/Home",
       name: "Home",
       component: Home,
+    },
+    {
+      path: "/AdminHome",
+      name: "AdminHome",
+      component: AdminHome,
     },
     {
       path: "/StudentProfile",
