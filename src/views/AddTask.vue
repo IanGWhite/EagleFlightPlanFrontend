@@ -13,22 +13,24 @@ const currentItem = ref(0);
 
 const otherTasks = ref(['Make Resume', 'Take Clifton Strengths', 'Apply for a Job']);
 
+const message = ref("");
+
 const task = ref({
   category: "",
   name: "",
   description: "",
   semestersFromGrad: "",
   points: "",
-  reflectionReq: "",
+  reflectionReq: false,
   rationale: "",
-  canUpload: "",
+  canUpload: false,
   prereqName: "",
   hyperLink: "",
 });
 
 
 const saveTask = () => {
-  eagleTaskServices.createTask(task.value)
+  TaskServices.createEagleTask(task.value)
     .then(() => {
       message.value = "Task saved successfully";
       router.push({ name: "Home" }); // hypothetical route name for education list
@@ -118,6 +120,7 @@ onMounted(() => {
 
                                 <v-sheet>
                                 <v-autocomplete 
+                                v-model="task.prereqName"
                                 label="Prerequisite"
                                 :items=otherTasks
                                 bg-color="white"
