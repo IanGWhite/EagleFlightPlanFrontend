@@ -70,7 +70,7 @@ const todoItems = ref(
           </v-list-item>
 
           <v-card-text class="card-link-text-wrapper">
-            <a href="www.google.com/" class="card-link-text">See full calendar</a>
+            <a href="Calendar" class="card-link-text">See full calendar</a>
           </v-card-text>
 
           </v-card>
