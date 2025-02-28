@@ -23,19 +23,18 @@ const events = ref(
   ]);
 
 
-const todoItems = ref(
-  [{ type: "Task 1", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
-  { type: "Task 2", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true },
-  { type: "Task 3", name: "This is the task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
-  
-  ]);
-
   const completedTasks = ref(
   [{ type: "Task 1", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Chandler Hurt" },
   { type: "Task 2", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true, student:"Ian White" },
   { type: "Task 3", name: "This is the task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Samantha Wiggs" },
-  
   ]);
+
+  const headers = ref([
+          { key: 'type', title: 'type', align: 'start', width:'33%' },
+          { key: 'student', title: 'Student', align:'center', width:'33%' },
+          { key: 'button', title: '', align: 'end', width:'33%' },
+        ]
+  )
 
   // The quick access buttons with their links
   const quickAccess = ref( 
@@ -128,24 +127,32 @@ const todoItems = ref(
       <v-main> <!--            MAIN            -->
         <v-list-item></v-list-item><!-- SPACE ABOVE TIMELINE -->
         <v-card-title class="page-title">Completed Tasks</v-card-title>
-        <v-card class="main-tasks" variant="tonal">
-          <template v-slot:text>
-            <v-text-field
-              v-model="search"
-              label="Search"
-              prepend-inner-icon="mdi-magnify"
-              variant="outlined"
-              hide-details
-              single-line
-            ></v-text-field>
-          </template>
-
+        <v-card variant="tonal" style="margin-left: 5%; margin-right: 5%;">
+          
+          <v-text-field
+            v-model="search"
+            label=""
+            prepend-inner-icon="mdi-magnify"
+            variant=""
+            hide-details
+            single-line
+          ></v-text-field>
 
           <v-data-table
+            class="pa-3"
             hide-default-header
+            :headers="headers"
             :items="completedTasks"
             :search="search"
-          ></v-data-table>
+            hide-default-footer
+          >
+          <template v-slot:item.button="{ item }" >
+            <v-btn class="quick-btn "
+             rounded="0"
+             append-icon="mdi-arrow-right"
+            >Approve</v-btn>
+          </template>
+        </v-data-table>
 
         </v-card>
 
@@ -217,6 +224,10 @@ const todoItems = ref(
   height: auto;
   background-color: rgb(63, 63, 63);
   color: white;
+}
+
+.list-btn{
+  margin-left: 20%;
 }
 
 
