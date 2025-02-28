@@ -14,6 +14,7 @@ const goToInfo = () => {
 };
 const dialog = ref(false);
 const currentItem = ref(0);
+const search = ref("");
 
 const events = ref(
   [{ name: "Event 100", date: "3/4" },
@@ -29,7 +30,15 @@ const todoItems = ref(
   
   ]);
 
-  const quickAccess = ref(
+  const completedTasks = ref(
+  [{ type: "Task 1", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Chandler Hurt" },
+  { type: "Task 2", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true, student:"Ian White" },
+  { type: "Task 3", name: "This is the task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Samantha Wiggs" },
+  
+  ]);
+
+  // The quick access buttons with their links
+  const quickAccess = ref( 
   [{ name: "Students", location: "/Home" },
   { name: "Tasks", location: "/Home" },
   { name: "Events", location: "/Home" },
@@ -120,47 +129,23 @@ const todoItems = ref(
         <v-list-item></v-list-item><!-- SPACE ABOVE TIMELINE -->
         <v-card-title class="page-title">Completed Tasks</v-card-title>
         <v-card class="main-tasks" variant="tonal">
-          <v-timeline density="compact" align-start style="padding-left: 5%; padding-right: 5%;" line-thickness="7" >
-            
-            <v-timeline-item 
-              v-for="(item, index) in todoItems"
-              :key="item.type"
-              style="width: 100%;"
-              @click="dialog = true; currentItem = index"
-              class="cursor-pointer"
-        >
-        <!-- <v-row class="d-flex" justify="space-between" style="width: 100%;">
-      <v-col>
-        {{ item.name }}
-      </v-col>
-      <v-col class="text-right">
-        {{ item.points }} pts.
-      </v-col>
-    </v-row> -->
-    
-    {{ item.name }}
-    <!-- {{ item.name }}  -->
-    <v-spacer></v-spacer>
-    {{ item.points }} pts.
-
-        </v-timeline-item>
-          </v-timeline>
+          <template v-slot:text>
+            <v-text-field
+              v-model="search"
+              label="Search"
+              prepend-inner-icon="mdi-magnify"
+              variant="outlined"
+              hide-details
+              single-line
+            ></v-text-field>
+          </template>
 
 
-        <!-- COMPLETED TASKS -->
-        <v-timeline density="compact" align-start style="padding-left: 5%; padding-right: 5%;" line-thickness="7" >
-            <v-timeline-item 
-          v-for="item in doneItems"
-          :key="item.type"
-          dot-color="green"
-        >
-    {{ item.name }}
-    <v-spacer></v-spacer>
-    {{ item.points }} pts.
-
-
-        </v-timeline-item>
-          </v-timeline>
+          <v-data-table
+            hide-default-header
+            :items="completedTasks"
+            :search="search"
+          ></v-data-table>
 
         </v-card>
 
