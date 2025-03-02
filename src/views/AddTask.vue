@@ -11,7 +11,8 @@ const user = ref({});
 const dialog = ref(false);
 const currentItem = ref(0);
 
-const otherTasks = ref(['Make Resume', 'Take Clifton Strengths', 'Apply for a Job']);
+const otherTasks = ref([]);
+const otherTasksNames = ref([]);
 
 const message = ref("");
 
@@ -28,6 +29,27 @@ const task = ref({
   hyperLink: "",
 });
 
+const getEagleTaskNames = () => {
+  for(let i = 0; i < otherTasks.value.length; i++){
+    otherTasksNames.value.push(otherTasks.value[i].name);
+    console.log("Task Name:", otherTasksNames.value);
+  }
+  console.log("Task Name:", otherTasksNames.value);
+  console.log("Task Name:", otherTasks.value.length);
+}
+
+const fetchEagleTasks = () => {
+  TaskServices.getAllEagleTasks()
+    .then((response) => {
+      otherTasks.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched tasks:", otherTasks.value);
+      getEagleTaskNames();
+    })
+    .catch((error) => {
+      console.error("Error fetching tasks:", error);
+    });
+    
+};
 
 const saveTask = () => {
   TaskServices.createEagleTask(task.value)
@@ -48,6 +70,7 @@ const cancel = () => {
 onMounted(() => {
   user.value = Utils.getStore('user')
   console.log(user.value)
+  fetchEagleTasks();
 })
 
 </script>
@@ -122,7 +145,7 @@ onMounted(() => {
                                 <v-autocomplete 
                                 v-model="task.prereqName"
                                 label="Prerequisite"
-                                :items=otherTasks
+                                :items=otherTasksNames
                                 bg-color="white"
                                 ></v-autocomplete>
                                 </v-sheet>
