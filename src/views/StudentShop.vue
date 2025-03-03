@@ -10,10 +10,16 @@ const dialog = ref(false);
 const currentItem = ref(0);
 
 const shopItems = ref(
-  [{ name: "White Dress Shirt", points: "100", description: "White button up dress shirt with collar", imageLink:"src/assets/shop/white-dress-shirt.png"},
-  { name: "Light Blue Dress Shirt", points: "130", description: "Light blue button up dress shirt with chest pocket", imageLink:"src/assets/shop/blue-dress-shirt.png"},
-  { name: "Black Tie", points: "50", description: "Black neck tie", imageLink:"src/assets/shop/black-dress-tie.png"},
-  { name: "White Dress Shirt", points: "100", description: "White button up dress shirt with collar", imageLink:"src/assets/shop/white-dress-shirt.png"},
+  [
+  { name: "Black Dress Suit", points: "100", description: "Complete suit with all parts included", imageLink:"src/assets/shop/black-suit.png"},
+  { name: "White Dress Shirt", points: "50", description: "White button up dress shirt with collar", imageLink:"src/assets/shop/white-dress-shirt.png"},
+  { name: "Light Blue Dress Shirt", points: "50", description: "Light blue button up dress shirt", imageLink:"src/assets/shop/blue-dress-shirt.png"},
+  
+  { name: "Pants", points: "50", description: "Black dress pants", imageLink:"src/assets/shop/black-dress-pants.png"},
+  { name: "Skirt", points: "50", description: "Black dress skirt", imageLink:"src/assets/shop/black-dress-skirt.png"},
+  { name: "Black Tie", points: "25", description: "Black neck tie", imageLink:"src/assets/shop/black-dress-tie.png"},
+  { name: "Belt", points: "25", description: "Black belt", imageLink:"src/assets/shop/black-belt.png"},
+  { name: "Shoes", points: "25", description: "Black dress shoes", imageLink:"src/assets/shop/dress-shoes.png"},
   
   ]);
 

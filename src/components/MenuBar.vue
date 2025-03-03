@@ -73,8 +73,8 @@ const fetchUser= () => {
       
       <div class="menu-buttons">
         <!-- <v-btn color="lightBlue" class="mx-2" @click="goToResume">Resume</v-btn> -->
-        <v-btn color="white" class="mx-2" @click="navigateTo('ResumeListStudents')">Resume</v-btn>
-        <v-btn color="white" class="mx-2" @click="navigateTo('StudentInfo')">Info</v-btn>
+        <!-- <v-btn color="white" class="mx-2" @click="navigateTo('ResumeListStudents')">Resume</v-btn>
+        <v-btn color="white" class="mx-2" @click="navigateTo('StudentInfo')">Info</v-btn> -->
         
 
         <!-- <v-avatar color="brown" size="40px" class="mx-2" @click="toggleDrawer"></v-avatar> -->

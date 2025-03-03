@@ -12,7 +12,7 @@ const router = useRouter();
 const calDialog = ref(false);
 const selectedEvent = ref({});
 
-const isAdmin = ref(true);
+const isAdmin = ref(false);
 
 const events = ref(
   [{ name: "Birthday", description: "Celebrate this months birthday", category:"Math", location: "Garvey Center",
@@ -24,8 +24,14 @@ const events = ref(
   
   { name: "Career Fair", description: "We believe you have been created with purpose and calling. OC's Career Services office is committed to walking beside you as you uncover your unique calling and embark on a fulfilling career journey.", category:"All", location: "Garvey Center",
       title: "Career Fair",
-      start: new Date('Mar 1, 2025 10:00 AM'),
-      end: new Date('Mar 1, 2025 5:30 PM'),
+      start: new Date('Mar 5, 2025 10:00 AM'),
+      end: new Date('Mar 5, 2025 5:30 PM'),
+  },
+
+  { name: "Lunch and Learn", description: "Knowing how hiring works is KEY to landing your dream job—learn what recruiters look for, how to stand out, and what NOT to do in the hiring process. Don't miss this chance to gain insider knowledge!", category:"All", location: "Duncan Room",
+      title: "Lunch and Learn",
+      start: new Date('Mar 6, 2025 11:40 AM'),
+      end: new Date('Mar 6, 2025 12:30 PM'),
   },
   ]);
 

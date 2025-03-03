@@ -12,19 +12,24 @@ const goToResume = () => {
 const goToInfo = () => {
   router.push({ name: 'StudentInfo' });
 };
+
+const goToPage = (link) => {
+  router.push({ link });
+};
 const dialog = ref(false);
 const currentItem = ref(0);
+const points = ref(100);
 
 const todoItems = ref(
-  [{ type: "Task 1", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
-  { type: "Task 2", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true },
-  { type: "Task 3", name: "This is the task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
+  [{ type: "Declare a major", name: "Declare a major", points: "25", description: "Navigate to your student profile and select a major.", rationale:"This is reasoning for the the student to select a major", canUpload:false, hyperLink:"https://www.google.com", reflectionReq:false },
+  { type: "Professional headshot", name: "Professional headshot", points: "25", description: "Get a professional headshot taken and upload it here. You can do this at many locations or here at OC.", rationale:"", canUpload:true, hyperLink:"", reflectionReq:true },
+  { type: "Gallup strengths test", name: "Gallup strengths test", points: "50", description: "Take the Gallup strengths test and submit them to your student profile.", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"https://www.google.com", reflectionReq:false },
   
   ]);
 
   const doneItems = ref(
-  [{ type: "Task 5", name: "Do a thing", points: "10" },
-  { type: "Task 6", name: "Do another thing", points: "40" }
+  [{ type: "Lunch and Learn event", name: "Lunch and Learn", points: "50" },
+  { type: "Task 6", name: "Mock Interview", points: "50" }
   ]);
 </script>
 
@@ -113,7 +118,7 @@ const todoItems = ref(
             </v-list-item>
             
             <v-card-text class="card-link-text-wrapper">
-              <a href="www.google.com/" class="card-link-text">See all</a>
+              <a href="home" class="card-link-text">See all</a>
             </v-card-text>
   
             </v-card>
@@ -128,7 +133,7 @@ const todoItems = ref(
             <v-card variant="tonal">
             <v-card-title class="text-center">Your Points</v-card-title>
           <v-card-text class="points-text">
-            500
+            {{points}}
           </v-card-text>
 
           <v-card-text class="card-link-text-wrapper">
@@ -159,7 +164,7 @@ const todoItems = ref(
             
             
             <v-card-text class="card-link-text-wrapper">
-              <a href="www.google.com/" class="card-link-text">See all</a>
+              <a href="home" class="card-link-text">See all</a>
             </v-card-text>
             </v-card>
         </v-list>
@@ -167,7 +172,7 @@ const todoItems = ref(
 
       <v-main> <!--            MAIN            -->
         <v-list-item></v-list-item><!-- SPACE ABOVE TIMELINE -->
-        <v-card-title class="text-center">To-do</v-card-title>
+        <v-card-title class="page-title">To-do</v-card-title>
         <v-card class="main-tasks" variant="tonal">
           <v-timeline density="compact" align-start style="padding-left: 5%; padding-right: 5%;" line-thickness="7" >
             
@@ -228,8 +233,14 @@ const todoItems = ref(
           <v-card-text>
             {{todoItems[currentItem].description}}
           </v-card-text>
-          <v-card-text>
+          <v-card-text v-if="todoItems[currentItem].rationale.length>1">
             {{todoItems[currentItem].rationale}}
+          </v-card-text>
+
+          <v-card-text class="text-center pa-0" v-if="todoItems[currentItem].hyperLink.length>1">
+            <v-btn rounded="0" class="quick-btn">
+              Here
+            </v-btn>
           </v-card-text>
 
           <v-card-text v-if="todoItems[currentItem].canUpload">
@@ -238,7 +249,7 @@ const todoItems = ref(
           
       
         <template v-slot:actions>
-          <v-btn class="ms-auto" text="Cancel" @click="dialog = false"></v-btn>
+          <v-btn class="ms-auto" text="Close" @click="dialog = false"></v-btn>
         </template>
       </v-card>
     </v-dialog>
@@ -289,8 +300,15 @@ const todoItems = ref(
 .badge-image{
   max-height:10%;
 }
-.main-tasks{
-  
+.quick-btn{
+  width: auto;
+  border-radius: auto;
+  padding: auto;
+  margin-bottom: 6px;
+  margin-top: 6px;
+  height: auto;
+  background-color: rgb(63, 63, 63);
+  color: white;
 }
 
 
