@@ -14,10 +14,11 @@ const goToInfo = () => {
 };
 const dialog = ref(false);
 const currentItem = ref(0);
+const currentItemObj = ref([{}]);
 const search = ref("");
 
 const events = ref(
-  [{ name: "Event 100", date: "3/4" },
+  [{ name: "Event 1", date: "3/4" },
   { name: "Event 2", date: "3/8" },
   { name: "Event 3", date: "3/10" },
   ]);
@@ -36,7 +37,7 @@ const events = ref(
         ]
   )
 
-  // The quick access buttons with their links
+  // The quick access buttons with their page links
   const quickAccess = ref( 
   [{ name: "Students", location: "/Home" },
   { name: "Tasks", location: "/Home" },
@@ -139,17 +140,18 @@ const events = ref(
           ></v-text-field>
 
           <v-data-table
-            class="pa-3"
             hide-default-header
             :headers="headers"
             :items="completedTasks"
             :search="search"
             hide-default-footer
+            style="padding: 12px; padding-top: 0%; font-size: 17px;"
           >
           <template v-slot:item.button="{ item }" >
-            <v-btn class="quick-btn "
+            <v-btn class="quick-btn"
              rounded="0"
              append-icon="mdi-arrow-right"
+             @click="dialog=true; currentItemObj=item"
             >Approve</v-btn>
           </template>
         </v-data-table>
@@ -163,25 +165,26 @@ const events = ref(
         min-width="400"
       >
           <v-card-title class="text-center">
-            {{todoItems[currentItem].name}}
+            {{currentItemObj.name}}
           </v-card-title>
           <v-card-subtitle class="text-center">
-            {{todoItems[currentItem].points}} pts.
+            {{currentItemObj.points}} pts.
           </v-card-subtitle>
           <v-card-text>
-            {{todoItems[currentItem].description}}
+            {{currentItemObj.description}}
           </v-card-text>
           <v-card-text>
-            {{todoItems[currentItem].rationale}}
+            {{currentItemObj.rationale}}
           </v-card-text>
 
-          <v-card-text v-if="todoItems[currentItem].canUpload">
+          <!-- <v-card-text v-if="completedTasks[currentItem].canUpload">
             <v-file-input clearable label="File input" density="compact"></v-file-input>
-          </v-card-text>
+          </v-card-text> -->
           
       
         <template v-slot:actions>
           <v-btn class="ms-auto" text="Cancel" @click="dialog = false"></v-btn>
+          <v-btn class="quick-btn" text="Approve" @click=""></v-btn>
         </template>
       </v-card>
     </v-dialog>
@@ -230,6 +233,9 @@ const events = ref(
   margin-left: 20%;
 }
 
+.v-input{
+  margin-bottom: 0;
+}
 
 
 </style>

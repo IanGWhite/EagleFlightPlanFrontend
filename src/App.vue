@@ -15,6 +15,6 @@ import MenuBar from "./components/MenuBar.vue";
 
 <style scoped>
 .padded-content {
-  /* padding-top: 100px */
+  padding-top: 90px
 }
 </style>
