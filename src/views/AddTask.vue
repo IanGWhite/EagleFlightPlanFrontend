@@ -58,7 +58,7 @@ const saveTask = () => {
       router.push({ name: "Home" }); // hypothetical route name for education list
     })
     .catch((e) => {
-      message.value =  "An error occurred";
+      message.value =  "Please enter correct data for all fields";
     });
 };
 
@@ -82,25 +82,26 @@ onMounted(() => {
         <v-card-title class="page-title">Task</v-card-title>
         <!-- <v-card > -->
           <v-container width="70%" fluid style="background: lightgrey; height:100%;">
-            
+            <p color="red">{{ message }}</p>
+            <p>Required *</p>
             <v-row justify="left">
               <v-col>
                     <v-form>
                         <v-text-field
                         v-model="task.name"
-                        label="Name"
+                        label="Name*"
                         required
                         bg-color = "white"
                         ></v-text-field>
                         <v-text-field
                         v-model="task.category"
-                        label="Category"
+                        label="Category*"
                         required
                         bg-color = "white"
                         ></v-text-field>
                                 <v-textarea
                                     v-model="task.description"
-                                    label="Description"
+                                    label="Description*"
                                     class="mr-2"
                                     required
                                     bg-color = "white"
@@ -108,14 +109,16 @@ onMounted(() => {
                                 <div class="row">
                                     <v-text-field
                                     v-model="task.points"
-                                    label="Points"
+                                    label="Points*"
+                                    type = "number"
                                     required
                                     bg-color = "white"
                                 ></v-text-field>
                                 <v-text-field
                                     v-model="task.semestersFromGrad"
-                                    label="Semesters from Graduation"
+                                    label="Semesters from Graduation*"
                                     class="mr-2"
+                                    type = "number"
                                     required
                                     bg-color = "white"
                                 ></v-text-field>
@@ -132,7 +135,6 @@ onMounted(() => {
                                 <v-checkbox
                                 v-model="task.reflectionReq"
                                 label="Requires Reflection"
-                                required
                                 ></v-checkbox>
                                 
                                 <v-checkbox
@@ -155,7 +157,7 @@ onMounted(() => {
                                 label="Hyperlink"
                                 bg-color = "white"
                                 ></v-text-field>
-
+                                <p color="red">{{ message }}</p>
                                 <div class="buttons">
                                 <v-btn color="error" @click="cancel">Cancel</v-btn>
                                 <v-btn color="red" @click="saveTask">confirm</v-btn>
