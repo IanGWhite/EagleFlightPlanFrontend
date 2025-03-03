@@ -1,7 +1,7 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
-//import TaskServices from "../services/taskServices";
+import TaskServices from "../services/eagleTaskServices";
 import MenuBar from "../components/MenuBar.vue";
 import Utils from "../config/utils.js";
 
@@ -11,7 +11,10 @@ const user = ref({});
 const dialog = ref(false);
 const currentItem = ref(0);
 
-const otherTasks = ref(['Make Resume', 'Take Clifton Strengths', 'Apply for a Job']);
+const otherTasks = ref([]);
+const otherTasksNames = ref([]);
+
+const message = ref("");
 
 const task = ref({
   category: "",
@@ -19,26 +22,47 @@ const task = ref({
   description: "",
   semestersFromGrad: "",
   points: "",
-  reflectionReq: "",
+  reflectionReq: false,
   rationale: "",
-  canUpload: "",
+  canUpload: false,
   prereqName: "",
   hyperLink: "",
 });
 
-/*
+const getEagleTaskNames = () => {
+  for(let i = 0; i < otherTasks.value.length; i++){
+    otherTasksNames.value.push(otherTasks.value[i].name);
+    console.log("Task Name:", otherTasksNames.value);
+  }
+  console.log("Task Name:", otherTasksNames.value);
+  console.log("Task Name:", otherTasks.value.length);
+}
+
+const fetchEagleTasks = () => {
+  TaskServices.getAllEagleTasks()
+    .then((response) => {
+      otherTasks.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched tasks:", otherTasks.value);
+      getEagleTaskNames();
+    })
+    .catch((error) => {
+      console.error("Error fetching tasks:", error);
+    });
+    
+};
+
 const saveTask = () => {
-  TaskServices.createTask(task.value)
+  TaskServices.createEagleTask(task.value)
     .then(() => {
       message.value = "Task saved successfully";
       router.push({ name: "Home" }); // hypothetical route name for education list
     })
     .catch((e) => {
-      message.value =  "An error occurred";
+      message.value =  "Please enter correct data for all fields";
     });
 };
 
-*/
+
 const cancel = () => {
   router.push({ name: "Home" }); // hypothetical route for cancel action
 };
@@ -46,6 +70,7 @@ const cancel = () => {
 onMounted(() => {
   user.value = Utils.getStore('user')
   console.log(user.value)
+  fetchEagleTasks();
 })
 
 </script>
@@ -57,25 +82,26 @@ onMounted(() => {
         <v-card-title class="page-title">Task</v-card-title>
         <!-- <v-card > -->
           <v-container width="70%" fluid style="background: lightgrey; height:100%;">
-            
+            <p color="red">{{ message }}</p>
+            <p>Required *</p>
             <v-row justify="left">
               <v-col>
                     <v-form>
                         <v-text-field
                         v-model="task.name"
-                        label="Name"
+                        label="Name*"
                         required
                         bg-color = "white"
                         ></v-text-field>
                         <v-text-field
                         v-model="task.category"
-                        label="Category"
+                        label="Category*"
                         required
                         bg-color = "white"
                         ></v-text-field>
                                 <v-textarea
                                     v-model="task.description"
-                                    label="Description"
+                                    label="Description*"
                                     class="mr-2"
                                     required
                                     bg-color = "white"
@@ -83,14 +109,16 @@ onMounted(() => {
                                 <div class="row">
                                     <v-text-field
                                     v-model="task.points"
-                                    label="Points"
+                                    label="Points*"
+                                    type = "number"
                                     required
                                     bg-color = "white"
                                 ></v-text-field>
                                 <v-text-field
                                     v-model="task.semestersFromGrad"
-                                    label="Semesters from Graduation"
+                                    label="Semesters from Graduation*"
                                     class="mr-2"
+                                    type = "number"
                                     required
                                     bg-color = "white"
                                 ></v-text-field>
@@ -107,7 +135,6 @@ onMounted(() => {
                                 <v-checkbox
                                 v-model="task.reflectionReq"
                                 label="Requires Reflection"
-                                required
                                 ></v-checkbox>
                                 
                                 <v-checkbox
@@ -118,8 +145,9 @@ onMounted(() => {
 
                                 <v-sheet>
                                 <v-autocomplete 
+                                v-model="task.prereqName"
                                 label="Prerequisite"
-                                :items=otherTasks
+                                :items=otherTasksNames
                                 bg-color="white"
                                 ></v-autocomplete>
                                 </v-sheet>
@@ -129,10 +157,10 @@ onMounted(() => {
                                 label="Hyperlink"
                                 bg-color = "white"
                                 ></v-text-field>
-
+                                <p color="red">{{ message }}</p>
                                 <div class="buttons">
-                                <v-btn color="red" @click="confirmTask">confirm</v-btn>
                                 <v-btn color="error" @click="cancel">Cancel</v-btn>
+                                <v-btn color="red" @click="saveTask">confirm</v-btn>
                                 </div>
                     </v-form>
               </v-col>
