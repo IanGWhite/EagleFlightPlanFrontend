@@ -23,15 +23,16 @@ const events = ref(
   { name: "Event 3", date: "3/10" },
   ]);
 
-
+  const sortBy= ref([{ sortBy: 'submissionDate', order: 'asc' }])
   const completedTasks = ref(
-  [{ type: "Task 1", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Chandler Hurt" },
-  { type: "Task 2", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true, student:"Ian White" },
-  { type: "Task 3", name: "This is the task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Samantha Wiggs" },
+  [{ type: "Task 1", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Chandler Hurt", reflection: "This made me think about lots of things like where to look for a job or whatever.", submissionDate: "2021-05-13" },
+  { type: "Task 2", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true, student:"Ian White", reflection: "This made me think about lots of things like where to look for a job or whatever.", submissionDate: "2025-02-16" },
+  { type: "Task 3", name: "This is the task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Samantha Wiggs", reflection:"", submissionDate: "2023-02-01"},
   ]);
 
+  //cols for the completed tasks table
   const headers = ref([
-          { key: 'type', title: 'type', align: 'start', width:'33%' },
+          { key: 'name', title: 'Name', align: 'start', width:'33%' },
           { key: 'student', title: 'Student', align:'center', width:'33%' },
           { key: 'button', title: '', align: 'end', width:'33%' },
         ]
@@ -137,6 +138,7 @@ const events = ref(
             variant=""
             hide-details
             single-line
+            
           ></v-text-field>
 
           <v-data-table
@@ -144,6 +146,7 @@ const events = ref(
             :headers="headers"
             :items="completedTasks"
             :search="search"
+            :sortBy.sync="sortBy"
             hide-default-footer
             style="padding: 12px; padding-top: 0%; font-size: 17px;"
           >
@@ -171,11 +174,25 @@ const events = ref(
             {{currentItemObj.points}} pts.
           </v-card-subtitle>
           <v-card-text>
-            {{currentItemObj.description}}
-          </v-card-text>
-          <v-card-text>
+            {{currentItemObj.description}} <br>
             {{currentItemObj.rationale}}
           </v-card-text>
+          
+
+          <v-card-text v-if="currentItemObj.reflectionReq"
+          class="reflection-text border-md">
+            <p
+            >Student Response:</p>
+            {{currentItemObj.reflection}}
+          </v-card-text>
+          <v-card-text v-else-if="currentItemObj.reflection.length > 0"
+          class="reflection-text border-md">
+            <p
+            >Student Response:</p>
+            {{currentItemObj.reflection}}
+          </v-card-text>
+
+          
 
           <!-- <v-card-text v-if="completedTasks[currentItem].canUpload">
             <v-file-input clearable label="File input" density="compact"></v-file-input>
@@ -235,6 +252,13 @@ const events = ref(
 
 .v-input{
   margin-bottom: 0;
+}
+
+.reflection-text{
+  margin-right: 5%; 
+  margin-left: 5%;
+  border-width: 2px;
+  padding: 8px;
 }
 
 
