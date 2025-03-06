@@ -92,15 +92,10 @@ const events = ref(
           </v-list-item>
 
           <v-card-text class="card-link-text-wrapper">
-            <a href="www.google.com/" class="card-link-text">See full calendar</a>
+            <a href="calendar" class="card-link-text">See full calendar</a>
           </v-card-text>
 
           </v-card>
-          <v-list-item></v-list-item> <!-- SPACE IN BETWEEN CARDS -->
-
-          <!--              EXPERIENCES CARD               -->
-          
-          
         </v-list>
       </v-navigation-drawer>
             <!-- RIGHT DRAWER -->
