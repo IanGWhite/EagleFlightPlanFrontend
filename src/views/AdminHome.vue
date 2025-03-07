@@ -196,7 +196,8 @@ const events = ref(
           
       
         <template v-slot:actions>
-          <v-btn class="ms-auto" text="Cancel" @click="dialog = false"></v-btn>
+          <v-btn class="ms-auto" text="Cancel" @click="dialog = false" style="width: auto;"></v-btn>
+          <v-btn class="quick-btn decline" text="Decline" @click=""></v-btn>
           <v-btn class="quick-btn" text="Approve" @click=""></v-btn>
         </template>
       </v-card>
@@ -239,6 +240,11 @@ const events = ref(
   margin-top: 6px;
   height: auto;
   background-color: rgb(63, 63, 63);
+  color: white;
+}
+
+.decline{
+  background-color: red;
   color: white;
 }
 
