@@ -1,7 +1,8 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
-//import TaskServices from "../services/taskServices";
+import TaskServices from "../services/eagleTaskServices";
+import CategoryServices from "../services/categoryServices";
 import MenuBar from "../components/MenuBar.vue";
 import Utils from "../config/utils.js";
 
@@ -11,34 +12,90 @@ const user = ref({});
 const dialog = ref(false);
 const currentItem = ref(0);
 
-const otherTasks = ref(['Make Resume', 'Take Clifton Strengths', 'Apply for a Job']);
+const otherTasks = ref([]);
+const otherTasksNames = ref([]);
+
+const categories = ref([]);
+const categoryNames = ref([]);
+
+const message = ref("");
+
+const taskCategoryName = ref({name: ""});
 
 const task = ref({
-  category: "",
-  name: "",
-  description: "",
+  categoryId: 0,
+  name: null,
+  description: null,
   semestersFromGrad: "",
   points: "",
-  reflectionReq: "",
+  reflectionReq: false,
   rationale: "",
-  canUpload: "",
+  canUpload: false,
   prereqName: "",
   hyperLink: "",
 });
 
-/*
+const getEagleTaskNames = () => {
+  for(let i = 0; i < otherTasks.value.length; i++){
+    otherTasksNames.value.push(otherTasks.value[i].name);
+  }
+  console.log("Task Name:", otherTasksNames.value);
+}
+
+const getCategoryNames = () => {
+  for(let i = 0; i < categories.value.length; i++){
+    categoryNames.value.push(categories.value[i].name);
+  }
+  console.log("Category Name:", categoryNames.value);
+}
+
+const fetchEagleTasks = () => {
+  TaskServices.getAllEagleTasks()
+    .then((response) => {
+      otherTasks.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched tasks:", otherTasks.value);
+      getEagleTaskNames();
+    })
+    .catch((error) => {
+      console.error("Error fetching tasks:", error);
+    });
+    
+};
+
+const fetchCategories = () => {
+  CategoryServices.getAllCategories()
+    .then((response) => {
+      categories.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched categories:", categories.value);
+      getCategoryNames();
+    })
+    .catch((error) => {
+      console.error("Error fetching categories:", error);
+    });
+    
+};
+
 const saveTask = () => {
-  TaskServices.createTask(task.value)
+  for(let i = 0; i < categories.value.length; i++){
+    console.log("first name: " + categories.value[i].name);
+    console.log("second name: " + taskCategoryName.value.name);
+    if(categories.value[i].name == taskCategoryName.value.name){
+      task.value.categoryId = categories.value[i].id;
+      console.log("id:" + categories.value[i].id);
+    }
+
+  }
+  TaskServices.createEagleTask(task.value)
     .then(() => {
       message.value = "Task saved successfully";
       router.push({ name: "Home" }); // hypothetical route name for education list
     })
     .catch((e) => {
-      message.value =  "An error occurred";
+      message.value =  "Please enter correct data for all fields";
     });
 };
 
-*/
+
 const cancel = () => {
   router.push({ name: "Home" }); // hypothetical route for cancel action
 };
@@ -46,6 +103,8 @@ const cancel = () => {
 onMounted(() => {
   user.value = Utils.getStore('user')
   console.log(user.value)
+  fetchEagleTasks();
+  fetchCategories();
 })
 
 </script>
@@ -57,25 +116,29 @@ onMounted(() => {
         <v-card-title class="page-title">Task</v-card-title>
         <!-- <v-card > -->
           <v-container width="70%" fluid style="background: lightgrey; height:100%;">
-            
+            <p color="red">{{ message }}</p>
+            <p>Required *</p>
             <v-row justify="left">
               <v-col>
                     <v-form>
                         <v-text-field
                         v-model="task.name"
-                        label="Name"
+                        label="Name*"
                         required
                         bg-color = "white"
                         ></v-text-field>
-                        <v-text-field
-                        v-model="task.category"
+
+                        <v-sheet>
+                        <v-autocomplete 
+                        v-model="taskCategoryName.name"
                         label="Category"
-                        required
-                        bg-color = "white"
-                        ></v-text-field>
+                        :items=categoryNames
+                        bg-color="white"
+                         ></v-autocomplete>
+                         </v-sheet>
                                 <v-textarea
                                     v-model="task.description"
-                                    label="Description"
+                                    label="Description*"
                                     class="mr-2"
                                     required
                                     bg-color = "white"
@@ -83,14 +146,16 @@ onMounted(() => {
                                 <div class="row">
                                     <v-text-field
                                     v-model="task.points"
-                                    label="Points"
+                                    label="Points*"
+                                    type = "number"
                                     required
                                     bg-color = "white"
                                 ></v-text-field>
                                 <v-text-field
                                     v-model="task.semestersFromGrad"
-                                    label="Semesters from Graduation"
+                                    label="Semesters from Graduation*"
                                     class="mr-2"
+                                    type = "number"
                                     required
                                     bg-color = "white"
                                 ></v-text-field>
@@ -107,7 +172,6 @@ onMounted(() => {
                                 <v-checkbox
                                 v-model="task.reflectionReq"
                                 label="Requires Reflection"
-                                required
                                 ></v-checkbox>
                                 
                                 <v-checkbox
@@ -118,8 +182,9 @@ onMounted(() => {
 
                                 <v-sheet>
                                 <v-autocomplete 
+                                v-model="task.prereqName"
                                 label="Prerequisite"
-                                :items=otherTasks
+                                :items=otherTasksNames
                                 bg-color="white"
                                 ></v-autocomplete>
                                 </v-sheet>
@@ -129,10 +194,10 @@ onMounted(() => {
                                 label="Hyperlink"
                                 bg-color = "white"
                                 ></v-text-field>
-
+                                <p color="red">{{ message }}</p>
                                 <div class="buttons">
-                                <v-btn color="red" @click="confirmTask">confirm</v-btn>
                                 <v-btn color="error" @click="cancel">Cancel</v-btn>
+                                <v-btn color="red" @click="saveTask">confirm</v-btn>
                                 </div>
                     </v-form>
               </v-col>
