@@ -24,8 +24,8 @@ const taskCategoryName = ref({name: ""});
 
 const task = ref({
   categoryId: 0,
-  name: "",
-  description: "",
+  name: null,
+  description: null,
   semestersFromGrad: "",
   points: "",
   reflectionReq: false,
