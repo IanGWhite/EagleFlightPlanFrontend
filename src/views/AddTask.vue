@@ -2,6 +2,7 @@
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import TaskServices from "../services/eagleTaskServices";
+import CategoryServices from "../services/categoryServices";
 import MenuBar from "../components/MenuBar.vue";
 import Utils from "../config/utils.js";
 
@@ -14,10 +15,15 @@ const currentItem = ref(0);
 const otherTasks = ref([]);
 const otherTasksNames = ref([]);
 
+const categories = ref([]);
+const categoryNames = ref([]);
+
 const message = ref("");
 
+const taskCategoryName = ref({name: ""});
+
 const task = ref({
-  category: "",
+  categoryId: 0,
   name: "",
   description: "",
   semestersFromGrad: "",
@@ -32,10 +38,15 @@ const task = ref({
 const getEagleTaskNames = () => {
   for(let i = 0; i < otherTasks.value.length; i++){
     otherTasksNames.value.push(otherTasks.value[i].name);
-    console.log("Task Name:", otherTasksNames.value);
   }
   console.log("Task Name:", otherTasksNames.value);
-  console.log("Task Name:", otherTasks.value.length);
+}
+
+const getCategoryNames = () => {
+  for(let i = 0; i < categories.value.length; i++){
+    categoryNames.value.push(categories.value[i].name);
+  }
+  console.log("Category Name:", categoryNames.value);
 }
 
 const fetchEagleTasks = () => {
@@ -51,7 +62,29 @@ const fetchEagleTasks = () => {
     
 };
 
+const fetchCategories = () => {
+  CategoryServices.getAllCategories()
+    .then((response) => {
+      categories.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched categories:", categories.value);
+      getCategoryNames();
+    })
+    .catch((error) => {
+      console.error("Error fetching categories:", error);
+    });
+    
+};
+
 const saveTask = () => {
+  for(let i = 0; i < categories.value.length; i++){
+    console.log("first name: " + categories.value[i].name);
+    console.log("second name: " + taskCategoryName.value.name);
+    if(categories.value[i].name == taskCategoryName.value.name){
+      task.value.categoryId = categories.value[i].id;
+      console.log("id:" + categories.value[i].id);
+    }
+
+  }
   TaskServices.createEagleTask(task.value)
     .then(() => {
       message.value = "Task saved successfully";
@@ -71,6 +104,7 @@ onMounted(() => {
   user.value = Utils.getStore('user')
   console.log(user.value)
   fetchEagleTasks();
+  fetchCategories();
 })
 
 </script>
@@ -93,12 +127,15 @@ onMounted(() => {
                         required
                         bg-color = "white"
                         ></v-text-field>
-                        <v-text-field
-                        v-model="task.category"
-                        label="Category*"
-                        required
-                        bg-color = "white"
-                        ></v-text-field>
+
+                        <v-sheet>
+                        <v-autocomplete 
+                        v-model="taskCategoryName.name"
+                        label="Category"
+                        :items=categoryNames
+                        bg-color="white"
+                         ></v-autocomplete>
+                         </v-sheet>
                                 <v-textarea
                                     v-model="task.description"
                                     label="Description*"
