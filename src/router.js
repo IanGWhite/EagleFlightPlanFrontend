@@ -27,6 +27,7 @@ import StudentProfile from "./views/StudentProfile.vue";
 import StudentShop from "./views/StudentShop.vue";
 import Calendar from "./views/Calendar.vue";
 import AddTask from "./views/AddTask.vue";
+import AdminStudentProfile from "./views/AdminStudentProfile.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -154,6 +155,12 @@ const router = createRouter({
       path: "/StudentProfile",
       name: "StudentProfile",
       component: StudentProfile,
+      props: true,
+    },
+    {
+      path: "/AdminStudentProfile",
+      name: "AdminStudentProfile",
+      component: AdminStudentProfile,
       props: true,
     },
     {
