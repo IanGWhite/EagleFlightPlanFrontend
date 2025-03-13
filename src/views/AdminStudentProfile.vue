@@ -36,12 +36,21 @@ const message = ref("test");
 onMounted(() => {
   
 })
+
+const savePermissions = () => {
+ 
+};
+
+const saveStudent = () => {
+ 
+};
+
 </script>
 
 <template>
   <v-app>
     <v-container>
-
+      <p class="page-title">Student Name</p>
       <v-card>
         
       <v-tabs v-model="tab">
@@ -123,7 +132,7 @@ onMounted(() => {
                     
                   </v-row>
                     <div class="buttons">
-                      <v-btn color="red" @click="saveAward(route.params.id)">Save</v-btn> <!-- EDIT BUTTON -->
+                      <v-btn color="red" @click="saveStudent(route.params.id)">Save</v-btn> <!-- EDIT BUTTON -->
                     </div>
           
               
@@ -174,12 +183,16 @@ onMounted(() => {
 
       <!--        PERMISSIONS         -->
       <v-tabs-window-item value="option-6">
-        <v-sheet class="pa-3">
-          <v-form>
+        <v-sheet class="pa-5">
+          <v-form class="pa-3">
             <v-switch color="blue" label="Admin" persistent-hint="true" hint="Is the user an admin?"></v-switch>
             <v-switch color="blue" label="Points" persistent-hint="true" hint="Ability to add or remove points from a student"></v-switch>
             <v-switch color="blue" label="Events" persistent-hint="true" hint="Ability to add or remove event information"></v-switch>
             <v-switch color="blue" label="Attendance" persistent-hint="true" hint="Ability to upload event attendance sheets"></v-switch>
+
+            <div class="buttons">
+              <v-btn color="red" @click="savePermissions()">Save</v-btn> <!-- EDIT BUTTON -->
+            </div>
           </v-form>
         </v-sheet>
       </v-tabs-window-item>
