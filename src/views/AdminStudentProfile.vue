@@ -11,11 +11,17 @@ const user = ref({});
 const tab = ref('option-1');
 
 const majors = ref(['Computer Science', 'Art', 'English']);
-const semesters = ref(['Fall 2025', 'Spring 2026', 'Fall 2026', 'Spring 2026', 'Fall 2027', 'Spring 2027']);
+//const semesters = ref(['Freshman 1', 'Freshman 2', 'Sophomore 1', 'Sophomore 2', 'Junior 1', 'Junior 2', 'Senior 1', 'Senior 2']);
+const semesters = ref([{ semestersLeft: 8, semesterNormalized: "Freshman 1" },
+{ semestersLeft: 7, semesterNormalized: "Freshman 2" },
+{ semestersLeft: 6, semesterNormalized: "Sophomore 1" }, { semestersLeft: 5, semesterNormalized: "Sophomore 2" },
+{ semestersLeft: 4, semesterNormalized: "Junior 1" }, { semestersLeft: 3, semesterNormalized: "Junior 2" },
+{ semestersLeft: 2, semesterNormalized: "Senior 1" }, { semestersLeft: 1, semesterNormalized: "Senior 2" }
+
+]);
+const selectedSemestersLeft = ref(8);
 
 const studentStrengths = ref([{ strength: 'Foo' }, { strength: 'two' }, { strength: 'three' }, { strength: 'for' }, { strength: 'fiv' }]);
-
-
 const pointLog = ref([{
   type: 'Badge',
   approvedBy: 'David North',
@@ -29,6 +35,20 @@ const pointLog = ref([{
   date: '10-12-25',
 },
 ]);
+
+const allTasks = ref(
+  [{ name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
+  { name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true },
+  { name: "This is a task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
+]);
+
+const studentEagleTasks = ref(
+  [{ name: "Make a resume", points: "30", description: "blah blah blah description", semesterFromGrad: 8 },
+  { name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", semesterFromGrad: 8 },
+  { name: "This is a task", points: "40", description: "Task 3 desc. this is describing", semesterFromGrad: 7 },
+]);
+
+
 const message = ref("test");
 
 
@@ -169,9 +189,46 @@ const saveStudent = () => {
       </v-tabs-window-item>
       <!--        FLIGHT PLAN         -->
       <v-tabs-window-item value="option-4">
-        <v-card-text>
-          WIP
-        </v-card-text>
+        <v-container>
+          <v-row justify="space-between">
+            <v-col>
+              <v-select dense
+                v-model="selectedSemestersLeft"
+                :items="semesters"
+                label="Semester"
+                item-value="semestersLeft"
+                item-title="semesterNormalized"
+              >
+              
+              </v-select>
+              <!-- {{selectedSemestersLeft}} -->
+            </v-col>
+
+            <v-col></v-col>
+            <v-col></v-col>
+
+            <v-col cols="auto">
+              <v-btn @click="" rounded="0" class="alt-btn" justify-end="true">Save</v-btn>
+            </v-col>
+          </v-row>
+
+          <v-container class="border bg-surface-variant" style="padding: 0;">
+            <v-sheet color="grey" class="pa-5">
+
+              <v-row >
+                <v-col v-for="task in studentEagleTasks">
+                  <v-card v-if="task.semesterFromGrad == selectedSemestersLeft" title="{{task.name}}">
+                  
+                </v-card>
+                </v-col>
+                
+              </v-row>
+              
+            </v-sheet>
+            
+          </v-container>
+
+        </v-container>
       </v-tabs-window-item>
 
       <!--        RESUMES         -->
