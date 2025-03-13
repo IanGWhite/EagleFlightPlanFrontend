@@ -86,7 +86,7 @@ const saveEvent = () => {
   EventServices.createEvent(event.value)
     .then(() => {
       message.value = "Event saved successfully";
-      router.push({ name: "Home" }); // hypothetical route name for education list
+      router.push({ name: "AdminHome" }); // hypothetical route name for education list
     })
     .catch((e) => {
       message.value =  "Please enter correct data for all fields";
