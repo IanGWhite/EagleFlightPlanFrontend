@@ -5,6 +5,8 @@ import EventServices from "../services/eventServices";
 import CategoryServices from "../services/categoryServices";
 import MenuBar from "../components/MenuBar.vue";
 import Utils from "../config/utils.js";
+import { VTimePicker } from 'vuetify/labs/components';
+
 
 const router = useRouter();
 const user = ref({});
@@ -22,14 +24,16 @@ const message = ref("");
 
 const eventCategoryName = ref({name: ""});
 
+const timeselection = ref(['AM', 'PM'])
+
 const event = ref({
   name: null,
   categoryId: 0,
   description: null,
   date: "",
   location: null,
-  startTime: "",
-  endTime: "",
+  startTime: null,
+  endTime: null,
   hyperLink: "",
 });
 
@@ -159,19 +163,37 @@ onMounted(() => {
                                 </div>
 
                                 <div class="row">
-
+                                  <!--
                                     <v-text-field
                                     v-model="event.startTime"
                                     label="startTime*"
+                                    type = "time"
                                     required
                                     bg-color = "white"
                                 ></v-text-field>
+                                -->
+                                <v-text-field
+                                  v-model="event.startTime"
+                                  label="startTime*"
+                                  type="time"
+                                  required
+                                  bg-color = "white"
+                                ></v-text-field>
+                                <v-text-field
+                                  v-model="event.endTime"
+                                  label="endTime*"
+                                  type="time"
+                                  required
+                                  bg-color = "white"
+                                ></v-text-field>
+                                <!--
                                 <v-text-field
                                     v-model="event.endTime"
                                     label="endTime*"
                                     required
                                     bg-color = "white"
                                 ></v-text-field>
+                                -->
                                 </div>
 
 
