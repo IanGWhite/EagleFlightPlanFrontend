@@ -30,7 +30,7 @@ const event = ref({
   name: null,
   categoryId: 0,
   description: null,
-  date: "",
+  date: null,
   location: null,
   startTime: null,
   endTime: null,
@@ -87,7 +87,11 @@ const saveEvent = () => {
     }
 
   }
-  EventServices.createEvent(event.value)
+  console.log(event.value.endTime);
+  if(event.value.startTime== "" || event.value.endTime == ""){
+    message.value =  "Please enter correct data for all fields";
+  }else{
+    EventServices.createEvent(event.value)
     .then(() => {
       message.value = "Event saved successfully";
       router.push({ name: "Calendar" }); // hypothetical route name for education list
@@ -95,6 +99,7 @@ const saveEvent = () => {
     .catch((e) => {
       message.value =  "Please enter correct data for all fields";
     });
+  }
 };
 
 
