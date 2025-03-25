@@ -51,6 +51,7 @@ const allStudentEagleTasks = ref(
   { name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", semesterFromGrad: 8 },
   { name: "This is a task", points: "40", description: "Task 3 desc. this is describing", semesterFromGrad: 7 },
   { name: "Task tuah", points: "70", description: "Task 4 desc. this is describing", semesterFromGrad: 7 },
+  { name: "Task tuah 2", points: "70", description: "Task 4 desc. this is describing", semesterFromGrad: 7 },
 ]);
 
 
@@ -71,17 +72,20 @@ const saveStudent = () => {
 };
 
 const loadCurrentTasks = (semester) => {
-  console.log("before: ", currentStudentEagleTasks);
+  //console.log("Semester: ", semester);
+  //console.log("test: ", allStudentEagleTasks.value.length);
+  //console.log("before: ", currentStudentEagleTasks.value);
   var myIndex = 0;
   currentStudentEagleTasks.value = [];
- for(let i = 0; i < allStudentEagleTasks.length; i++) {
-  if(element.semesterFromGrad == semester)
+ for(let i = 0; i < allStudentEagleTasks.value.length; i++) {
+  //console.log(allStudentEagleTasks.value[i]);
+  if(allStudentEagleTasks.value[i].semesterFromGrad == semester)
   {
-    currentStudentEagleTasks[myIndex] = element;
+    currentStudentEagleTasks.value[myIndex] = allStudentEagleTasks.value[i];
     myIndex++;
   }
  }
- console.log("after: ", currentStudentEagleTasks);
+ console.log("after: ", currentStudentEagleTasks.value);
 };
 
 </script>
@@ -108,6 +112,7 @@ const loadCurrentTasks = (semester) => {
         <v-tab 
           text="Flight Plan"
           value="option-4"
+          @click="loadCurrentTasks(selectedSemestersLeft)"
         ></v-tab>
         <v-tab 
           text="Resumes"
@@ -217,7 +222,7 @@ const loadCurrentTasks = (semester) => {
                 label="Semester"
                 item-value="semestersLeft"
                 item-title="semesterNormalized"
-                @update:menu="loadCurrentTasks(selectedSemestersLeft)"
+                @update:modelValue="loadCurrentTasks(selectedSemestersLeft)"
               >
               
               </v-select>
@@ -236,8 +241,8 @@ const loadCurrentTasks = (semester) => {
             <v-sheet color="grey" class="pa-5">
 
               <v-row >
-                <v-col v-for="task in currentStudentEagleTasks">
-                  <v-card v-if="task.semesterFromGrad == selectedSemestersLeft">
+                <v-col v-for="task in currentStudentEagleTasks" density="compact">
+                  <v-card v-if="task.semesterFromGrad == selectedSemestersLeft" class="FlightPlanCard">
                     <v-card-title class="">
                       {{ task.name }}
                     </v-card-title>
@@ -251,6 +256,31 @@ const loadCurrentTasks = (semester) => {
                       </v-btn>
                     </v-card-actions>
                 </v-card>
+                </v-col>
+                <!-- add one button -->
+                <v-col density="compact">
+                  <v-card class="FlightPlanCard">
+                    <v-card-title>
+                      New Task
+                    </v-card-title>
+                    <v-card-text style="padding-bottom: 0;">
+
+                    
+                      <v-select density="compact"
+                      style="padding-left: 5px; padding-right: 5px; margin: 0%;"
+                      :items="allTasks"
+                      label="Task"
+                      item-title="name"
+                      hide-details
+                      >
+                      </v-select>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-btn variant="tonal" class="alt-btn"  @click="AddTaskToPlan()">
+                        add
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
                 </v-col>
                 
               </v-row>
@@ -315,6 +345,9 @@ const loadCurrentTasks = (semester) => {
   width: auto;
   padding: auto;
   height: auto;
+}
+.FlightPlanCard{
+  
 }
 
 </style>
