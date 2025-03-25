@@ -42,10 +42,15 @@ const allTasks = ref(
   { name: "This is a task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
 ]);
 
-const studentEagleTasks = ref(
+const currentStudentEagleTasks = ref(
+  [{ name: "", points: "", description: "", semesterFromGrad: 0 },
+]);
+
+const allStudentEagleTasks = ref(
   [{ name: "Make a resume", points: "30", description: "blah blah blah description", semesterFromGrad: 8 },
   { name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", semesterFromGrad: 8 },
   { name: "This is a task", points: "40", description: "Task 3 desc. this is describing", semesterFromGrad: 7 },
+  { name: "Task tuah", points: "70", description: "Task 4 desc. this is describing", semesterFromGrad: 7 },
 ]);
 
 
@@ -63,6 +68,20 @@ const savePermissions = () => {
 
 const saveStudent = () => {
  
+};
+
+const loadCurrentTasks = (semester) => {
+  console.log("before: ", currentStudentEagleTasks);
+  var myIndex = 0;
+  currentStudentEagleTasks.value = [];
+ for(let i = 0; i < allStudentEagleTasks.length; i++) {
+  if(element.semesterFromGrad == semester)
+  {
+    currentStudentEagleTasks[myIndex] = element;
+    myIndex++;
+  }
+ }
+ console.log("after: ", currentStudentEagleTasks);
 };
 
 </script>
@@ -198,6 +217,7 @@ const saveStudent = () => {
                 label="Semester"
                 item-value="semestersLeft"
                 item-title="semesterNormalized"
+                @update:menu="loadCurrentTasks(selectedSemestersLeft)"
               >
               
               </v-select>
@@ -216,9 +236,20 @@ const saveStudent = () => {
             <v-sheet color="grey" class="pa-5">
 
               <v-row >
-                <v-col v-for="task in studentEagleTasks">
-                  <v-card v-if="task.semesterFromGrad == selectedSemestersLeft" title="{{task.name}}">
-                  
+                <v-col v-for="task in currentStudentEagleTasks">
+                  <v-card v-if="task.semesterFromGrad == selectedSemestersLeft">
+                    <v-card-title class="">
+                      {{ task.name }}
+                    </v-card-title>
+                    <v-card-subtitle>
+                      {{ task.description }}
+                    </v-card-subtitle>
+                    <v-card-actions class="font-weight-regular">
+                      <v-btn variant="tonal" class="border-md rounded remove-btn" density="compact" @click="RemoveTaskFromPlan()">
+                        <v-icon icon="mdi-close"/>
+                        remove
+                      </v-btn>
+                    </v-card-actions>
                 </v-card>
                 </v-col>
                 
@@ -278,4 +309,12 @@ const saveStudent = () => {
   justify-content: center;
   gap: 10px;
 }
+.remove-btn{
+  display: auto;
+  gap: auto;
+  width: auto;
+  padding: auto;
+  height: auto;
+}
+
 </style>
