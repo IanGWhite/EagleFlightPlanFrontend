@@ -36,22 +36,44 @@ const pointLog = ref([{
 },
 ]);
 
+// * * * F L I G H T   P L A N  * * *
+//tasks
+//list of all tasks that the admin can choose from
 const allTasks = ref(
   [{ name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
   { name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true },
   { name: "This is a task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
+  { name: "Task Tuah", points: "40", description: "Task 4 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
+  { name: "Task 2ah", points: "50000", description: "Job on that thang", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
 ]);
-
+// the list of tasks that are currently being displayed
 const currentStudentEagleTasks = ref(
   [{ name: "", points: "", description: "", semesterFromGrad: 0 },
 ]);
-
+// all tasks that are assigned to a specific student
 const allStudentEagleTasks = ref(
   [{ name: "Make a resume", points: "30", description: "blah blah blah description", semesterFromGrad: 8 },
   { name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", semesterFromGrad: 8 },
   { name: "This is a task", points: "40", description: "Task 3 desc. this is describing", semesterFromGrad: 7 },
   { name: "Task tuah", points: "70", description: "Task 4 desc. this is describing", semesterFromGrad: 7 },
   { name: "Task tuah 2", points: "70", description: "Task 4 desc. this is describing", semesterFromGrad: 7 },
+]);
+
+//experiences
+const allExperiences = ref(
+  [{ name: "Go to career fair", points: "30", description: "blah blah blah description", reflectionReq:false },
+  { name: "Go to Job whatever", points: "30", description: "Go to a job whatever to experience jobs or whatever", reflectionReq:false },
+  { name: "Experience ego death", points: "100", description: "Go to a job whatever to experience death jobs or whatever", reflectionReq:false },
+]);
+// the list of tasks that are currently being displayed
+const currentStudentEagleExperiences = ref(
+  [{ name: "", points: "", description: "", semesterFromGrad: 0 },
+]);
+// all tasks that are assigned to a specific student
+const allStudentEagleExperiences = ref(
+  [{ name: "Go to career fair", points: "30", description: "blah blah blah description", reflectionReq:false, semesterFromGrad: 8},
+  { name: "Go to Job whatever", points: "30", description: "Go to a job whatever to experience jobs or whatever", reflectionReq:false, semesterFromGrad: 8},
+  { name: "Experience ego death", points: "100", description: "Go to a job whatever to death jobs or whatever", reflectionReq:false, semesterFromGrad: 6},
 ]);
 
 
@@ -72,20 +94,29 @@ const saveStudent = () => {
 };
 
 const loadCurrentTasks = (semester) => {
-  //console.log("Semester: ", semester);
-  //console.log("test: ", allStudentEagleTasks.value.length);
-  //console.log("before: ", currentStudentEagleTasks.value);
   var myIndex = 0;
   currentStudentEagleTasks.value = [];
+  //tasks
  for(let i = 0; i < allStudentEagleTasks.value.length; i++) {
-  //console.log(allStudentEagleTasks.value[i]);
   if(allStudentEagleTasks.value[i].semesterFromGrad == semester)
   {
     currentStudentEagleTasks.value[myIndex] = allStudentEagleTasks.value[i];
     myIndex++;
   }
  }
- console.log("after: ", currentStudentEagleTasks.value);
+ 
+ //experiences
+ myIndex = 0;
+  currentStudentEagleExperiences.value = [];
+  //tasks
+ for(let i = 0; i < allStudentEagleExperiences.value.length; i++) {
+  if(allStudentEagleExperiences.value[i].semesterFromGrad == semester)
+  {
+    currentStudentEagleExperiences.value[myIndex] = allStudentEagleExperiences.value[i];
+    myIndex++;
+  }
+ }
+ console.log("experiences: ", currentStudentEagleExperiences.value);
 };
 
 </script>
@@ -240,9 +271,10 @@ const loadCurrentTasks = (semester) => {
           <v-container class="border bg-surface-variant" style="padding: 0;">
             <v-sheet color="grey" class="pa-5">
 
+              <!-- T A S K S -->
               <v-row >
                 <v-col v-for="task in currentStudentEagleTasks" density="compact">
-                  <v-card v-if="task.semesterFromGrad == selectedSemestersLeft" class="FlightPlanCard">
+                  <v-card v-if="task.semesterFromGrad == selectedSemestersLeft" class="flightPlanCard">
                     <v-card-title class="">
                       {{ task.name }}
                     </v-card-title>
@@ -259,7 +291,7 @@ const loadCurrentTasks = (semester) => {
                 </v-col>
                 <!-- add one button -->
                 <v-col density="compact">
-                  <v-card class="FlightPlanCard">
+                  <v-card class="flightPlanCard">
                     <v-card-title>
                       New Task
                     </v-card-title>
@@ -284,7 +316,52 @@ const loadCurrentTasks = (semester) => {
                 </v-col>
                 
               </v-row>
-              
+
+              <!-- E X P E R I E N C E S -->
+              <v-row >
+                <v-col v-for="experience in currentStudentEagleExperiences" density="compact">
+                  <v-card v-if="experience.semesterFromGrad == selectedSemestersLeft" class="flightPlanCard">
+                    <v-card-title class="">
+                      {{ experience.name }}
+                    </v-card-title>
+                    <v-card-subtitle>
+                      {{ experience.description }}
+                    </v-card-subtitle>
+                    <v-card-actions class="font-weight-regular">
+                      <v-btn variant="tonal" class="border-md rounded remove-btn" density="compact" @click="RemoveExperienceFromPlan()">
+                        <v-icon icon="mdi-close"/>
+                        remove
+                      </v-btn>
+                    </v-card-actions>
+                </v-card>
+                </v-col>
+                <!-- add one button -->
+                <v-col density="compact">
+                  <v-card class="flightPlanCard">
+                    <v-card-title>
+                      New Experience
+                    </v-card-title>
+                    <v-card-text style="padding-bottom: 0;">
+
+                    
+                      <v-select density="compact"
+                      style="padding-left: 5px; padding-right: 5px; margin: 0%;"
+                      :items="allExperiences"
+                      label="Experience"
+                      item-title="name"
+                      hide-details
+                      >
+                      </v-select>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-btn variant="tonal" class="alt-btn"  @click="AddExperienceToPlan()">
+                        add
+                      </v-btn>
+                    </v-card-actions>
+                  </v-card>
+                </v-col>
+                
+              </v-row>
             </v-sheet>
             
           </v-container>
@@ -346,8 +423,8 @@ const loadCurrentTasks = (semester) => {
   padding: auto;
   height: auto;
 }
-.FlightPlanCard{
-  
+.flightPlanCard{
+  min-height: 160px;
 }
 
 </style>
