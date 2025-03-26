@@ -390,7 +390,7 @@ const loadCurrentTasks = (semester) => {
         <v-container>
           
 
-          <v-data-table density="comfortable"
+          <v-data-table 
           hide-default-header
           :items="studentResumes"
           :headers="headers"
