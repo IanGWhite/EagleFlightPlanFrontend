@@ -11,16 +11,6 @@ const user = ref({});
 const tab = ref('option-1');
 
 const majors = ref(['Computer Science', 'Art', 'English']);
-//const semesters = ref(['Freshman 1', 'Freshman 2', 'Sophomore 1', 'Sophomore 2', 'Junior 1', 'Junior 2', 'Senior 1', 'Senior 2']);
-const semesters = ref([{ semestersLeft: 8, semesterNormalized: "Freshman 1" },
-{ semestersLeft: 7, semesterNormalized: "Freshman 2" },
-{ semestersLeft: 6, semesterNormalized: "Sophomore 1" }, { semestersLeft: 5, semesterNormalized: "Sophomore 2" },
-{ semestersLeft: 4, semesterNormalized: "Junior 1" }, { semestersLeft: 3, semesterNormalized: "Junior 2" },
-{ semestersLeft: 2, semesterNormalized: "Senior 1" }, { semestersLeft: 1, semesterNormalized: "Senior 2" }
-
-]);
-const selectedSemestersLeft = ref(8);
-
 const studentStrengths = ref([{ strength: 'Foo' }, { strength: 'two' }, { strength: 'three' }, { strength: 'for' }, { strength: 'fiv' }]);
 const pointLog = ref([{
   type: 'Badge',
@@ -36,7 +26,25 @@ const pointLog = ref([{
 },
 ]);
 
+const studentResumes = ref([
+  {
+  name: 'Resume 1',
+  resumeId: '0',
+},
+{
+  name: 'Resume 2',
+  resumeId: '1',
+},
+]);
+
 // * * * F L I G H T   P L A N  * * *
+const semesters = ref([{ semestersLeft: 8, semesterNormalized: "Freshman 1" },
+{ semestersLeft: 7, semesterNormalized: "Freshman 2" },
+{ semestersLeft: 6, semesterNormalized: "Sophomore 1" }, { semestersLeft: 5, semesterNormalized: "Sophomore 2" },
+{ semestersLeft: 4, semesterNormalized: "Junior 1" }, { semestersLeft: 3, semesterNormalized: "Junior 2" },
+{ semestersLeft: 2, semesterNormalized: "Senior 1" }, { semestersLeft: 1, semesterNormalized: "Senior 2" }
+]);
+const selectedSemestersLeft = ref(8);
 //tasks
 //list of all tasks that the admin can choose from
 const allTasks = ref(
@@ -76,6 +84,14 @@ const allStudentEagleExperiences = ref(
   { name: "Experience ego death", points: "100", description: "Go to a job whatever to death jobs or whatever", reflectionReq:false, semesterFromGrad: 6},
 ]);
 
+
+// * * * R E S U M E S * * *
+//headers for the resume list table
+const headers = ref([
+          { key: 'name', title: 'Name', align: 'start', width:'33%' },
+          { key: 'button', title: '', align: 'end', width:'33%' },
+        ]
+  )
 
 const message = ref("test");
 
@@ -371,9 +387,23 @@ const loadCurrentTasks = (semester) => {
 
       <!--        RESUMES         -->
       <v-tabs-window-item value="option-5">
-        <v-card-text>
-          WIP
-        </v-card-text>
+        <v-container>
+          
+
+          <v-data-table density="comfortable"
+          hide-default-header
+          :items="studentResumes"
+          :headers="headers"
+          >
+          <template v-slot:item.button="{ item }" >
+            <v-btn class="alt-btn"
+             rounded="0"
+             append-icon="mdi-arrow-right"
+             @click="ViewStudentResume()"
+            >View</v-btn>
+          </template>
+          </v-data-table>
+        </v-container>
       </v-tabs-window-item>
 
       <!--        PERMISSIONS         -->
