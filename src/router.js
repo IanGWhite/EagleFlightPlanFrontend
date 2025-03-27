@@ -158,7 +158,7 @@ const router = createRouter({
       props: true,
     },
     {
-      path: "/AdminStudentProfile",
+      path: "/AdminStudentProfile/:id",
       name: "AdminStudentProfile",
       component: AdminStudentProfile,
       props: true,

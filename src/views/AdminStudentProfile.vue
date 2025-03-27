@@ -11,7 +11,7 @@ const user = ref({});
 const tab = ref('option-1');
 
 const majors = ref(['Computer Science', 'Art', 'English']);
-const studentStrengths = ref([{ strength: 'Foo' }, { strength: 'two' }, { strength: 'three' }, { strength: 'for' }, { strength: 'fiv' }]);
+const studentStrengths = ref([{ strength: 'One' }, { strength: 'Two' }, { strength: 'three' }, { strength: 'four' }, { strength: 'five' }]);
 const pointLog = ref([{
   type: 'Badge',
   approvedBy: 'David North',
@@ -26,16 +26,7 @@ const pointLog = ref([{
 },
 ]);
 
-const studentResumes = ref([
-  {
-  name: 'Resume 1',
-  resumeId: '0',
-},
-{
-  name: 'Resume 2',
-  resumeId: '1',
-},
-]);
+
 
 // * * * F L I G H T   P L A N  * * *
 const semesters = ref([{ semestersLeft: 8, semesterNormalized: "Freshman 1" },
@@ -88,11 +79,21 @@ const allStudentEagleExperiences = ref(
 // * * * R E S U M E S * * *
 //headers for the resume list table
 const headers = ref([
-          { key: 'name', title: 'Name', align: 'start', width:'33%' },
-          { key: 'button', title: '', align: 'end', width:'33%' },
-        ]
-  )
+      { key: 'name', title: 'Name', align: 'start', width:'33%' },
+      { key: 'button', title: '', align: 'end', width:'33%' },
+    ]
+  );
 
+  const studentResumes = ref([
+  {
+    name: 'Resume 1',
+    resumeId: '0',
+  },
+  {
+    name: 'Resume 2',
+    resumeId: '1',
+  },
+]);
 const message = ref("test");
 
 
