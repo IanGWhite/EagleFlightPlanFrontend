@@ -1,10 +1,12 @@
 <script setup>
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
-import TaskServices from "../services/eagleTaskServices";
+import EventServices from "../services/eventServices";
 import CategoryServices from "../services/categoryServices";
 import MenuBar from "../components/MenuBar.vue";
 import Utils from "../config/utils.js";
+import { VTimePicker } from 'vuetify/labs/components';
+
 
 const router = useRouter();
 const user = ref({});
@@ -12,34 +14,34 @@ const user = ref({});
 const dialog = ref(false);
 const currentItem = ref(0);
 
-const otherTasks = ref([]);
-const otherTasksNames = ref([]);
+const otherEvents = ref([]);
+const otherEventsNames = ref([]);
 
 const categories = ref([]);
 const categoryNames = ref([]);
 
 const message = ref("");
 
-const taskCategoryName = ref({name: ""});
+const eventCategoryName = ref({name: ""});
 
-const task = ref({
-  categoryId: 0,
+const timeselection = ref(['AM', 'PM'])
+
+const event = ref({
   name: null,
+  categoryId: 0,
   description: null,
-  semestersFromGrad: "",
-  points: "",
-  reflectionReq: false,
-  rationale: "",
-  canUpload: false,
-  prereqName: "",
+  date: null,
+  location: null,
+  startTime: null,
+  endTime: null,
   hyperLink: "",
 });
 
-const getEagleTaskNames = () => {
-  for(let i = 0; i < otherTasks.value.length; i++){
-    otherTasksNames.value.push(otherTasks.value[i].name);
+const getEagleEventNames = () => {
+  for(let i = 0; i < otherEvents.value.length; i++){
+    otherEventsNames.value.push(otherEvents.value[i].name);
   }
-  console.log("Task Name:", otherTasksNames.value);
+  console.log("Event Name:", otherEventsNames.value);
 }
 
 const getCategoryNames = () => {
@@ -49,15 +51,15 @@ const getCategoryNames = () => {
   console.log("Category Name:", categoryNames.value);
 }
 
-const fetchEagleTasks = () => {
-  TaskServices.getAllEagleTasks()
+const fetchEagleEvents = () => {
+  EventServices.getAllEvents()
     .then((response) => {
-      otherTasks.value = response.data; // Assuming the backend returns an array of tasks
-      console.log("Fetched tasks:", otherTasks.value);
-      getEagleTaskNames();
+      otherEvents.value = response.data; // Assuming the backend returns an array of events
+      console.log("Fetched events:", otherEvents.value);
+      getEagleEventNames();
     })
     .catch((error) => {
-      console.error("Error fetching tasks:", error);
+      console.error("Error fetching events:", error);
     });
     
 };
@@ -65,7 +67,7 @@ const fetchEagleTasks = () => {
 const fetchCategories = () => {
   CategoryServices.getAllCategories()
     .then((response) => {
-      categories.value = response.data; // Assuming the backend returns an array of tasks
+      categories.value = response.data; // Assuming the backend returns an array of events
       console.log("Fetched categories:", categories.value);
       getCategoryNames();
     })
@@ -75,35 +77,40 @@ const fetchCategories = () => {
     
 };
 
-const saveTask = () => {
+const saveEvent = () => {
   for(let i = 0; i < categories.value.length; i++){
     console.log("first name: " + categories.value[i].name);
-    console.log("second name: " + taskCategoryName.value.name);
-    if(categories.value[i].name == taskCategoryName.value.name){
-      task.value.categoryId = categories.value[i].id;
+    console.log("second name: " + eventCategoryName.value.name);
+    if(categories.value[i].name == eventCategoryName.value.name){
+      event.value.categoryId = categories.value[i].id;
       console.log("id:" + categories.value[i].id);
     }
 
   }
-  TaskServices.createEagleTask(task.value)
+  console.log(event.value.endTime);
+  if(event.value.startTime== "" || event.value.endTime == ""){
+    message.value =  "Please enter correct data for all fields";
+  }else{
+    EventServices.createEvent(event.value)
     .then(() => {
-      message.value = "Task saved successfully";
-      router.push({ name: "AdminHome" }); // hypothetical route name for education list
+      message.value = "Event saved successfully";
+      router.push({ name: "Calendar" }); // hypothetical route name for education list
     })
     .catch((e) => {
       message.value =  "Please enter correct data for all fields";
     });
+  }
 };
 
 
 const cancel = () => {
-  router.push({ name: "Home" }); // hypothetical route for cancel action
+  router.push({ name: "Calendar" }); // hypothetical route for cancel action
 };
 
 onMounted(() => {
   user.value = Utils.getStore('user')
   console.log(user.value)
-  fetchEagleTasks();
+  fetchEagleEvents();
   fetchCategories();
 })
 
@@ -113,7 +120,7 @@ onMounted(() => {
     <v-app class="rounded rounded-md">
       <v-main> <!--            MAIN            -->
         <v-list-item></v-list-item><!-- SPACE ABOVE TIMELINE -->
-        <v-card-title class="page-title">Task</v-card-title>
+        <v-card-title class="page-title">Event</v-card-title>
         <!-- <v-card > -->
           <v-container width="70%" fluid style="background: lightgrey; height:100%;">
             <p color="red">{{ message }}</p>
@@ -122,7 +129,7 @@ onMounted(() => {
               <v-col>
                     <v-form>
                         <v-text-field
-                        v-model="task.name"
+                        v-model="event.name"
                         label="Name*"
                         required
                         bg-color = "white"
@@ -130,14 +137,14 @@ onMounted(() => {
 
                         <v-sheet>
                         <v-autocomplete 
-                        v-model="taskCategoryName.name"
+                        v-model="eventCategoryName.name"
                         label="Category"
                         :items=categoryNames
                         bg-color="white"
                          ></v-autocomplete>
                          </v-sheet>
                                 <v-textarea
-                                    v-model="task.description"
+                                    v-model="event.description"
                                     label="Description*"
                                     class="mr-2"
                                     required
@@ -145,59 +152,66 @@ onMounted(() => {
                                 ></v-textarea>
                                 <div class="row">
                                     <v-text-field
-                                    v-model="task.points"
-                                    label="Points*"
-                                    type = "number"
+                                    v-model="event.location"
+                                    label="Location*"
+                                    class="mr-2"
                                     required
                                     bg-color = "white"
                                 ></v-text-field>
-                                <v-text-field
-                                    v-model="task.semestersFromGrad"
-                                    label="Semesters from Graduation*"
-                                    class="mr-2"
-                                    type = "number"
+                                    <v-text-field
+                                    v-model="event.date"
+                                    label="Date*"
+                                    type = "date"
                                     required
                                     bg-color = "white"
                                 ></v-text-field>
                                 </div>
 
-                                <v-textarea
-                                v-model="task.rationale"
-                                label="Rationale"
-                                rows="4"
-                                bg-color = "white"
-                                ></v-textarea>
+                                <div class="row">
+                                  <!--
+                                    <v-text-field
+                                    v-model="event.startTime"
+                                    label="startTime*"
+                                    type = "time"
+                                    required
+                                    bg-color = "white"
+                                ></v-text-field>
+                                -->
+                                <v-text-field
+                                  v-model="event.startTime"
+                                  label="startTime*"
+                                  type="time"
+                                  required
+                                  bg-color = "white"
+                                ></v-text-field>
+                                <v-text-field
+                                  v-model="event.endTime"
+                                  label="endTime*"
+                                  type="time"
+                                  required
+                                  bg-color = "white"
+                                ></v-text-field>
+                                <!--
+                                <v-text-field
+                                    v-model="event.endTime"
+                                    label="endTime*"
+                                    required
+                                    bg-color = "white"
+                                ></v-text-field>
+                                -->
+                                </div>
 
-                                <v-row>
-                                <v-checkbox
-                                v-model="task.reflectionReq"
-                                label="Requires Reflection"
-                                ></v-checkbox>
-                                
-                                <v-checkbox
-                                v-model="task.canUpload"
-                                label="Requires Upload"
-                                ></v-checkbox>
-                                </v-row>
 
-                                <v-sheet>
-                                <v-autocomplete 
-                                v-model="task.prereqName"
-                                label="Prerequisite"
-                                :items=otherTasksNames
-                                bg-color="white"
-                                ></v-autocomplete>
-                                </v-sheet>
 
                                 <v-text-field
-                                v-model="task.hyperLink"
+                                v-model="event.hyperLink"
                                 label="Hyperlink"
                                 bg-color = "white"
                                 ></v-text-field>
                                 <p color="red">{{ message }}</p>
                                 <div class="buttons">
                                 <v-btn color="error" @click="cancel">Cancel</v-btn>
-                                <v-btn color="red" @click="saveTask">confirm</v-btn>
+                                <v-btn color="red" @click="saveEvent">confirm</v-btn>
                                 </div>
                     </v-form>
               </v-col>
@@ -257,7 +271,7 @@ onMounted(() => {
 .badge-image{
   max-height:10%;
 }
-.main-tasks{
+.main-events{
   
 }
 
