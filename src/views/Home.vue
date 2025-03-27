@@ -14,12 +14,19 @@ const goToInfo = () => {
 };
 const dialog = ref(false);
 const currentItem = ref(0);
+const dialogIsTask = ref(false);
 
-const todoItems = ref(
-  [{ type: "Task 1", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
-  { type: "Task 2", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true },
-  { type: "Task 3", name: "This is the task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
+const todoTaskItems = ref(
+  [{ type: "Task", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"", reflectionReq:false },
+  { type: "Task", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true },
+  { type: "Task", name: "This is the task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"https://www.google.com", reflectionReq:false },
   
+  
+  ]);
+
+  const todoExperienceItems = ref(
+  [{ type: "Experience", name: "Job Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:false, category:"Math" },
+  { type: "Experience", name: "Career Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:true, category:"Career Fair" },
   ]);
 
   const doneItems = ref(
@@ -167,79 +174,137 @@ const todoItems = ref(
 
       <v-main> <!--            MAIN            -->
         <v-list-item></v-list-item><!-- SPACE ABOVE TIMELINE -->
-        <v-card-title class="text-center">To-do</v-card-title>
+        <v-card-title class="page-title">To-do</v-card-title>
         <v-card class="main-tasks" variant="tonal">
+          
           <v-timeline density="compact" align-start style="padding-left: 5%; padding-right: 5%;" line-thickness="7" >
+            <!-- Tasks -->
             
             <v-timeline-item 
-              v-for="(item, index) in todoItems"
+              v-for="(item, index) in todoTaskItems"
               :key="item.type"
               style="width: 100%;"
-              @click="dialog = true; currentItem = index"
+              @click="dialog = true; currentItem = index; dialogIsTask=true"
               class="cursor-pointer"
-        >
-        <!-- <v-row class="d-flex" justify="space-between" style="width: 100%;">
-      <v-col>
-        {{ item.name }}
-      </v-col>
-      <v-col class="text-right">
-        {{ item.points }} pts.
-      </v-col>
-    </v-row> -->
-    
-    {{ item.name }}
-    <!-- {{ item.name }}  -->
-    <v-spacer></v-spacer>
-    {{ item.points }} pts.
+              dot-color="red"
+            >
+              {{ item.name }}
+              <!-- {{ item.name }}  -->
+              <v-spacer></v-spacer>
+              {{ item.points }} pts.
 
-        </v-timeline-item>
+            </v-timeline-item>
+
+            <!-- Experiences -->
+            <v-timeline-item 
+              v-for="(item, index) in todoExperienceItems"
+              :key="item.type"
+              style="width: 100%;"
+              @click="dialog = true; currentItem = index; dialogIsTask=false"
+              class="cursor-pointer"
+              dot-color="niceBlue"
+            >
+              {{ item.name }}
+              <!-- {{ item.name }}  -->
+              <v-spacer></v-spacer>
+              {{ item.points }} pts.
+
+            </v-timeline-item>
+
           </v-timeline>
 
 
         <!-- COMPLETED TASKS -->
+         <p class="text-h5" style="margin-left: 5%;">Completed</p>
+         
         <v-timeline density="compact" align-start style="padding-left: 5%; padding-right: 5%;" line-thickness="7" >
             <v-timeline-item 
-          v-for="item in doneItems"
-          :key="item.type"
-          dot-color="green"
-        >
-    {{ item.name }}
-    <v-spacer></v-spacer>
-    {{ item.points }} pts.
+              v-for="item in doneItems"
+              :key="item.type"
+              dot-color="green"
+              icon="mdi-check"
+              class="text-disabled"
+            >
+            {{ item.name }}
+            <v-spacer></v-spacer>
+            {{ item.points }} pts.
 
-
-        </v-timeline-item>
+            </v-timeline-item>
           </v-timeline>
 
         </v-card>
 
-        
+        <!-- DIALOG -->
         <v-dialog v-model="dialog" width="auto">
-      <v-card
-        max-width="600"
-        min-width="400"
-      >
-          <v-card-title class="text-center">
-            {{todoItems[currentItem].name}}
-          </v-card-title>
-          <v-card-subtitle class="text-center">
-            {{todoItems[currentItem].points}} pts.
-          </v-card-subtitle>
-          <v-card-text>
-            {{todoItems[currentItem].description}}
-          </v-card-text>
-          <v-card-text>
-            {{todoItems[currentItem].rationale}}
-          </v-card-text>
+          <!-- TASKS -->
+          <v-card v-if="dialogIsTask"
+           
+            min-width="400"
+          >
+            <v-card-title class="text-center">
+              {{todoTaskItems[currentItem].name}}
+            </v-card-title>
+            <v-card-subtitle class="text-center">
+              {{todoTaskItems[currentItem].points}} pts.
+            </v-card-subtitle>
+            <v-card-text class="pa-4">
+              {{todoTaskItems[currentItem].description}}
+            </v-card-text>
+            <v-card-text class="pa-4">
+              {{todoTaskItems[currentItem].rationale}}
+            </v-card-text>
 
-          <v-card-text v-if="todoItems[currentItem].canUpload">
-            <v-file-input clearable label="File input" density="compact"></v-file-input>
-          </v-card-text>
+            <v-card-text v-if="todoTaskItems[currentItem].reflectionReq">
+              <v-textarea label="Reflection" hint="Reflect on how this task helped you grow">
+              </v-textarea>
+            </v-card-text>
+
+            <v-card-text v-if="todoTaskItems[currentItem].canUpload">
+              <v-file-input clearable label="File input" density="compact"></v-file-input>
+            </v-card-text>
+
+            <v-card-text v-if="todoTaskItems[currentItem].hyperLink.length > 0" class="text-center btn-alt">
+              <v-btn prepend-icon="mdi-open-in-new"
+              :href="todoTaskItems[currentItem].hyperLink"
+              target="_blank"
+              >Link</v-btn>
+            </v-card-text>
           
-      
-        <template v-slot:actions>
-          <v-btn class="ms-auto" text="Cancel" @click="dialog = false"></v-btn>
-        </template>
+            <template v-slot:actions>
+              <v-btn class="ms-auto" text="Cancel" @click="dialog = false"></v-btn>
+              <v-btn v-if="todoTaskItems[currentItem].reflectionReq"
+              class="ms-auto" text="Submit" @click="SubmitReflection()"></v-btn>
+            </template>
+      </v-card>
+
+      <!-- EXPERIENCES -->
+      <v-card v-if="!dialogIsTask"
+            
+            min-width="400"
+          >
+            <v-card-title class="text-center">
+              {{todoExperienceItems[currentItem].name}}
+            </v-card-title>
+            <v-card-subtitle class="text-center">
+              {{todoExperienceItems[currentItem].points}} pts.
+            </v-card-subtitle>
+            <v-card-subtitle class="" style="padding: 5px 15px;">
+              <v-icon icon="mdi-shape"/>
+              {{todoExperienceItems[currentItem].category}}
+            </v-card-subtitle>
+            <v-card-text class="pa-4">
+              {{todoExperienceItems[currentItem].description}}
+            </v-card-text>
+            
+            <v-card-text v-if="todoExperienceItems[currentItem].reflectionReq">
+              <v-textarea label="Reflection" hint="Reflect on how this experience helped you grow"></v-textarea>
+            </v-card-text>
+
+            <template v-slot:actions>
+              <v-btn class="ms-auto" text="Cancel" @click="dialog = false"></v-btn>
+              <v-btn v-if="todoExperienceItems[currentItem].reflectionReq"
+              class="ms-auto" text="Submit" @click="SubmitReflection()"></v-btn>
+            </template>
       </v-card>
     </v-dialog>
 
@@ -289,7 +354,8 @@ const todoItems = ref(
 .badge-image{
   max-height:10%;
 }
-.main-tasks{
+.complete-task{
+  opacity: 0.5;
   
 }
 
