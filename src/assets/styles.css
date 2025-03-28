@@ -40,6 +40,17 @@
     transition: background-color 0.3s;
     /* color: #f4ecd0; */
   }
+
+  .alt-btn{
+    width: auto;
+    border-radius: auto;
+    padding: auto;
+    margin-bottom: 6px;
+    margin-top: 6px;
+    height: auto;
+    background-color: rgb(63, 63, 63);
+    color: white;
+  }
   
   .v-btn.light-blue {
     background-color: #f4ecd0;
