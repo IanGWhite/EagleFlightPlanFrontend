@@ -28,6 +28,7 @@ import StudentShop from "./views/StudentShop.vue";
 import Calendar from "./views/Calendar.vue";
 import AddTask from "./views/AddTask.vue";
 import viewAllStudents from "./views/viewAllStudents.vue";
+import AdminStudentProfile from "./views/AdminStudentProfile.vue";
 import AddEvent from "./views/AddEvent.vue";
 
 const router = createRouter({
@@ -156,6 +157,12 @@ const router = createRouter({
       path: "/StudentProfile",
       name: "StudentProfile",
       component: StudentProfile,
+      props: true,
+    },
+    {
+      path: "/AdminStudentProfile/:id",
+      name: "AdminStudentProfile",
+      component: AdminStudentProfile,
       props: true,
     },
     {
