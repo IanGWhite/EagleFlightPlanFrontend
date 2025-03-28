@@ -28,6 +28,7 @@ import StudentShop from "./views/StudentShop.vue";
 import Calendar from "./views/Calendar.vue";
 import AddTask from "./views/AddTask.vue";
 import viewAllStudents from "./views/viewAllStudents.vue";
+import AddEvent from "./views/AddEvent.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -179,6 +180,11 @@ const router = createRouter({
       path: "/viewAllStudents",
       name: "viewAllStudents",
       component: viewAllStudents,
+    },
+    {
+      path: "/AddEvent",
+      name: "AddEvent",
+      component: AddEvent,
       props: true,
     },
   ],

@@ -36,6 +36,10 @@ const events = ref(
     // Prevent navigating to narrower view (default vue-cal behavior).
     e.stopPropagation()
   }
+  
+  const AddEventPage = () => {
+    router.push({ name: "AddEvent" }); // hypothetical route name for education list
+  }
 
 </script>
 
@@ -108,7 +112,7 @@ const events = ref(
         v-if="isAdmin"
         class="position-sticky bottom-0 left-0 bg-primary rounded-lg ma-3" 
         text="Add Event"
-        @click="EditEvent"
+        @click="AddEventPage"
         prepend-icon="mdi-plus"
         color="red"
         ></v-btn>
