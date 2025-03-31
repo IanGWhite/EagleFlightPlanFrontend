@@ -182,19 +182,20 @@ onMounted(async () => {
         <v-card-title class="page-title">Students</v-card-title>
 
         <!-- Search bar and Upload button in a row -->
-        <v-row class="align-center">
+        <v-row >
           <v-col>
-            <v-text-field
+            <v-text-field class="ma-0"
               v-model="search"
               label="Search"
               prepend-inner-icon="mdi-magnify"
               variant="solo-filled"
               single-line
               density="compact"
+              hide-details
             ></v-text-field>
           </v-col>
           <v-col cols="auto">
-            <v-btn color="red" @click="triggerFileInput">
+            <v-btn color="red" @click="triggerFileInput" style="margin-right: 5px;">
               Upload File
             </v-btn>
           </v-col>
@@ -217,6 +218,7 @@ onMounted(async () => {
             :filter-keys="['StudentName', 'studentIdNo']"
           >
             <template v-slot:item.view="{ item }">
+              <!-- Need to change to send to a student profile -->
               <v-btn
                 color="red"
                 class="alt-btn"
@@ -244,5 +246,6 @@ onMounted(async () => {
 .row {
   display: flex;
   justify-content: space-between;
+  
 }
 </style>
