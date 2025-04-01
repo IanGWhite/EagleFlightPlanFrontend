@@ -7,4 +7,7 @@ export default {
   getUser(userId) {
     return apiClient.get(`/user/${userId}`);
   },
+  createUser(data) {
+    return apiClient.post(`/user`, data);
+  },
 };
