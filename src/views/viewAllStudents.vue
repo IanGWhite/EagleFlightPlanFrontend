@@ -184,14 +184,13 @@ onMounted(async () => {
         <!-- Search bar and Upload button in a row -->
         <v-row >
           <v-col>
-            <v-text-field class="ma-0"
-              v-model="search"
-              label="Search"
-              prepend-inner-icon="mdi-magnify"
-              variant="solo-filled"
-              single-line
-              density="compact"
-              hide-details
+            <v-text-field
+          v-model="search"
+          density="compact"
+          label="Search"
+          prepend-inner-icon="mdi-magnify"
+          variant="solo-filled"
+          single-line
             ></v-text-field>
           </v-col>
           <v-col cols="auto">
@@ -214,9 +213,9 @@ onMounted(async () => {
           <v-data-table
             :headers="headers"
             :items="studentList"
-            :filter="search"
+            v-model:search="search"
             :filter-keys="['StudentName', 'studentIdNo']"
-          >
+            >
             <template v-slot:item.view="{ item }">
               <!-- Need to change to send to a student profile -->
               <v-btn
