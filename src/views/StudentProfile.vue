@@ -2,7 +2,7 @@
 import { ref,onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import AwardServices from "../services/awardServices.js"; // hypothetical service for managing award data
-import MenuBar from "../components/MenuBar.vue";
+import pointLogServices from "../services/pointLogServices.js";
 import Utils from "../config/utils.js";
 
 const router = useRouter();
@@ -25,19 +25,14 @@ const award = ref({
   description: ""
 });
 
-const pointLog = ref([{
-  type: 'Badge',
-  approvedBy: 'David North',
-  pointDifference: 10,
-  date: '10-12-25',
-},
-{
-  type: 'Shop',
-  approvedBy: 'Admin name',
-  pointDifference: -20,
-  date: '10-12-25',
-},
-]);
+const pointLogList = ref([]);
+
+const headers = [
+  { title: "Type", key: "name", align: "start", sortable: false },
+  { title: "pointDifference", key: "pointDifference", sortable: false },
+  { title: "Date", key: "date"},
+];
+
 const message = ref("test");
 
 const saveAward = (id) => {
@@ -51,18 +46,42 @@ const saveAward = (id) => {
     });
 };
 
+const getPointLog = async () => {
+  try {
+    const response = await pointLogServices.getAllPointLogs(user.value.studentId);
+    
+    if (response && response.data) {
+      pointLogList.value = response.data;
+
+      pointLogList.value.forEach(log => {
+        if (log.date) {
+          log.date = new Date(log.date).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+          });
+        } else {
+          log.date = "Unknown";
+        }
+      });
+
+      console.log("Point log gotten successfully:", pointLogList.value);
+    } else {
+      console.error("Invalid response structure:", response);
+    }
+  } catch (e) {
+    message.value = "An error occurred: " + e.message;
+    console.error("Error fetching point logs:", e);
+  }
+};
+
 
 
 
 onMounted(() => {
   user.value = Utils.getStore('user')
   // console.log(user.value)
-  const awardId = route.params.id;
-      if (awardId) {
-        getAwards(awardId);
-      } else {
-        // console.error('No Award ID provided in route');
-      }
+  getPointLog();
 })
 </script>
 
@@ -137,7 +156,9 @@ onMounted(() => {
       <!--        POINT TRANSACTION HISTORY         -->
       <v-tabs-window-item value="option-3">
         <v-container>
-          <v-data-table :items="pointLog"></v-data-table>
+          <v-data-table :headers="headers"
+           :items="pointLogList"
+            :filter-keys="['Date']"></v-data-table>
         </v-container>
       </v-tabs-window-item>
       </v-tabs-window>
