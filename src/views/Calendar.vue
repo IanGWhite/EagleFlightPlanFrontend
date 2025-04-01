@@ -1,33 +1,50 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 // import MenuBar from "../components/MenuBar.vue";
 import { VCalendar } from 'vuetify/labs/VCalendar';
 import { useDate } from 'vuetify';
 import VueCal from 'vue-cal'
+import EventServices from "../services/eventServices";
+import Utils from "../config/utils.js";
+import CategoryServices from "../services/categoryServices";
 
 
 const router = useRouter();
+
+const user = ref({});
 
 const calDialog = ref(false);
 const selectedEvent = ref({});
 
 const isAdmin = ref(true);
 
-const events = ref(
-  [{ name: "Birthday", description: "Celebrate this months birthday", category:"Math", location: "Garvey Center",
-      title: "birthday",
-      start: new Date('Feb 27, 2025 12:00 PM'),
-      end: new Date('Feb 27, 2025 4:30 PM'),
-      class: 'leisure',
-  },
-  
-  { name: "Career Fair", description: "We believe you have been created with purpose and calling. OC's Career Services office is committed to walking beside you as you uncover your unique calling and embark on a fulfilling career journey.", category:"All", location: "Garvey Center",
-      title: "Career Fair",
-      start: new Date('Mar 1, 2025 10:00 AM'),
-      end: new Date('Mar 1, 2025 5:30 PM'),
-  },
-  ]);
+const categories = ref([]);
+const events = ref([
+  { name: "Birthday", description: "celebrate this wonderful day",
+    title: "birthday",
+    start: new Date('Apr 3, 2025 12:00 PM'),
+    end: new Date('Apr 3, 2025 4:00 PM'),
+    class: 'leisure',
+    backgroundColor: '#0e002e',
+    color: '#0e002e',
+  }
+]);
+const databaseEvents = ref([]);
+
+const eventNames = ref([]);
+
+const eventPlaceholder = ref(  
+{ name: "",
+ description: "",
+    title: "",
+    start: new Date('Mar 27, 2025 12:00 PM'),
+    end: new Date('Mar 27, 2025 12:00 PM'),
+    class: "health",
+    location: "",
+    background: "true",
+    color: '#0e002e',
+  }); //used to transfer data from database events to events
 
   const OnEventClick = (event, e) => {
     selectedEvent.value = event;
@@ -40,6 +57,80 @@ const events = ref(
   const AddEventPage = () => {
     router.push({ name: "AddEvent" }); // hypothetical route name for education list
   }
+
+  const fetchEagleEvents = () => {
+  EventServices.getAllEvents()
+    .then((response) => {
+      databaseEvents.value = response.data; // Assuming the backend returns an array of events
+      console.log("Fetched database events:", databaseEvents.value);
+      fetchCategories();
+    })
+    .catch((error) => {
+      console.error("Error fetching database events:", error);
+    });
+    
+};
+
+const convertEvents = () => {
+    events.value = databaseEvents.value.map((n) => {
+      console.log("categoryId:", n.categoryId);
+      var myCategory = 'hello';
+      for(let i = 0; i < categories.value.length; i++){
+        if(categories.value[i].id == n.categoryId){
+          myCategory = categories.value[i].name;
+        }
+      }
+      console.log("category:", myCategory);
+      return{
+      name: n.name,
+      description: n.description,
+      start: new Date(n.date.substring(0,10)+', '+n.startTime+':00'),
+      end: new Date(n.date.substring(0,10)+', '+n.endTime+':00'),
+      location: n.location,
+      category: myCategory,
+      class: 'health',
+      backgroundColor: '#0e002e',
+      color: '#0e002e',
+    }
+    });
+    console.log("events list: ", events.value);
+  
+  /*
+  for (let i = 0; i <= databaseEvents.value.length; i++){
+    events.value.push({ name: databaseEvents.value[i].name,
+ description: "",
+    title: "",
+    start: new Date('Mar 27, 2025 12:00 PM'),
+    end: new Date('Mar 27, 2025 12:00 PM'),
+    class: "",
+    location: "",
+  })
+  }
+  */
+
+}
+
+const fetchCategories = () => {
+  CategoryServices.getAllCategories()
+    .then((response) => {
+      categories.value = response.data; // Assuming the backend returns an array of events
+      console.log("Fetched categories:", categories.value);
+      convertEvents();
+    })
+    .catch((error) => {
+      console.error("Error fetching categories:", error);
+    });
+    
+};
+
+
+
+onMounted(() => {
+  user.value = Utils.getStore('user')
+  console.log(user.value)
+  fetchEagleEvents();
+})
+
 
 </script>
 
@@ -84,9 +175,9 @@ const events = ref(
                 </v-card-text>
                 <v-card-text>
                   <v-icon>mdi-calendar</v-icon>
-                  {{ selectedEvent.start.format("MMM D") }},
-                  {{ selectedEvent.start.formatTime("h:mm{am}") }} -
-                  {{ selectedEvent.end.formatTime("h:mm{am}") }}
+                  {{ selectedEvent.title}},
+                  {{ selectedEvent.start}} -
+                  {{ selectedEvent.end}}
                   <!-- {{formatter.format(events[currentItem].end, 'fullTime12h')}} -->
                   
                   <v-spacer></v-spacer>
@@ -128,7 +219,7 @@ const events = ref(
 }
 
 
-
+.vuecal__event.health {background-color: #57cea9cc;}
 
 
 
