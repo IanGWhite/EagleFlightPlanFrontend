@@ -32,19 +32,6 @@ const events = ref([
 ]);
 const databaseEvents = ref([]);
 
-const eventNames = ref([]);
-
-const eventPlaceholder = ref(  
-{ name: "",
- description: "",
-    title: "",
-    start: new Date('Mar 27, 2025 12:00 PM'),
-    end: new Date('Mar 27, 2025 12:00 PM'),
-    class: "health",
-    location: "",
-    background: "true",
-    color: '#0e002e',
-  }); //used to transfer data from database events to events
 
   const OnEventClick = (event, e) => {
     selectedEvent.value = event;
