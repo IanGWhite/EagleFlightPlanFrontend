@@ -59,7 +59,7 @@ const databaseEvents = ref([]);
 const convertEvents = () => {
     events.value = databaseEvents.value.map((n) => {
       console.log("categoryId:", n.categoryId);
-      var myCategory = 'hello';
+      var myCategory = ''; //default category
       for(let i = 0; i < categories.value.length; i++){
         if(categories.value[i].id == n.categoryId){
           myCategory = categories.value[i].name;
