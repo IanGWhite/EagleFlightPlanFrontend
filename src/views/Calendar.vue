@@ -26,8 +26,6 @@ const events = ref([
     start: new Date('Apr 3, 2025 12:00 PM'),
     end: new Date('Apr 3, 2025 4:00 PM'),
     class: 'leisure',
-    backgroundColor: '#0e002e',
-    color: '#0e002e',
   }
 ]);
 const databaseEvents = ref([]);
@@ -75,9 +73,7 @@ const convertEvents = () => {
       end: new Date(n.date.substring(0,10)+', '+n.endTime+':00'),
       location: n.location,
       category: myCategory,
-      class: 'health',
-      backgroundColor: '#0e002e',
-      color: '#0e002e',
+      class: myCategory,
     }
     });
     console.log("events list: ", events.value);
