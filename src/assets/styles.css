@@ -74,7 +74,7 @@
   }
   
   .v-text-field input, .v-textarea textarea {
-    padding: 10px;
+    /* padding: 10px; */
     border-radius: 4px;
   }
   
