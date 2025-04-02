@@ -38,8 +38,9 @@ const todoTaskItems = ref(
   ]);
 
   const doneExperienceItems = ref(
-  [{ type: "Experience", name: "Job Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:false, category:"Math" },
-  { type: "Experience", name: "Career Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:true, category:"Career Fair" },
+  [{ type: "Experience", name: "Job Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:false, category:"Math", reflection:"This helped me become a better person", approvalState:2, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
+  { type: "Experience", name: "Career Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:true, category:"Career Fair", reflection:"", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
+  { type: "Experience", name: "Career Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:true, category:"", reflection:"fhjskhfjsdk", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
   ]);
 </script>
 
@@ -184,17 +185,16 @@ const todoTaskItems = ref(
         <v-list-item></v-list-item><!-- SPACE ABOVE TIMELINE -->
         <v-card-title class="page-title">To-do</v-card-title>
         <v-card class="main-tasks" variant="tonal">
-          
+          <!-- TIMELINES -->
           <v-timeline density="compact" align-start style="padding-left: 5%; padding-right: 5%;" line-thickness="7" >
             <!-- Tasks -->
-            
             <v-timeline-item 
               v-for="(item, index) in todoTaskItems"
               :key="item.type"
               style="width: 100%;"
               @click="dialog = true; currentItem = index; dialogIsTask=true; dialogIsComplete=false"
               class="cursor-pointer"
-              dot-color="red"
+              dot-color="#ed6e13"
             >
               {{ item.name }}
               <!-- {{ item.name }}  -->
@@ -203,7 +203,7 @@ const todoTaskItems = ref(
 
             </v-timeline-item>
 
-            <!-- Experiences -->
+            <!-- EXPERIENCES TIMELINE -->
             <v-timeline-item 
               v-for="(item, index) in todoExperienceItems"
               :key="item.type"
@@ -240,7 +240,23 @@ const todoTaskItems = ref(
 
             </v-timeline-item>
           </v-timeline>
+          <!-- COMPLETED EXPERIENCES TIMELINE -->
+          <v-timeline density="compact" align-start style="padding-left: 5%; padding-right: 5%;" line-thickness="7" >
+            <v-timeline-item 
+              v-for="(item, index) in doneExperienceItems"
+              :key="item.type"
+              dot-color="green"
+              icon="mdi-check"
+              class="text-disabled cursor-pointer"
+              @click="dialog = true; currentItem = index; dialogIsTask=false; dialogIsComplete=true"
+              
+            >
+            {{ item.name }}
+            <v-spacer></v-spacer>
+            {{ item.points }} pts.
 
+            </v-timeline-item>
+          </v-timeline>
         </v-card>
 
         <!-- DIALOG -->
@@ -362,33 +378,51 @@ const todoTaskItems = ref(
       </v-card>
 
       <!-- COMPLETE EXPERIENCES -->
-      <v-card v-if="dialogIsComplete && !dialogIsTask"
-            
+      <v-card v-if="dialogIsComplete && !dialogIsTask" 
             min-width="400"
           >
-            <v-card-title class="text-center">
-              {{todoExperienceItems[currentItem].name}}
+             <v-card-title class="text-center">
+              {{doneExperienceItems[currentItem].name}}
             </v-card-title>
-            <v-card-subtitle class="text-center">
-              {{todoExperienceItems[currentItem].points}} pts.
-            </v-card-subtitle>
-            
-            <v-card-text class="pa-4">
-              {{todoExperienceItems[currentItem].description}}
+          
+            <v-card-text class="text-center" v-if="doneExperienceItems[currentItem].approvalState == 0" style="color: red;">
+              This task is not complete and should not be here.
             </v-card-text>
-            <v-card-subtitle class="" style="padding: 5px 15px;">
+            <v-card-subtitle class="text-center" v-if="doneExperienceItems[currentItem].approvalState == 1">
+              This task has been submitted for completion.
+            </v-card-subtitle>
+
+            <v-card-subtitle class="text-center">
+              {{doneExperienceItems[currentItem].points}} pts.
+            </v-card-subtitle>
+
+
+            <v-card-text class="pa-4">
+              {{doneExperienceItems[currentItem].description}}
+            </v-card-text>
+            <v-card-subtitle v-if="doneExperienceItems[currentItem].category.length > 0" style="padding: 5px 15px;">
               <v-icon icon="mdi-shape"/>
-              {{todoExperienceItems[currentItem].category}}
+              {{doneExperienceItems[currentItem].category}}
             </v-card-subtitle>
             
-            <v-card-text v-if="todoExperienceItems[currentItem].reflectionReq">
-              <v-textarea label="Reflection" hint="Reflect on how this experience helped you grow"></v-textarea>
+
+            <v-card-text v-if="doneExperienceItems[currentItem].reflection.length > 0">
+              <v-textarea label="Reflection" readonly v-model="doneExperienceItems[currentItem].reflection">
+                {{ doneExperienceItems[currentItem].reflection }}
+              </v-textarea>
             </v-card-text>
 
+            
             <template v-slot:actions>
-              <v-btn class="ms-auto" text="Cancel" @click="dialog = false"></v-btn>
-              <v-btn v-if="todoExperienceItems[currentItem].reflectionReq"
-              class="ms-auto" text="Submit" @click="SubmitReflection()"></v-btn>
+              <v-card-subtitle v-if="doneTaskItems[currentItem].approvalState == 1">
+                Submitted on:
+                {{ useDate().format(doneTaskItems[currentItem].submissionDate, 'fullDate')  }}
+              </v-card-subtitle>
+              <v-card-subtitle v-if="doneTaskItems[currentItem].approvalState == 2">
+                Completed on:
+                {{ useDate().format(doneTaskItems[currentItem].completionDate, 'fullDate')  }}
+              </v-card-subtitle>
+              <v-btn class="ms-auto" text="Close" @click="dialog = false"></v-btn>
             </template>
       </v-card>
     </v-dialog>
