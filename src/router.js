@@ -30,6 +30,7 @@ import AddTask from "./views/AddTask.vue";
 import viewAllStudents from "./views/viewAllStudents.vue";
 import AdminStudentProfile from "./views/AdminStudentProfile.vue";
 import AddEvent from "./views/AddEvent.vue";
+import AddTransaction from "./views/AddTransaction.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -192,6 +193,12 @@ const router = createRouter({
       path: "/AddEvent",
       name: "AddEvent",
       component: AddEvent,
+      props: true,
+    },
+    {
+      path: "/AddTransaction",
+      name: "AddTransaction",
+      component: AddTransaction,
       props: true,
     },
   ],
