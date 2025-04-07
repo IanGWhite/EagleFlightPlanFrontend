@@ -1,9 +1,11 @@
 <script setup>
 import { ref,onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import AwardServices from "../services/awardServices.js"; // hypothetical service for managing award data
 import pointLogServices from "../services/pointLogServices.js";
+import studentStrengthsServices from "../services/studentStrengthsServices.js";
+import studentMajorsServices from "../services/studentMajorsServices.js";
 import Utils from "../config/utils.js";
+import majorsServices from "../services/majorsServices.js";
 
 const router = useRouter();
 
@@ -12,18 +14,12 @@ const user = ref({});
 
 const tab = ref('option-1');
 
-const majors = ref(['Computer Science', 'Art', 'English']);
+const studentMajor = ref([]);
+const studentmajorId = ref({});
 const semesters = ref(['Fall 2025', 'Spring 2026', 'Fall 2026', 'Spring 2026', 'Fall 2027', 'Spring 2027']);
 
 const studentStrengths = ref([{ strength: 'Foo' }, { strength: 'two' }, { strength: 'three' }, { strength: 'for' }, { strength: 'fiv' }]);
 
-const award = ref({
-  organization: "",
-  title: "",
-  startDate: "",
-  endDate: "",
-  description: ""
-});
 
 const pointLogList = ref([]);
 
@@ -34,17 +30,6 @@ const headers = [
 ];
 
 const message = ref("test");
-
-const saveAward = (id) => {
-  AwardServices.updateAward(user.value.studentId, id ,award.value)
-    .then(() => {
-      message.value = "Award saved successfully";
-      router.push({ name: "StudentInfo" }); // hypothetical route name for award list
-    })
-    .catch((e) => {
-      message.value = "An error occurred";
-    });
-};
 
 const getPointLog = async () => {
   try {
@@ -75,13 +60,28 @@ const getPointLog = async () => {
   }
 };
 
-
+const getStudentMajor =  () => {
+      try {
+        const response =  studentMajorsServices.getStudentMajor(user.value.studentId);
+        console.log(response.data);
+        studentmajorId.value = response.data;
+        console.log("hello");
+        console.log("major Id " + studentmajorId.studentMajorId);
+        const reply = majorsServices.getMajor(response.studentmajorId);
+        studentMajor.value = reply.data;
+        console.log("major:");
+        console.log(studentMajor.name);
+      } catch (error) {
+        console.error('Failed to retrieve major data:');
+      }
+    };
 
 
 onMounted(() => {
   user.value = Utils.getStore('user')
   // console.log(user.value)
   getPointLog();
+  getStudentMajor();
 })
 </script>
 
@@ -109,13 +109,20 @@ onMounted(() => {
             <!-- <v-form @submit.prevent="saveAward"> -->
               <v-form>
               <!-- add v-models to autocomplete forms -->
-               <v-sheet >
-                <v-autocomplete 
-                  
-                  label="Major"
-                  :items=majors
-                ></v-autocomplete>
-               </v-sheet>
+              <v-sheet>
+                <v-row>
+                  <v-col>
+                    <v-label>Major</v-label> <!-- Label for Major -->
+                    <v-chip 
+                      class="pa-2"
+                      :label="studentMajor"
+                      color="lightblue" 
+                    >
+                      {{ studentMajor.name }} <!-- Display the student major text -->
+                    </v-chip>
+                  </v-col>
+                </v-row>
+              </v-sheet>
                 
                 <v-sheet>
                   <v-autocomplete 
