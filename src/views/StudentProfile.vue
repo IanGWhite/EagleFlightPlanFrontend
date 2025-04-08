@@ -3,22 +3,32 @@ import { ref,onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import pointLogServices from "../services/pointLogServices.js";
 import studentStrengthsServices from "../services/studentStrengthsServices.js";
+import strengthsServices from  "../services/strengthsServices.js"
 import studentMajorsServices from "../services/studentMajorsServices.js";
 import Utils from "../config/utils.js";
 import majorsServices from "../services/majorsServices.js";
+import semesterServices from "../services/semesterServices.js";
+import studentServices from "../services/studentServices.js";
 
 const router = useRouter();
 
 const route = useRoute();
 const user = ref({});
+const student = ref({});
 
 const tab = ref('option-1');
 
 const studentMajor = ref([]);
 const studentmajorIdNo = ref({});
-const semesters = ref(['Fall 2025', 'Spring 2026', 'Fall 2026', 'Spring 2026', 'Fall 2027', 'Spring 2027']);
 
-const studentStrengths = ref([{ strength: 'Foo' }, { strength: 'two' }, { strength: 'three' }, { strength: 'for' }, { strength: 'fiv' }]);
+const gradDate = ref([]);
+
+const gradSemesters = ref([]);
+
+const allStrengths = ref([
+]);
+
+const selectedStrengthIds = ref([]);
 
 
 const pointLogList = ref([]);
@@ -61,24 +71,110 @@ const getPointLog = async () => {
 };
 
 const getStudentMajor =  async () => {
-      try {
-        const response =  await studentMajorsServices.getStudentMajor(user.value.studentId);
-        studentmajorIdNo.value = response.data[0];
-        console.log("major Id " + studentmajorIdNo.value.studentMajorId);
-        const reply = await majorsServices.getMajor(studentmajorIdNo.value.studentMajorId);
-        studentMajor.value = reply.data;
-        console.log("major:");
-        console.log(studentMajor.value.name);
-      } catch (error) {
-        console.error('Failed to retrieve major data:');
-      }
-    };
+  try {
+    const response =  await studentMajorsServices.getStudentMajor(user.value.studentId);
+    studentmajorIdNo.value = response.data[0];
+    console.log("major Id " + studentmajorIdNo.value.studentMajorId);
+    const reply = await majorsServices.getMajor(studentmajorIdNo.value.studentMajorId);
+    studentMajor.value = reply.data;
+    console.log("major:");
+    console.log(studentMajor.value.name);
+  } catch (error) {
+    console.error('Failed to retrieve major data:');
+  }
+};
+
+const getGradDate =  async () => {
+  try {
+    const response = await studentServices.getStudentForUser(user.value.studentId);
+    console.log(response.data);
+    student.value = response.data[0];
+    console.log("Student info: ");
+    console.log(student.value);
+    const reply = await semesterServices.getSemester(student.value.estimatedGradSemester)
+    gradSemesters.value = reply.data;
+    console.log("gradSemester date " + gradSemesters.value.dateStart);
+
+    const formattedDate = new Date(gradSemesters.value.dateEnd).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+      gradDate.value = formattedDate; // Update GraduationDate
+  } catch (error) {
+    console.error('Failed to retrieve grad semster date data:');
+  }
+};
+
+const getStrenghs =  async () => {
+  try {
+    const response =  await strengthsServices.getAllStrengths();
+    allStrengths.value = response.data;
+    console.log("all strengh info " + allStrengths.value);
+  } catch (error) {
+    console.error('Failed to retrieve all strengh data:');
+  }
+};
+
+const getStudentStrenghs =  async () => {
+  try {
+    const response =  await studentStrengthsServices.getAllStudentStrengthsForStudent(user.value.studentId);
+    selectedStrengthIds.value = response.data;
+    console.log("student strengh info " + selectedStrengthIds.value);
+  } catch (error) {
+    console.error('Failed to retrieve major data:');
+  }
+};
+
+const saveStrengths = async () => {
+  const ids = selectedStrengthIds.value.map(s => s.strengthId);
+  const dataId = selectedStrengthIds.value.map(s => s.id);
+
+  // Check all 5 are selected
+  if (ids.length !== 5 || ids.includes(null) || ids.includes(undefined)) {
+    alert("Please select all 5 strengths.");
+    return;
+  }
+
+  // Check for duplicates
+  const uniqueIds = new Set(ids);
+  if (uniqueIds.size !== ids.length) {
+    alert("Each strength must be unique. Please remove duplicates.");
+    return;
+  }
+
+  try {
+    for (let i = 0; i < ids.length; i++) {
+      const payload = {
+        strengthId: ids[i]
+      };
+
+      console.log(`Updating strength slot ${i + 1}:`, {
+        studentId: user.value.studentId,
+        strengthRecordId: dataId[i],
+        payload
+      });
+
+      const res = await studentStrengthsServices.updateStudentStrength(user.value.studentId, dataId[i], payload);
+      console.log("Response:", res);
+    }
+
+    console.log("Strengths saved successfully!");
+  } catch (error) {
+    console.error("Error saving strengths:", error);
+    alert("Failed to save strengths.");
+  }
+};
+
 
 onMounted(() => {
   user.value = Utils.getStore('user')
   // console.log(user.value)
   getPointLog();
   getStudentMajor();
+  getGradDate();
+  getStrenghs();
+  getStudentStrenghs();
 })
 </script>
 
@@ -112,42 +208,49 @@ onMounted(() => {
                     <v-label>Major</v-label> <!-- Label for Major -->
                     <v-chip 
                       class="pa-2"
-                      :label="studentMajor"
-                      color="lightblue" 
+                      color="lightblue"
                     >
-                      {{ studentMajor.name }} <!-- Display the student major text -->
+                      {{ studentMajor.name }}
                     </v-chip>
                   </v-col>
                 </v-row>
               </v-sheet>
                 
-                <v-sheet>
-                  <v-autocomplete 
-                  
-                    label="Estimated Grad Semester"
-                    :items=semesters
-                  ></v-autocomplete>
-                </v-sheet>
-                
+              <v-sheet>
+                <v-row>
+                  <v-col>
+                    <v-label>Graduation Date</v-label> <!-- Label for Major -->
+                    <v-chip 
+                      class="pa-2"
+                      color="lightblue" 
+                    >
+                      {{ gradDate }} <!-- Display the student major text -->
+                    </v-chip>
+                  </v-col>
+                </v-row>
+              </v-sheet>
+              <v-card style="width: 40%;">
+                <v-card-title>Top 5 Clifton Strengths</v-card-title>
+                <v-select
+                  v-for="(strength, index) in selectedStrengthIds"
+                  :key="index"
+                  v-model="selectedStrengthIds[index].strengthId"
+                  :items="allStrengths"
+                  item-title="name"
+                  item-value="id"
+                  label="Select Strength"
+                  variant="solo"
+                  hide-details
+                  dense
+                  style="margin-bottom: 10px;"
+                >
+                  <template #prepend-inner>
+                    {{ index + 1 }}.
+                  </template>
+                </v-select>
 
-
-                <v-card style="width: 40%;">
-                  <v-card-title>Top 5 Clifton Strengths</v-card-title>
-                  <v-text-field 
-                    v-for="(strength, index) in studentStrengths"
-                    :key="index"
-                    v-model="studentStrengths[index].strength"
-                    hide-details="auto"
-                    style="margin-bottom: 0%;"
-                    variant="solo"
-                  >
-                    {{ index + 1 }}. 
-                  </v-text-field>
-                </v-card>
-
-                <div class="buttons">
-                  <v-btn color="red" @click="saveAward(route.params.id)">Save</v-btn> <!-- EDIT BUTTON -->
-                </div>
+                <v-btn color="red" @click="saveStrengths">Save</v-btn>
+              </v-card>
             </v-form>
           </v-sheet>
       </v-tabs-window-item>

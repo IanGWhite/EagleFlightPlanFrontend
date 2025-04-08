@@ -7,8 +7,8 @@ export default {
   getStudentStrengths(studentId, id) {
     return apiClient.get(`/students/${studentId}/studentStrengths/${id}`);
   },
-  createStudentStrength(studentId, data) {
-    return apiClient.post(`/students/${studentId}/studentStrengths`, data);
+  createStudentStrength(studentId, strengthId) {
+    return apiClient.post(`/students/${studentId}/studentStrengths/${strengthId}`);
   },
   updateStudentStrength(studentId, id, data) {
     return apiClient.put(`/students/${studentId}/studentStrengths/${id}`, data);
