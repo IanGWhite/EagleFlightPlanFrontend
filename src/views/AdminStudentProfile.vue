@@ -2,6 +2,12 @@
 import { ref,onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import pointLogServices from "../services/pointLogServices.js";
+import majorsServices from "../services/majorsServices.js";
+import semesterServices from "../services/semesterServices.js";
+import studentServices from "../services/studentServices.js";
+import studentStrengthsServices from "../services/studentStrengthsServices.js";
+import strengthsServices from  "../services/strengthsServices.js"
+import studentMajorsServices from "../services/studentMajorsServices.js";
 import Utils from "../config/utils.js";
 
 const router = useRouter();
@@ -12,7 +18,11 @@ const user = ref({});
 const studentId = ref({});
 const tab = ref('option-1');
 
-const majors = ref(['Computer Science', 'Art', 'English']);
+const majors = ref([]);
+const studentMajor = ref([]);
+const studentmajorIdNo = ref({});
+
+
 const studentStrengths = ref([{ strength: 'One' }, { strength: 'Two' }, { strength: 'three' }, { strength: 'four' }, { strength: 'five' }]);
 const pointLogList = ref([]);
 
@@ -126,10 +136,35 @@ const getPointLog = async () => {
   }
 };
 
+//tab 1 student info
+const getStudentMajor =  async () => {
+  try {
+    const response =  await studentMajorsServices.getStudentMajor(studentId.value);
+    studentmajorIdNo.value = response.data[0];
+    console.log("major Id " + studentmajorIdNo.value.studentMajorId);
+  } catch (error) {
+    console.error('Failed to retrieve major data:');
+  }
+};
+
+const getMajors = async () => {
+  try {
+    const response =  await studentMajorsServices.getStudentMajor(studentId.value);
+    studentmajorIdNo.value = response.data[0];
+    console.log("major Id " + studentmajorIdNo.value.studentMajorId);
+  } catch (error) {
+    console.error('Failed to retrieve major data:');
+  }
+}
+
+
+
 onMounted(() => {
   studentId.value = route.params.id;
   console.log(studentId.value);
   getPointLog();
+  getMajors();
+  getStudentMajor();
 })
 
 const savePermissions = () => {
@@ -221,7 +256,7 @@ const loadCurrentTasks = (semester) => {
                       <v-autocomplete 
                         
                         label="Major"
-                        :items=majors
+                        :items=studentMajor
                       ></v-autocomplete>
                     </v-sheet>
                       
