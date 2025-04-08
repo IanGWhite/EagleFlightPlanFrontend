@@ -88,7 +88,7 @@ const fetchUser= () => {
         <v-list-item>
         <v-list-item-content style="width: auto; overflow: visible;">
           <v-btn  class="drop-btn" @click="navigateTo('Home')">Student Home</v-btn>
-          <v-btn v-if="isAdmin"  class="drop-btn" @click="navigateTo('adminHome')">Admin Home</v-btn>
+          <v-btn v-if="isAdmin"  class="drop-btn" @click="navigateTo('AdminHome')">Admin Home</v-btn>
           <v-btn class="drop-btn" @click="navigateTo('StudentProfile')">Profile</v-btn>
           <v-btn v-if="user" class="drop-btn" @click="logout">Sign Out</v-btn>
 
