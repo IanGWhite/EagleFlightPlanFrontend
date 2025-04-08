@@ -19,7 +19,6 @@ const studentId = ref({});
 const tab = ref('option-1');
 
 const majors = ref([]);
-const studentMajor = ref([]);
 const studentmajorIdNo = ref({});
 
 
@@ -140,8 +139,8 @@ const getPointLog = async () => {
 const getStudentMajor =  async () => {
   try {
     const response =  await studentMajorsServices.getStudentMajor(studentId.value);
-    studentmajorIdNo.value = response.data[0];
-    console.log("major Id " + studentmajorIdNo.value.studentMajorId);
+    studentmajorIdNo.value = response.data[0].studentMajorId;
+    console.log("major Id " + studentmajorIdNo.value);
   } catch (error) {
     console.error('Failed to retrieve major data:');
   }
@@ -149,9 +148,9 @@ const getStudentMajor =  async () => {
 
 const getMajors = async () => {
   try {
-    const response =  await studentMajorsServices.getStudentMajor(studentId.value);
-    studentmajorIdNo.value = response.data[0];
-    console.log("major Id " + studentmajorIdNo.value.studentMajorId);
+    const response =  await majorsServices.getAllMajors();
+    majors.value = response.data;
+    console.log("major Id " + majors.value);
   } catch (error) {
     console.error('Failed to retrieve major data:');
   }
@@ -253,11 +252,15 @@ const loadCurrentTasks = (semester) => {
                       label="Student id">
                       </v-text-field>
 
-                      <v-autocomplete 
-                        
+                      <v-autocomplete
+                        v-model="studentMajorId"
                         label="Major"
-                        :items=studentMajor
+                        :items="studentMajor"
+                        item-text="name"         
+                        item-value="id"           
+                        return-object     
                       ></v-autocomplete>
+
                     </v-sheet>
                       
                       <v-sheet>
