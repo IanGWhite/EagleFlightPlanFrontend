@@ -31,16 +31,16 @@ const todoTaskItems = ref(
   ]);
 
   const doneTaskItems = ref(
-  [{ type: "Task 5", name: "Completed Task", points: "10", description: "blah blah blah description", reflection:"This helped me become a better person", approvalState:1, submissionDate:new Date('Apr 1, 2025'), completionDate:new Date('Apr 2, 2025') },
-  { type: "Task 5", name: "Completed Task 2", points: "30", description: "blah blah blah description", reflection:"", approvalState:2, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
-  { type: "Task 5", name: "Radical new task", points: "60", description: "Go To a Job Fair to get a really cool job and have fun", reflection:"I am awesome and swaggy", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
+  [{ type: "Task 5", name: "Professional Wardrobe", points: "10", description: "Start building your professional attire for career fairs,interviews and events", reflection:"This helped me know how to dress for interviews", approvalState:1, submissionDate:new Date('Apr 1, 2025'), completionDate:new Date('Apr 2, 2025') },
+  { type: "Task 5", name: "LinkedIn & Handshake", points: "30", description: "Build your online presence on these platforms. Career Services will guide you on how to network effectively and showcase your skills. Remember, LinkedIn is a prime hunting ground for employers", reflection:"", approvalState:2, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
+  { type: "Task 5", name: "Career Path", points: "60", description: "If you have a vision, we'll help you refine your skills and gain relevant experience.", reflection:"", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
   
   ]);
 
   const doneExperienceItems = ref(
   [{ type: "Experience", name: "Job Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:false, category:"Math", reflection:"This helped me become a better person", approvalState:2, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
-  { type: "Experience", name: "Career Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:true, category:"Career Fair", reflection:"", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
-  { type: "Experience", name: "Career Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:true, category:"", reflection:"fhjskhfjsdk", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
+  { type: "Experience", name: "Career Fair", points: "50", description: "Go To a Career Fair to get a really cool job and have fun", reflectionReq:true, category:"Career Fair", reflection:"", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
+  { type: "Experience", name: "Volunteering", points: "50", description: "Give back to your community and gain valuable experience while building your resume and nurturing your spiritual growth.", reflectionReq:true, category:"", reflection:"fhjskhfjsdk", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
   ]);
 </script>
 
@@ -305,6 +305,7 @@ const todoTaskItems = ref(
       <v-card v-if="!dialogIsComplete && !dialogIsTask"
             
             min-width="400"
+            max-width="600"
           >
             <v-card-title class="text-center">
               {{todoExperienceItems[currentItem].name}}
@@ -335,6 +336,7 @@ const todoTaskItems = ref(
       <!-- COMPLETE TASKS -->
       <v-card v-if="dialogIsComplete && dialogIsTask" 
             min-width="400"
+            max-width="600"
           >
              <v-card-title class="text-center">
               {{doneTaskItems[currentItem].name}}
@@ -380,6 +382,7 @@ const todoTaskItems = ref(
       <!-- COMPLETE EXPERIENCES -->
       <v-card v-if="dialogIsComplete && !dialogIsTask" 
             min-width="400"
+            max-width="600"
           >
              <v-card-title class="text-center">
               {{doneExperienceItems[currentItem].name}}
