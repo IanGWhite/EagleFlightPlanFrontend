@@ -2,6 +2,8 @@
 import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import Utils from "../config/utils.js";
+import pointLogServices from '../services/pointLogServices.js';
+import shopItemServices from '../services/shopItemServices.js';
 
 const router = useRouter();
 const user = ref({});
@@ -27,11 +29,10 @@ const pointLog = ref({
 });
 const rules = ref(
   {required: value => !!value || 'Field is required', required1: value => value != 0 || 'Cannot be 0 points'},
-  
 )
 
 const setInputValues = (shopIndex) =>{
-  console.log(pointLog.value.date)
+  //console.log("Set input values: ",pointLog.value.date)
   if(shopIndex == null)
 {
   pointLog.value.name = "";
@@ -39,13 +40,38 @@ const setInputValues = (shopIndex) =>{
   return;
 }
   pointLog.value.pointDifference = -shopItems.value[shopIndex].points;
-  if(shopIndex == 0)
-    pointLog.value.name = "";
-  else
-    pointLog.value.name = "Shop-" + shopItems.value[shopIndex].name;
+  // if(shopIndex == 0)
+  //   pointLog.value.name = "";
+  // else
+  pointLog.value.name = "Shop-" + shopItems.value[shopIndex].name;
 }
 
+// BACKEND FUNCTIONS
+onMounted(() => {
+  user.value = Utils.getStore('user')
+  //console.log(user.value)
+  fetchShopItems()
+})
 
+const fetchShopItems = () => {
+  var count = 0;
+  shopItemServices.getAllShopItems()
+    .then((response) => {
+      shopItems.value = response.data.map((shopItem) => ({
+        name: shopItem.name,
+        points: shopItem.points + "",
+        description: shopItem.description,
+        index: count++,
+      })); // Assuming the backend returns an array of links
+      //shopItems.value = response.data;
+      //shopItems.value[count-1] = { name: "Custom", points: "", description: "", index:0}
+      
+      console.log("Fetched shop items:", shopItems);
+    })
+    .catch((error) => {
+      console.error("Error fetching shop items:", error);
+    });
+};
 // delete any unused functions
 // im leaving these here for reference
 /* const getEagleTaskNames = () => {
