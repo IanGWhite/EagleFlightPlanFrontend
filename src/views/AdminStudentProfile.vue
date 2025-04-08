@@ -44,8 +44,8 @@ const allStudentEagleTasks = ref(
   [{ name: "Make a resume", points: "30", description: "blah blah blah description", semesterFromGrad: 8 },
   { name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", semesterFromGrad: 8 },
   { name: "This is a task", points: "40", description: "Task 3 desc. this is describing", semesterFromGrad: 7 },
-  { name: "Task tuah", points: "70", description: "Task 4 desc. this is describing", semesterFromGrad: 7 },
-  { name: "Task tuah 2", points: "70", description: "Task 4 desc. this is describing", semesterFromGrad: 7 },
+  { name: "Test Task", points: "70", description: "Task 4 desc. this is describing", semesterFromGrad: 7 },
+  { name: "Test Task 2", points: "70", description: "Task 4 desc. this is describing", semesterFromGrad: 7 },
 ]);
 
 //experiences
@@ -62,7 +62,7 @@ const currentStudentEagleExperiences = ref(
 const allStudentEagleExperiences = ref(
   [{ name: "Go to career fair", points: "30", description: "blah blah blah description", reflectionReq:false, semesterFromGrad: 8},
   { name: "Go to Job whatever", points: "30", description: "Go to a job whatever to experience jobs or whatever", reflectionReq:false, semesterFromGrad: 8},
-  { name: "Experience ego death", points: "100", description: "Go to a job whatever to death jobs or whatever", reflectionReq:false, semesterFromGrad: 6},
+  { name: "Job Time", points: "100", description: "Go to a job whatever to death jobs or whatever", reflectionReq:false, semesterFromGrad: 6},
 ]);
 
 
