@@ -25,6 +25,8 @@ const headers = [
   { title: "", key: "view", sortable: false },
 ];
 
+const goToStudent = (stId) => router.push({ name: 'AdminStudentProfile', params: { id: stId } });
+
 const getStudents = async () => {
   try {
     const response = await studentServices.getAllStudents();
@@ -34,6 +36,7 @@ const getStudents = async () => {
     studentList.value = response.data.map((student) => ({
       StudentName: `${student.fName} ${student.lName}`,
       studentIdNo: student.studentIdNo,
+      id: student.id,
       GraduationDate: "", // Initially empty, will be updated later
       GraduationDateID: student.estimatedGradSemester,
     }));
@@ -223,7 +226,7 @@ onMounted(async () => {
                 class="alt-btn"
                 rounded="0"
                 append-icon="mdi-arrow-right"
-                @click="dialog = true; currentItemObj = item"
+                @click="goToStudent(item.id)"
               >
                 View
               </v-btn>
