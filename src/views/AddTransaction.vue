@@ -4,9 +4,13 @@ import { ref, onMounted } from 'vue';
 import Utils from "../config/utils.js";
 import pointLogServices from '../services/pointLogServices.js';
 import shopItemServices from '../services/shopItemServices.js';
+import studentServices from '../services/studentServices.js';
 
 const router = useRouter();
 const user = ref({});
+
+const student =ref({});
+const studentId = ref({});
 
 // you have to put the index and have the first one be custom with nothing in it. I can't get it to work otherwise
 const shopItems = ref(
@@ -49,6 +53,8 @@ const setInputValues = (shopIndex) =>{
 // BACKEND FUNCTIONS
 onMounted(() => {
   user.value = Utils.getStore('user')
+  studentId.value = route.params.id;
+  fetchStudent(studentId);
   //console.log(user.value)
   fetchShopItems()
 })
@@ -62,16 +68,25 @@ const fetchShopItems = () => {
         points: shopItem.points + "",
         description: shopItem.description,
         index: count++,
-      })); // Assuming the backend returns an array of links
-      //shopItems.value = response.data;
-      //shopItems.value[count-1] = { name: "Custom", points: "", description: "", index:0}
-      
+      })); 
       console.log("Fetched shop items:", shopItems);
     })
     .catch((error) => {
       console.error("Error fetching shop items:", error);
     });
 };
+const fetchStudent = (id) => {
+  studentServices.getStudentForUser(id)
+    .then((response) => {
+      student.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched student:", student.value);
+    })
+    .catch((error) => {
+      console.error("Error fetching student:", error);
+    });
+    
+};
+
 // delete any unused functions
 // im leaving these here for reference
 /* const getEagleTaskNames = () => {
