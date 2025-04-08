@@ -15,7 +15,7 @@ const user = ref({});
 const tab = ref('option-1');
 
 const studentMajor = ref([]);
-const studentmajorId = ref({});
+const studentmajorIdNo = ref({});
 const semesters = ref(['Fall 2025', 'Spring 2026', 'Fall 2026', 'Spring 2026', 'Fall 2027', 'Spring 2027']);
 
 const studentStrengths = ref([{ strength: 'Foo' }, { strength: 'two' }, { strength: 'three' }, { strength: 'for' }, { strength: 'fiv' }]);
@@ -60,22 +60,19 @@ const getPointLog = async () => {
   }
 };
 
-const getStudentMajor =  () => {
+const getStudentMajor =  async () => {
       try {
-        const response =  studentMajorsServices.getStudentMajor(user.value.studentId);
-        console.log(response.data);
-        studentmajorId.value = response.data;
-        console.log("hello");
-        console.log("major Id " + studentmajorId.studentMajorId);
-        const reply = majorsServices.getMajor(response.studentmajorId);
+        const response =  await studentMajorsServices.getStudentMajor(user.value.studentId);
+        studentmajorIdNo.value = response.data[0];
+        console.log("major Id " + studentmajorIdNo.value.studentMajorId);
+        const reply = await majorsServices.getMajor(studentmajorIdNo.value.studentMajorId);
         studentMajor.value = reply.data;
         console.log("major:");
-        console.log(studentMajor.name);
+        console.log(studentMajor.value.name);
       } catch (error) {
         console.error('Failed to retrieve major data:');
       }
     };
-
 
 onMounted(() => {
   user.value = Utils.getStore('user')
