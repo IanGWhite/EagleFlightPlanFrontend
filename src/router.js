@@ -31,6 +31,7 @@ import viewAllStudents from "./views/viewAllStudents.vue";
 import AdminStudentProfile from "./views/AdminStudentProfile.vue";
 import AddEvent from "./views/AddEvent.vue";
 import AddTransaction from "./views/AddTransaction.vue";
+import AddEagleExperience from "./views/AddEagleExperience.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -199,6 +200,12 @@ const router = createRouter({
       path: "/AddTransaction/:id",
       name: "AddTransaction",
       component: AddTransaction,
+      props: true,
+    },
+    {
+      path: "/AddEagleExperience",
+      name: "AddEagleExperience",
+      component: AddEagleExperience,
       props: true,
     },
   ],

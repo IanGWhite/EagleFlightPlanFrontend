@@ -1,6 +1,7 @@
 <script setup>
 import { ref,onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
+import pointLogServices from "../services/pointLogServices.js";
 import Utils from "../config/utils.js";
 
 const router = useRouter();
@@ -8,23 +9,12 @@ const router = useRouter();
 const route = useRoute();
 const user = ref({});
 
+const studentId = ref({});
 const tab = ref('option-1');
 
 const majors = ref(['Computer Science', 'Art', 'English']);
 const studentStrengths = ref([{ strength: 'One' }, { strength: 'Two' }, { strength: 'three' }, { strength: 'four' }, { strength: 'five' }]);
-const pointLog = ref([{
-  type: 'Badge',
-  approvedBy: 'David North',
-  pointDifference: 10,
-  date: '10-12-25',
-},
-{
-  type: 'Shop',
-  approvedBy: 'Admin name',
-  pointDifference: -20,
-  date: '10-12-25',
-},
-]);
+const pointLogList = ref([]);
 
 
 
@@ -97,13 +87,53 @@ const headers = ref([
 const message = ref("test");
 
 
+// * * * P O I N T L O G * * *
+//headers for the point Log list table
+
+const pointLogHeaders = [
+  { title: "Type", key: "name", align: "start", sortable: false },
+  { title: "pointDifference", key: "pointDifference", sortable: false },
+  { title: "Appoved By:", key: "approvedBy"},
+  { title: "Date", key: "date"},
+];
+
+const getPointLog = async () => {
+  try {
+    const response = await pointLogServices.getAllPointLogs(studentId.value);
+    
+    if (response && response.data) {
+      pointLogList.value = response.data;
+
+      pointLogList.value.forEach(log => {
+        if (log.date) {
+          log.date = new Date(log.date).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+          });
+        } else {
+          log.date = "Unknown";
+        }
+      });
+
+      console.log("Point log gotten successfully:", pointLogList.value);
+    } else {
+      console.error("Invalid response structure:", response);
+    }
+  } catch (e) {
+    message.value = "An error occurred: " + e.message;
+    console.error("Error fetching point logs:", e);
+  }
+};
 
 onMounted(() => {
-  
+  studentId.value = route.params.id;
+  console.log(studentId.value);
+  getPointLog();
 })
 
 const savePermissions = () => {
- 
+  
 };
 
 const saveStudent = () => {
@@ -254,10 +284,11 @@ const loadCurrentTasks = (semester) => {
               <v-btn @click="" rounded="0" class="alt-btn">New Transaction</v-btn>
             </v-col>
           </v-row>
-          
-
-          <v-data-table :items="pointLog"></v-data-table>
+          <v-data-table :headers="pointLogHeaders"
+           :items="pointLogList"
+            :filter-keys="['Date']"></v-data-table>
         </v-container>
+
       </v-tabs-window-item>
       <!--        FLIGHT PLAN         -->
       <v-tabs-window-item value="option-4">
