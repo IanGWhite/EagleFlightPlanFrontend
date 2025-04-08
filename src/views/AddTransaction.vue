@@ -1,24 +1,19 @@
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import Utils from "../config/utils.js";
 import pointLogServices from '../services/pointLogServices.js';
 import shopItemServices from '../services/shopItemServices.js';
 import studentServices from '../services/studentServices.js';
 
-const router = useRouter();
+const route = useRoute();
 const user = ref({});
 
-const student =ref({});
+const student =ref({ fName:"", lName:"" });
 const studentId = ref({});
 
-// you have to put the index and have the first one be custom with nothing in it. I can't get it to work otherwise
 const shopItems = ref(
   [{ name: "Custom", points: "", description: "", index:0},
-  { name: "White Dress Shirt", points: "100", index:1},
-  { name: "Light Blue Dress Shirt", points: "130", index:2},
-  { name: "Black Tie", points: "50", index:3},
-  { name: "Dumb Dress Shirt", points: "110", index:4},
   ]);
 const selectedShopItem = ref(shopItems[0]);
 
@@ -52,9 +47,9 @@ const setInputValues = (shopIndex) =>{
 
 // BACKEND FUNCTIONS
 onMounted(() => {
-  user.value = Utils.getStore('user')
+  user.value = Utils.getStore('user');
   studentId.value = route.params.id;
-  fetchStudent(studentId);
+  fetchStudent(studentId.value);
   //console.log(user.value)
   fetchShopItems()
 })
@@ -76,15 +71,31 @@ const fetchShopItems = () => {
     });
 };
 const fetchStudent = (id) => {
+  console.log("studentId:", id)
   studentServices.getStudentForUser(id)
     .then((response) => {
-      student.value = response.data; // Assuming the backend returns an array of tasks
+      student.value = response.data[0]; // Assuming the backend returns an array of tasks
       console.log("Fetched student:", student.value);
     })
     .catch((error) => {
       console.error("Error fetching student:", error);
     });
     
+};
+const saveTransaction = () => {
+  pointLog.value.approvedBy = user.value.fName + " " + user.value.lName;
+  pointLog.value.studentId = parseInt(studentId.value);
+  //console.log("Student Id ", pointLog.value.studentId);
+
+  pointLogServices.createPointLog(pointLog.value)
+    .then(() => {
+      message.value = "Task saved successfully";
+      //router.push({ name: "AdminStudentProfile/", studentId.value }); // hypothetical route name for education list
+    })
+    .catch((e) => {
+      message.value =  "Please enter correct data for all fields";
+      console.log(e)
+    });
 };
 
 // delete any unused functions
@@ -174,7 +185,7 @@ onMounted(() => {
             <v-row justify="left">
               <v-col>
                 <v-form>
-                  <v-card-title class="text-center">Student Name</v-card-title>
+                  <v-card-title class="text-center">{{ student.fName }} {{ student.lName }}</v-card-title>
                   <v-autocomplete 
                     v-model="selectedShopItem"
                     style=" padding-left: 30%; padding-right: 30%;"
