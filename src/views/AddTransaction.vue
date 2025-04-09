@@ -1,5 +1,5 @@
 <script setup>
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import Utils from "../config/utils.js";
 import pointLogServices from '../services/pointLogServices.js';
@@ -7,9 +7,10 @@ import shopItemServices from '../services/shopItemServices.js';
 import studentServices from '../services/studentServices.js';
 
 const route = useRoute();
+const router = useRouter();
 const user = ref({});
 
-const student =ref({ fName:"", lName:"" });
+const student =ref({ fName:"", lName:"", points:0 });
 const studentId = ref({});
 
 const shopItems = ref(
@@ -85,17 +86,38 @@ const fetchStudent = (id) => {
 const saveTransaction = () => {
   pointLog.value.approvedBy = user.value.fName + " " + user.value.lName;
   pointLog.value.studentId = parseInt(studentId.value);
-  //console.log("Student Id ", pointLog.value.studentId);
 
-  pointLogServices.createPointLog(pointLog.value)
+  pointLogServices.createPointLog(studentId.value, pointLog.value)
     .then(() => {
-      message.value = "Task saved successfully";
+      
+      message.value = "Point Log saved successfully";
+      saveStudentPoints();
       //router.push({ name: "AdminStudentProfile/", studentId.value }); // hypothetical route name for education list
     })
     .catch((e) => {
       message.value =  "Please enter correct data for all fields";
       console.log(e)
     });
+
+  
+};
+
+const saveStudentPoints = () => {
+  student.value.points += pointLog.value.pointDifference;
+  studentServices.updateStudent(studentId.value, student.value)
+    .then(() => {
+      
+      message.value = "Student points saved successfully";
+      //router.push({ name: "AdminStudentProfile/", studentId.value }); // hypothetical route name for education list
+    })
+    .catch((e) => {
+      message.value =  "Student unable to save";
+      console.log(e)
+    });
+};
+
+const cancel = () => {
+  router.push({ name: 'AdminStudentProfile', params: { id: studentId.value } }); 
 };
 
 // delete any unused functions
