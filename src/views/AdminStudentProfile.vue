@@ -192,7 +192,7 @@ const loadCurrentTasks = (semester) => {
 <template>
   <v-app>
     <v-container>
-      <p class="page-title">Student Name</p>
+      <p class="page-title">{{ student.fName }} {{ student.lName }}</p>
       <v-card>
         
       <v-tabs v-model="tab">

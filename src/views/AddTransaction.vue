@@ -65,34 +65,59 @@ const fetchShopItems = () => {
         description: shopItem.description,
         index: count++,
       })); 
-      console.log("Fetched shop items:", shopItems);
+      // console.log("Fetched shop items:", shopItems);
     })
     .catch((error) => {
       console.error("Error fetching shop items:", error);
     });
 };
 const fetchStudent = (id) => {
-  console.log("studentId:", id)
+  // console.log("studentId:", id)
   studentServices.getStudentForUser(id)
     .then((response) => {
       student.value = response.data[0]; // Assuming the backend returns an array of tasks
-      console.log("Fetched student:", student.value);
+      // console.log("Fetched student:", student.value);
     })
     .catch((error) => {
       console.error("Error fetching student:", error);
     });
     
 };
+
+const validateTransaction = async (event) =>{
+  var results = await event;
+  if(results.valid)
+  {
+    saveTransaction();
+  }
+};
+
 const saveTransaction = () => {
   pointLog.value.approvedBy = user.value.fName + " " + user.value.lName;
   pointLog.value.studentId = parseInt(studentId.value);
 
   pointLogServices.createPointLog(studentId.value, pointLog.value)
     .then(() => {
-      
       message.value = "Point Log saved successfully";
-      saveStudentPoints();
-      //router.push({ name: "AdminStudentProfile/", studentId.value }); // hypothetical route name for education list
+      
+      //student.value.points += pointLog.value.pointDifference;
+      // student.value.points = 0;
+      calculatePoints();
+      console.log("Student points: ", student.value.points)
+        studentServices.updateStudent(studentId.value, student.value)
+          .then(() => {
+            message.value = "Student points saved successfully";
+            //router.push({ name: "AdminStudentProfile/", studentId.value }); // hypothetical route name for education list
+          })
+          .catch((e) => {
+            message.value =  "Student unable to save";
+            console.log(e);
+            return;
+          });
+
+
+
+      cancel()
     })
     .catch((e) => {
       message.value =  "Please enter correct data for all fields";
@@ -101,6 +126,17 @@ const saveTransaction = () => {
 
   
 };
+
+const calculatePoints =() => {
+  var points1 = student.value.points;
+  var points2 = pointLog.value.pointDifference;
+  var answer = +points1 + +points2;
+  var pointString = "points1: " + points1;
+  pointString += "\n points2: " + points2;
+  pointString += "\n answer: " + answer;
+  // alert(pointString);
+  student.value.points = answer;
+}
 
 const saveStudentPoints = () => {
   student.value.points += pointLog.value.pointDifference;
@@ -206,7 +242,7 @@ onMounted(() => {
             <p color="red">{{ message }}</p>
             <v-row justify="left">
               <v-col>
-                <v-form>
+                <v-form validate-on="submit" @submit.prevent="validateTransaction">
                   <v-card-title class="text-center">{{ student.fName }} {{ student.lName }}</v-card-title>
                   <v-autocomplete 
                     v-model="selectedShopItem"
@@ -242,7 +278,7 @@ onMounted(() => {
 
                   <div class="buttons">
                     <v-btn color="error" @click="cancel">Cancel</v-btn>
-                    <v-btn color="red" @click="saveTransaction">confirm</v-btn>
+                    <v-btn color="red" type="submit" @click="">confirm</v-btn>
                   </div>
                 </v-form>
               </v-col>
