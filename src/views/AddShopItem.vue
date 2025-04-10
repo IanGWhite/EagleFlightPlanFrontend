@@ -24,17 +24,33 @@ const shopItem = ref({
 });
 const message = ref("");
 const rules = ref(
-  {required: value => !!value || 'Field is required', notZero: value => value > 0 || 'Cannot be 0 or less points'},
+  {required: value => !!value || 'Field is required', notZero: value => value > 0 || 'Cannot be 0 or less points'
+  },
 )
 
+const submit = async (event) => {
+  var results = await event;
+  console.log(results)
+  if(results.valid) {
+    saveShopItem();
+    // console.log("Yay submit")
+  }
+  else
+    console.log("submit failed")
+};
+
 const saveShopItem = () => {
-  shopItemServices.createShopItem(shopItem)
+  // shopItem.value.imageLink = imageUrl.value;
+  shopItem.value.imageLink = "src/assets/shop/black-dress-tie.png";
+  // console.log("imageURL in save: ", imageUrl.value)
+  shopItemServices.createShopItem(shopItem.value)
     .then(() => {
       message.value = "Experience saved successfully";
       cancel();
     })
     .catch((e) => {
       message.value = "An error occurred";
+      console.log(e);
     });
 };
 
@@ -49,11 +65,7 @@ onMounted(() => {
 });
 
 
-const submit = async (event) => {
-  var results = await event;
-  if(results.isValid) {saveShopItem()}
 
-}
 // const fetchShopItems = () => {
 //   shopItemServices.getAllShopItems()
 //     .then((response) => {
@@ -130,6 +142,7 @@ const onFileChange = (file)  => {
                   <v-sheet class="text-center rounded">
                     <v-img style="border: 2px; border-color: black;"
                       :src="imageUrl"
+                      lazy-src="src/assets/shop/image_placeholder.jpg"
                       aspect-ratio="1"
                       class="text-center ma-3 rounded"
                       height="250"
@@ -149,6 +162,7 @@ const onFileChange = (file)  => {
                       variant="solo"
                       accept="image/png, image/jpeg"
                       required
+                      :rules="[rules.required]"
                     >
                   </v-file-input>
                   </v-card-text>
