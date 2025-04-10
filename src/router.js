@@ -32,6 +32,7 @@ import AdminStudentProfile from "./views/AdminStudentProfile.vue";
 import AddEvent from "./views/AddEvent.vue";
 import AddTransaction from "./views/AddTransaction.vue";
 import AddEagleExperience from "./views/AddEagleExperience.vue";
+import AddShopItem from "./views/AddShopItem.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -172,6 +173,11 @@ const router = createRouter({
       name: "StudentShop",
       component: StudentShop,
       props: true,
+    },
+    {
+      path: "/AddShopItem",
+      name: "AddShopItem",
+      component: AddShopItem,
     },
     {
       path: "/Calendar",
