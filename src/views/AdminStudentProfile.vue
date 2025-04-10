@@ -16,13 +16,17 @@ const route = useRoute();
 const user = ref({});
 
 const studentId = ref({});
+const student = ref({});
 const tab = ref('option-1');
 
 const majors = ref([]);
 const studentmajorIdNo = ref({});
 
+const gradSemesterIdNo = ref({});
+const gradSemesters = ref([]);
 
-const studentStrengths = ref([{ strength: 'One' }, { strength: 'Two' }, { strength: 'three' }, { strength: 'four' }, { strength: 'five' }]);
+const studentStrengths = ref([]);
+const strengths = ref([]);
 const pointLogList = ref([]);
 
 
@@ -139,8 +143,8 @@ const getPointLog = async () => {
 const getStudentMajor =  async () => {
   try {
     const response =  await studentMajorsServices.getStudentMajor(studentId.value);
-    studentmajorIdNo.value = response.data[0].studentMajorId;
-    console.log("major Id " + studentmajorIdNo.value);
+    studentmajorIdNo.value = response.data[0];
+    console.log("major Id " + studentmajorIdNo.value.studentMajorId);
   } catch (error) {
     console.error('Failed to retrieve major data:');
   }
@@ -150,11 +154,89 @@ const getMajors = async () => {
   try {
     const response =  await majorsServices.getAllMajors();
     majors.value = response.data;
-    console.log("major Id " + majors.value);
+    console.log("major list " + majors.value);
   } catch (error) {
     console.error('Failed to retrieve major data:');
   }
 }
+
+const getGradSemester =  async () => {
+  try {
+    const response = await studentServices.getStudent(studentId.value);
+    //console.log(response.data);
+    student.value = response.data;
+    console.log("Student info: ");
+    console.log(student.value);
+    const reply = await semesterServices.getSemester(student.value.estimatedGradSemester)
+    gradSemesterIdNo.value = reply.data.id;
+    console.log("gradSemester date " + gradSemesterIdNo.value);
+  } catch (error) {
+    console.error('Failed to retrieve grad semster date data:');
+  }
+};
+
+const getSemesters = async () => {
+  try {
+    const reply = await semesterServices.getAllSemesters();
+    gradSemesters.value = reply.data;
+    console.log("Semester data:", gradSemesters.value);
+
+    gradSemesters.value = gradSemesters.value.map(semes => {
+      const formattedDate = new Date(semes.dateEnd).toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+
+      return {
+        ...semes,
+        dateEnd: formattedDate, // update the dateEnd field
+      };
+    });
+  } catch (error) {
+    console.error('Failed to retrieve semesters data:', error);
+  }
+};
+
+const getStudentStrenghs =  async () => {
+  try {
+    const response =  await studentStrengthsServices.getAllStudentStrengthsForStudent(studentId.value);
+    studentStrengths.value = response.data.map((strength) => ({
+      studentId: strength.studentId,
+      strengthId: strength.strengthId,
+      id: strength.id,
+      name: "", // Initially empty, will be updated later
+    }));
+    const reply = await strengthsServices.getAllStrengths();
+    strengths.value = reply.data;
+
+    studentStrengths.value = studentStrengths.value.map((studentStrength) => {
+      console.log(`Checking strength slot for studentStrength ID: ${studentStrength.strengthId} with Strength ID:`, studentStrength.strengthId);
+
+      const matchingStrength = strengths.value.find(
+        (strength) => Number(strength.id) === Number(studentStrength.strengthId)
+      );
+
+      if (matchingStrength) {
+        console.log(`Match found! Strength ID: ${matchingStrength.id}, Name: ${matchingStrength.name}`);
+
+        // Add strength name to the studentStrength object
+        studentStrength.name = matchingStrength.name;
+      } else {
+        console.log(`No match found for strength ID: ${studentStrength.strengthId}`);
+        studentStrength.name = "Unknown"; // If no match, set to "Unknown"
+      }
+
+      return studentStrength; // Ensure the object is returned with updated strengthName
+    });
+
+    console.log("student strengh info " + studentStrengths.value);
+  } catch (error) {
+    console.error('Failed to retrieve strength data:');
+  }
+};
+
+
 
 
 
@@ -164,14 +246,39 @@ onMounted(() => {
   getPointLog();
   getMajors();
   getStudentMajor();
+  getGradSemester();
+  getSemesters();
+  getStudentStrenghs();
 })
 
 const savePermissions = () => {
   
 };
 
-const saveStudent = () => {
- 
+const saveStudent = async () => {
+  try {
+    // Save Major
+    const majorPayload = {
+      majorId: studentmajorIdNo.value.studentMajorId,
+      studentMajorId: studentmajorIdNo.value.studentMajorId
+    };
+
+    console.log("Saving major:", majorPayload);
+    await studentMajorsServices.updateStudentMajor(studentId.value, studentmajorIdNo.value.id, majorPayload);
+
+    // Save Graduation Date
+    const gradDatePayload = {
+      estimatedGradSemester: gradSemesterIdNo.value.toString()
+    };
+
+    console.log("Saving graduation date:", gradDatePayload);
+    await studentServices.updateStudent(studentId.value, gradDatePayload);
+
+    alert("Major and Graduation Date saved successfully!");
+  } catch (error) {
+    console.error("Error saving data:", error);
+    alert("Failed to save major or graduation date.");
+  }
 };
 
 const loadCurrentTasks = (semester) => {
@@ -244,55 +351,84 @@ const loadCurrentTasks = (semester) => {
                   <v-col>
                     <!-- add v-models to autocomplete forms to attatch them to a student info ref-->
                     <v-sheet>
-                      <v-text-field 
-                      label="e-mail">
-                      </v-text-field>
-
-                      <v-text-field 
-                      label="Student id">
-                      </v-text-field>
-
-                      <v-autocomplete
-                        v-model="studentMajorId"
-                        label="Major"
-                        :items="studentMajor"
-                        item-text="name"         
-                        item-value="id"           
-                        return-object     
-                      ></v-autocomplete>
-
+                      <v-label>Student Id</v-label>
+                      <v-chip 
+                      class="pa-2"
+                      color="lightblue" 
+                      >
+                        {{ student.studentIdNo }} <!-- Display the student major text -->
+                      </v-chip>
                     </v-sheet>
                       
+                    <v-sheet>
+                      <v-label>Major</v-label> 
+                      <v-select 
+                        v-model="studentmajorIdNo.studentMajorId"
+                        :items="majors"
+                        item-title="name"
+                        item-value="id"
+                        label="Select Major"
+                        variant="solo"
+                        hide-details
+                        dense
+                        style="margin-bottom: 10px;"
+                      >
+                        <template #prepend-inner="{ item }">
+                          <!-- Only render item.name if item is defined -->
+                          {{ item ? item.name : '' }} 
+                        </template>
+                      </v-select>
+
+
+                    </v-sheet>
+
+                      
                       <v-sheet>
-                        <v-autocomplete 
-                        
-                          label="Estimated Grad Semester"
-                          :items=semesters
-                        ></v-autocomplete>
+                        <v-label>Graduation Date</v-label> 
+                        <v-select 
+                        :key="gradSemesterIdNo"
+                        v-model="gradSemesterIdNo"
+                        :items="gradSemesters"
+                        item-title="dateEnd"
+                        item-value="id"
+                        label="Select Semester"
+                        variant="solo"
+                        hide-details
+                        dense
+                        style="margin-bottom: 10px;"
+                      >
+                        <template #prepend-inner>
+                          {{ gradSemesters.dateEnd }}.
+                        </template>
+                      </v-select>
                       </v-sheet>
                   </v-col>
                   
                   <v-col>
                     <v-card>
                       <v-card-title>Top 5 Clifton Strengths</v-card-title>
-                      <v-text-field 
-                        v-for="(strength, index) in studentStrengths"
-                        :key="index"
-                        v-model="studentStrengths[index].strength"
-                        hide-details="auto"
-                        style="margin-bottom: 0%;"
-                        variant="solo"
-                      >
-                        {{ index + 1 }}. 
-                      </v-text-field>
+                      <v-card-text>
+                        <v-row dense>
+                          <v-col
+                            v-for="(strength, index) in studentStrengths"
+                            :key="index"
+                            cols="12"
+                          >
+                            <v-label class="text-h6 font-weight-bold">
+                              {{ index + 1 }}. {{ strength.name }}
+                            </v-label>
+                          </v-col>
+                        </v-row>
+                      </v-card-text>
                     </v-card>
+
                   </v-col>
 
 
                     
                   </v-row>
                     <div class="buttons">
-                      <v-btn color="red" @click="saveStudent(route.params.id)">Save</v-btn> <!-- EDIT BUTTON -->
+                      <v-btn color="red" @click="saveStudent()">Save</v-btn> <!-- EDIT BUTTON -->
                     </div>
           
               
