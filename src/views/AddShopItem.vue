@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import ExperienceServices from "../services/experienceServices.js"; // hypothetical service for managing experience data
 import MenuBar from "../components/MenuBar.vue";
 import Utils from "../config/utils.js";
+import shopItemServices from "../services/shopItemServices.js";
 
 const router = useRouter();
 const user = ref({});
