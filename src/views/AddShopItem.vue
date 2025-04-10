@@ -8,6 +8,9 @@ import shopItemServices from "../services/shopItemServices.js";
 const router = useRouter();
 const user = ref({});
 
+var image= undefined;
+var imageUrl= "";
+
 const shopItems = ref(
   [{ name: "", points: 0, description: "", imageLink:""},
   ]);
@@ -19,17 +22,9 @@ const shopItem = ref({
   imageLink:""
 });
 const message = ref("");
-
-const saveShopItem5 = () => {
-  ExperienceServices.createExperience(user.value.studentId,experience.value)
-    .then(() => {
-      message.value = "Experience saved successfully";
-      router.push({ name: "StudentInfo" }); // hypothetical route name for experience list
-    })
-    .catch((e) => {
-      message.value = "An error occurred";
-    });
-};
+const rules = ref(
+  {required: value => !!value || 'Field is required', notZero: value => value > 0 || 'Cannot be 0 or less points'},
+)
 
 const saveShopItem = () => {
   shopItemServices.createShopItem(shopItem)
@@ -50,8 +45,14 @@ onMounted(() => {
   user.value = Utils.getStore('user')
   // fetchShopItems();
   console.log(user.value)
-})
+});
 
+
+const submit = async (event) => {
+  var results = await event;
+  if(results.isValid) {saveShopItem()}
+
+}
 // const fetchShopItems = () => {
 //   shopItemServices.getAllShopItems()
 //     .then((response) => {
@@ -61,58 +62,98 @@ onMounted(() => {
 //     .catch((error) => {
 //       console.error("Error fetching shop items:", error);
 //     });
-    
 // };
+
+const createImage = (file) => {
+  const reader = new FileReader();
+
+  reader.onload = e => {
+    imageUrl = e.target.result;
+  };
+  reader.readAsDataURL(file);
+};
+
+const onFileChange = async (file)  => {
+  returnFile = await file;
+  console.log("file: ", returnFile);
+  if (!returnFile) {
+    return;
+  }
+  createImage(returnFile);
+};
 </script>
 
 <template>
   <v-app>
-    <v-container>
-      <v-card>
+    <v-container width="70%" fluid style="background: lightgrey; height:100%;">
         <v-card-title class="text-center">
           Add Shop Item
         </v-card-title>
         <v-card-text>
           <p>{{ message }}</p>
-          <v-form>
-            <v-text-field
-              v-model="shopItem.name"
-              label="Item Name"
-              required
-            ></v-text-field>
+          <v-form @submit.prevent="submit" validate-on="submit lazy">
+            <v-row>
+              <v-col>
+                <v-text-field
+                  v-model="shopItem.name"
+                  label="Name"
+                  required
+                  :rules="[rules.required]"
+                  bg-color="white"
+                ></v-text-field>
 
-            <v-text-field
-              v-model="shopItem.points"
-              label="Points"
-              type="number"
-              required
-            ></v-text-field>
+                <v-text-field
+                  v-model="shopItem.points"
+                  label="Points"
+                  type="number"
+                  required
+                  :rules="[rules.notZero]"
+                  bg-color="white"
+                ></v-text-field>
+                
+                <v-textarea
+                  v-model="shopItem.description"
+                  label="Description"
+                  rows="4"
+                  required
+                  :rules="[rules.required]"
+                  bg-color="white"
+                ></v-textarea>
+              </v-col>
 
-            <!-- <v-text-field
-              v-model="shopItem.state"
-              label="State"
-              required
-            ></v-text-field> -->
+              <v-col>
+                <v-card>
+                  <v-sheet class="text-center rounded">
+                    <v-img style="border: 2px; border-color: black;"
+                      :src="imageUrl"
+                      lazy-src="src/assets/shop/image_placeholder.jpg"
+                      aspect-ratio="1"
+                      class="text-center ma-3 rounded"
+                      height="250"
+                    ></v-img>
+                  </v-sheet>
+                  
+                  <v-card-subtitle>
+                    hello
+                  </v-card-subtitle>
 
-            <div class="row">
-              <!-- <v-text-field
-                v-model="shopItem.startDate"
-                label="Start Month"
-                class="mr-2"
-                required
-              ></v-text-field>
-              <v-text-field
-                v-model="shopItem.endDate"
-                label="End Month"
-                required
-              ></v-text-field> -->
-            </div>
-
-            <v-textarea
-              v-model="shopItem.description"
-              label="Description"
-              rows="4"
-            ></v-textarea>
+                  <v-card-text>
+                    <v-file-input @change="onFileChange"
+                      v-model="image"
+                      label="Upload Image"
+                      prepend-icon=""
+                      append-inner-icon="mdi-camera"
+                      variant="solo"
+                      accept="image/png, image/jpeg"
+                      
+                    >
+                  </v-file-input>
+                  </v-card-text>
+                </v-card>
+              </v-col>
+              
+            </v-row>
+            
 
             <div class="buttons">
               <v-btn color="error" @click="cancel">Cancel</v-btn>
@@ -120,7 +161,6 @@ onMounted(() => {
             </div>
           </v-form>
         </v-card-text>
-      </v-card>
     </v-container>
   </v-app>
 </template>
@@ -140,5 +180,9 @@ onMounted(() => {
   display: flex;
   justify-content: center;
   gap: 10px;
+}
+.v-field__overlay{
+  opacity: 1;
+  background-color: white;
 }
 </style>
