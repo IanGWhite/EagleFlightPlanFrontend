@@ -8,8 +8,9 @@ import shopItemServices from "../services/shopItemServices.js";
 const router = useRouter();
 const user = ref({});
 
-var image= undefined;
-var imageUrl= "";
+const image = ref(undefined);
+const imageUrl= ref("");
+// var imageUrl = "";
 
 const shopItems = ref(
   [{ name: "", points: 0, description: "", imageLink:""},
@@ -68,18 +69,21 @@ const createImage = (file) => {
   const reader = new FileReader();
 
   reader.onload = e => {
-    imageUrl = e.target.result;
+    imageUrl.value = e.target.result;
+    // imageUrl = e.target.result;
   };
   reader.readAsDataURL(file);
+  console.log("imageUrl: ", imageUrl)
 };
 
-const onFileChange = async (file)  => {
-  returnFile = await file;
-  console.log("file: ", returnFile);
-  if (!returnFile) {
+const onFileChange = (file)  => {
+  //var returnFile = await file;
+  //console.log("myfile: ", returnFile);
+  //console.log("file: ", file);
+  if (!file) {
     return;
   }
-  createImage(returnFile);
+  createImage(file);
 };
 </script>
 
@@ -126,26 +130,25 @@ const onFileChange = async (file)  => {
                   <v-sheet class="text-center rounded">
                     <v-img style="border: 2px; border-color: black;"
                       :src="imageUrl"
-                      lazy-src="src/assets/shop/image_placeholder.jpg"
                       aspect-ratio="1"
                       class="text-center ma-3 rounded"
                       height="250"
                     ></v-img>
                   </v-sheet>
-                  
                   <v-card-subtitle>
-                    hello
+                    <!-- {{imageUrl}} -->
                   </v-card-subtitle>
 
                   <v-card-text>
-                    <v-file-input @change="onFileChange"
+                    <v-file-input 
+                      @update:model-value="onFileChange"
                       v-model="image"
                       label="Upload Image"
                       prepend-icon=""
                       append-inner-icon="mdi-camera"
                       variant="solo"
                       accept="image/png, image/jpeg"
-                      
+                      required
                     >
                   </v-file-input>
                   </v-card-text>
