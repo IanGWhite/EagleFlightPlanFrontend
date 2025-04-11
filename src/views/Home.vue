@@ -1,10 +1,15 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import MenuBar from "../components/MenuBar.vue";
 import { useDate } from 'vuetify';
+import eagleTaskServices from '../services/eagleTaskServices';
+import Utils from "../config/utils.js";
+import categoryServices from '../services/categoryServices';
+import eagleExperienceServices from '../services/eagleExperienceServices.js';
 
 const router = useRouter();
+const user = ref({});
 
 const goToResume = () => {
   router.push({ name: 'ResumeListStudents' });
@@ -13,6 +18,11 @@ const goToResume = () => {
 const goToInfo = () => {
   router.push({ name: 'StudentInfo' });
 };
+
+const otherTasks = ref([]);
+const otherExperiences = ref([]);
+const categories = ref([]);
+
 const dialog = ref(false);
 const currentItem = ref(0);
 const dialogIsTask = ref(false);
@@ -42,6 +52,78 @@ const todoTaskItems = ref(
   { type: "Experience", name: "Career Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:true, category:"Career Fair", reflection:"", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
   { type: "Experience", name: "Career Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:true, category:"", reflection:"fhjskhfjsdk", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
   ]);
+
+
+  const convertTasks = () => {
+    todoTaskItems.value = otherTasks.value.map((n) => {
+      console.log("categoryId:", n.categoryId);
+      var myCategory = ''; //default category
+      for(let i = 0; i < categories.value.length; i++){
+        if(categories.value[i].id == n.categoryId){
+          myCategory = categories.value[i].name;
+        }
+      }
+      console.log("category:", myCategory);
+      return{
+      name: n.name,
+      description: n.description,
+      points: n.points,
+      rationale: n.rationale,
+      category: myCategory,
+      canUpload: n.canUpload, 
+      hyperLink: n.hyperLink, 
+      reflectionReq: n.reflectionReq,
+    }
+    });
+    console.log("events list: ", todoTaskItems.value);
+  }
+    
+
+
+  const fetchCategories = () => {
+  categoryServices.getAllCategories()
+    .then((response) => {
+      categories.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched categories:", categories.value);
+      fetchEagleTasks();
+      fetchEagleExperiences();
+    })
+    .catch((error) => {
+      console.error("Error fetching categories:", error);
+    });
+    
+  };
+
+  const fetchEagleExperiences = () => {
+  eagleExperienceServices.getAllEagleExperiences()
+    .then((response) => {
+      otherExperiences.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched experiences:", otherExperiences.value);
+    })
+    .catch((error) => {
+      console.error("Error fetching tasks:", error);
+    });
+    
+  };
+
+  const fetchEagleTasks = () => {
+  eagleTaskServices.getAllEagleTasks()
+    .then((response) => {
+      otherTasks.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched tasks:", otherTasks.value);
+      convertTasks();
+    })
+    .catch((error) => {
+      console.error("Error fetching tasks:", error);
+    });
+    
+  };
+
+onMounted(() => {
+  user.value = Utils.getStore('user')
+  console.log(user.value)
+  fetchCategories();
+})
 </script>
 
 <template>
