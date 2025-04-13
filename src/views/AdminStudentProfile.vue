@@ -428,7 +428,7 @@ const loadCurrentTasks = (semester) => {
                         style="margin-bottom: 10px;"
                       >
                         <template #prepend-inner>
-                          {{ gradSemesters.dateEnd }}.
+                          {{ gradSemesters.dateEnd }}
                         </template>
                       </v-select>
                       </v-sheet>
