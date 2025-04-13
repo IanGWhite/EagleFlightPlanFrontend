@@ -11,6 +11,7 @@ import studentMajorsServices from "../services/studentMajorsServices.js";
 import userRoleServices from "../services/userRoleServices.js";
 import roleServices from "../services/roleServices.js";
 import Utils from "../config/utils.js";
+import userServices from "../services/userServices.js";
 
 const router = useRouter();
 
@@ -20,6 +21,11 @@ const user = ref({});
 const studentId = ref({});
 const student = ref({});
 const tab = ref('option-1');
+
+const userRole = ref({});
+const userRoleId = ref({});
+
+const roles = ref([]);
 
 const majors = ref([]);
 const studentmajorIdNo = ref({});
@@ -241,48 +247,79 @@ const getStudentStrenghs =  async () => {
 
 const getUserRole = async () => {
   try {
-    const response = await userRoleServices.getUserRole(studentId.value);
+    const comeback = await userServices.getUser(student.value.userId);
+    user.value = comeback.data;
+    const response = await userRoleServices.getUserRole(student.value.userId);
+    console.log("user Id:"+ student.value.userId);
+    userRoleId.value = response.data[0];
+    console.log("RoleId:"+userRoleId.value.id);
+    const reply = await roleServices.getRole(userRoleId.value.roleId);
+    console.log("role: "+reply.data.id);
+    userRole.value = reply.data;
     
-    if (response && response.data) {
-      pointLogList.value = response.data;
-
-      pointLogList.value.forEach(log => {
-        if (log.date) {
-          log.date = new Date(log.date).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit"
-          });
-        } else {
-          log.date = "Unknown";
-        }
-      });
-
-      console.log("Point log gotten successfully:", pointLogList.value);
-    } else {
-      console.error("Invalid response structure:", response);
-    }
   } catch (e) {
     message.value = "An error occurred: " + e.message;
-    console.error("Error fetching point logs:", e);
+    console.error("Error fetching userRole:", e);
+  }
+};
+
+const getRoles = async () => {
+  try {
+    const response = await roleServices.getAllRoles();
+    console.log("roles:"+ response.data);
+    roles.value = response.data;
+    console.log(roles.value[0]);
+  } catch (e) {
+    message.value = "An error occurred: " + e.message;
+    console.error("Error fetching Roles:", e);
   }
 };
 
 
-onMounted(() => {
+onMounted(async () => {
   studentId.value = route.params.id;
-  console.log(studentId.value);
-  getPointLog();
-  getMajors();
-  getStudentMajor();
-  getGradSemester();
-  getSemesters();
-  getStudentStrenghs();
-  getUserRole();
-})
+  console.log("Student ID:", studentId.value);
+
+  await getMajors();
+  await getStudentMajor();
+  await getSemesters();
+  await getGradSemester();
+  await getStudentStrenghs();
+  await getPointLog();
+  await getUserRole();
+  await getRoles();
+});
 
 const savePermissions = () => {
-  
+  try{ 
+  const userPayload = {
+    admin: user.value.admin 
+  };
+  userServices.updateUser(user.value.id, userPayload);
+  console.log("is admin.1: "+user.value.admin);
+  console.log("is admin.2: "+userPayload.admin);
+
+  // userRole saving AHHHHHHHH!!!!!!!!
+
+  const match = roles.value.find(role =>
+    role.canEditPoints === userRole.value.canEditPoints &&
+    role.canAddEvents === userRole.value.canAddEvents &&
+    role.canMarkAttendance === userRole.value.canMarkAttendance
+  );
+
+  const userRolePayload = {
+    roleId: match.id
+  };
+  console.log("Userid: " + user.value.id);
+  console.log("UserRoleId: "+ userRole.value.id);
+  console.log("RoleId: "+ match.id)
+
+  userRoleServices.updateUserRole(user.value.id,userRoleId.value.id,userRolePayload);
+
+  } catch (error) {
+    console.error("Error saving data:", error);
+    alert("Failed to save user/userRole date.");
+  }
 };
 
 const saveStudent = async () => {
@@ -646,10 +683,17 @@ const loadCurrentTasks = (semester) => {
       <v-tabs-window-item value="option-6">
         <v-sheet class="pa-5">
           <v-form class="pa-3">
-            <v-switch color="blue" label="Admin" persistent-hint="true" hint="Is the user an admin?"></v-switch>
-            <v-switch color="blue" label="Points" persistent-hint="true" hint="Ability to add or remove points from a student"></v-switch>
-            <v-switch color="blue" label="Events" persistent-hint="true" hint="Ability to add or remove event information"></v-switch>
-            <v-switch color="blue" label="Attendance" persistent-hint="true" hint="Ability to upload event attendance sheets"></v-switch>
+            <v-switch
+              v-model="user.admin"
+              color="blue"
+              label="Admin"
+              persistent-hint
+              hint="Is the user an admin?"
+            ></v-switch>
+   
+            <v-switch v-model="userRole.canEditPoints" color="blue" label="Points" persistent-hint="true" hint="Ability to add or remove points from a student"></v-switch>
+            <v-switch v-model="userRole.canAddEvents" color="blue" label="Events" persistent-hint="true" hint="Ability to add or remove event information"></v-switch>
+            <v-switch v-model="userRole.canMarkAttendance" color="blue" label="Attendance" persistent-hint="true" hint="Ability to upload event attendance sheets"></v-switch>
 
             <div class="buttons">
               <v-btn color="red" @click="savePermissions()">Save</v-btn> <!-- EDIT BUTTON -->
