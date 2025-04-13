@@ -2,6 +2,8 @@
 import { ref,onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import pointLogServices from "../services/pointLogServices.js";
+import userRoleServices from "../services/userRoleServices.js";
+import roleServices from "../services/roleServices.js";
 import Utils from "../config/utils.js";
 
 const router = useRouter();
@@ -126,10 +128,40 @@ const getPointLog = async () => {
   }
 };
 
+const getUserRole = async () => {
+  try {
+    const response = await userRoleServices.getUserRole(studentId.value);
+    
+    if (response && response.data) {
+      pointLogList.value = response.data;
+
+      pointLogList.value.forEach(log => {
+        if (log.date) {
+          log.date = new Date(log.date).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit"
+          });
+        } else {
+          log.date = "Unknown";
+        }
+      });
+
+      console.log("Point log gotten successfully:", pointLogList.value);
+    } else {
+      console.error("Invalid response structure:", response);
+    }
+  } catch (e) {
+    message.value = "An error occurred: " + e.message;
+    console.error("Error fetching point logs:", e);
+  }
+};
+
 onMounted(() => {
   studentId.value = route.params.id;
   console.log(studentId.value);
   getPointLog();
+  getUserRole();
 })
 
 const savePermissions = () => {
