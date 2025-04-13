@@ -7,6 +7,9 @@ export default {
   getStudentForUser(userId) {
     return apiClient.get(`/students/userStudent/${userId}`);
   },
+  getStudent(studentId){
+    return apiClient.get(`/students/${studentId}`);
+  },
   createStudent(userId, data) {
     return apiClient.post(`/students/${userId}`, data);
   },
