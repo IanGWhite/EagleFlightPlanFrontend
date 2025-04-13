@@ -4,6 +4,9 @@ export default {
   getAllSemesters() {
     return apiClient.get(`/semesters`);
   },
+  getSemester(id){
+    return apiClient.get(`/semesters/${id}`);
+  },
   createSemester(data) {
     return apiClient.post(`/semesters/`, data);
   },

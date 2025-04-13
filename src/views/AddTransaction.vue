@@ -73,9 +73,9 @@ const fetchShopItems = () => {
 };
 const fetchStudent = (id) => {
   // console.log("studentId:", id)
-  studentServices.getStudentForUser(id)
+  studentServices.getStudent(id)
     .then((response) => {
-      student.value = response.data[0]; // Assuming the backend returns an array of tasks
+      student.value = response.data;
       // console.log("Fetched student:", student.value);
     })
     .catch((error) => {
