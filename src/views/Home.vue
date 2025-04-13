@@ -4,6 +4,7 @@ import { ref, onMounted } from 'vue';
 import MenuBar from "../components/MenuBar.vue";
 import { useDate } from 'vuetify';
 import studentEagleTaskServices from '../services/studentEagleTaskServices';
+import studentEagleExperienceServices from '../services/studentEagleExperienceServices';
 import eagleTaskServices from '../services/eagleTaskServices';
 import Utils from "../config/utils.js";
 import categoryServices from '../services/categoryServices';
@@ -23,6 +24,8 @@ const goToInfo = () => {
 
 const otherTasks = ref([]);
 const otherExperiences = ref([]);
+const studentTasks = ref({});
+const studentExperiences = ref({});
 const categories = ref([]);
 
 const dialog = ref(false);
@@ -31,55 +34,142 @@ const dialogIsTask = ref(false);
 //if the dialog should be the completed variant, otherwise is submittable version
 const dialogIsComplete = ref(false);
 
-const todoTaskItems = ref(
-  [{ type: "Task", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"", reflectionReq:false },
-  { type: "Task", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true },
-  { type: "Task", name: "This is the task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"https://www.google.com", reflectionReq:false },
-  ]);
+const todoTaskItems = ref([]);
 
-  const todoExperienceItems = ref(
-  [{ type: "Experience", name: "Job Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:false, category:"Math" },
-  { type: "Experience", name: "Career Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:true, category:"Career Fair" },
-  ]);
+  const todoExperienceItems = ref([]);
 
-  const doneTaskItems = ref(
-  [{ type: "Task 5", name: "Completed Task", points: "10", description: "blah blah blah description", reflection:"This helped me become a better person", approvalState:1, submissionDate:new Date('Apr 1, 2025'), completionDate:new Date('Apr 2, 2025') },
-  { type: "Task 5", name: "Completed Task 2", points: "30", description: "blah blah blah description", reflection:"", approvalState:2, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
-  { type: "Task 5", name: "Radical new task", points: "60", description: "Go To a Job Fair to get a really cool job and have fun", reflection:"I am awesome and swaggy", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
-  
-  ]);
+  const doneTaskItems = ref([]);
 
-  const doneExperienceItems = ref(
-  [{ type: "Experience", name: "Job Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:false, category:"Math", reflection:"This helped me become a better person", approvalState:2, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
-  { type: "Experience", name: "Career Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:true, category:"Career Fair", reflection:"", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
-  { type: "Experience", name: "Career Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:true, category:"", reflection:"fhjskhfjsdk", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
-  ]);
+  const doneExperienceItems = ref([]);
 
 
-  const convertTasks = () => {
-    todoTaskItems.value = otherTasks.value.map((n) => {
-      console.log("categoryId:", n.categoryId);
-      var myCategory = ''; //default category
-      for(let i = 0; i < categories.value.length; i++){
-        if(categories.value[i].id == n.categoryId){
-          myCategory = categories.value[i].name;
+  const convertStudentTasks = () => {
+
+    //todo tasks
+    todoTaskItems.value = studentTasks.value.filter(n => 
+      n.approvalState == 0
+    ).map((n) => {
+      for(let i = 0; i < otherTasks.value.length; i++){
+        if(otherTasks.value[i].id == n.eagleTaskId){
+          //grabbing category
+          console.log("categoryId:", otherTasks.value[i].categoryId);
+          var myCategory = ''; //default category
+          for(let i = 0; i < categories.value.length; i++){
+          if(categories.value[i].id == otherTasks.value[i].categoryId){
+           myCategory = categories.value[i].name;
+          }
+      }
+          return {
+            type: "Task",
+            name: otherTasks.value[i].name,
+            description: otherTasks.value[i].description,
+            points: otherTasks.value[i].points,
+            rationale: otherTasks.value[i].rationale,
+            category: myCategory,
+           canUpload: otherTasks.value[i].canUpload, 
+            hyperLink: otherTasks.value[i].hyperLink, 
+            reflectionReq: otherTasks.value[i].reflectionReq,
         }
       }
-      console.log("category:", myCategory);
-      return{
-      name: n.name,
-      description: n.description,
-      points: n.points,
-      rationale: n.rationale,
-      category: myCategory,
-      canUpload: n.canUpload, 
-      hyperLink: n.hyperLink, 
-      reflectionReq: n.reflectionReq,
-    }
+      }
+      return{}
     });
+
+        //done tasks
+        doneTaskItems.value = studentTasks.value.filter(n => 
+      n.approvalState == 1 || n.approvalState == 2
+    ).map((n) => {
+      for(let i = 0; i < otherTasks.value.length; i++){
+        if(otherTasks.value[i].id == n.eagleTaskId){
+          //grabbing category
+          console.log("categoryId:", otherTasks.value[i].categoryId);
+          var myCategory = ''; //default category
+          for(let i = 0; i < categories.value.length; i++){
+          if(categories.value[i].id == otherTasks.value[i].categoryId){
+           myCategory = categories.value[i].name;
+          }
+      }
+          return {
+            type: "Task 5",
+            name: otherTasks.value[i].name,
+            description: otherTasks.value[i].description,
+            points: otherTasks.value[i].points,
+            reflection: n.Reflection,
+            approvalState: n.approvalState, 
+            submissionDate: n.submissionDate, 
+            completionDate: n.completionDate,
+        }
+      }
+      }
+      return{}
+    });
+
     console.log("events list: ", todoTaskItems.value);
   }
     
+//convert experiences
+  const convertStudentExperiences = () => {
+
+//todo tasks
+todoExperienceItems.value = studentExperiences.value.filter(n => 
+  n.approvalState == 0
+).map((n) => {
+  for(let i = 0; i < otherExperiences.value.length; i++){
+    if(otherExperiences.value[i].id == n.eagleExperienceId){
+      //grabbing category
+      console.log("categoryId:", otherExperiences.value[i].categoryId);
+      var myCategory = ''; //default category
+      for(let i = 0; i < categories.value.length; i++){
+      if(categories.value[i].id == otherExperiences.value[i].categoryId){
+       myCategory = categories.value[i].name;
+      }
+  }
+      return {
+        type: "Experience",
+        name: otherExperiences.value[i].name,
+        description: otherExperiences.value[i].description,
+        points: otherExperiences.value[i].points,
+        category: myCategory,
+        reflectionReq: otherExperiences.value[i].reflectionReq,
+    }
+  }
+  }
+  return{}
+});
+
+    //done tasks
+    doneExperienceItems.value = studentExperiences.value.filter(n => 
+  n.approvalState == 1 || n.approvalState == 2
+).map((n) => {
+  for(let i = 0; i < otherExperiences.value.length; i++){
+    if(otherExperiences.value[i].id == n.eagleExperienceId){
+      //grabbing category
+      console.log("categoryId:", otherExperiences.value[i].categoryId);
+      var myCategory = ''; //default category
+      for(let i = 0; i < categories.value.length; i++){
+      if(categories.value[i].id == otherExperiences.value[i].categoryId){
+       myCategory = categories.value[i].name;
+      }
+  }
+      return {
+        type: "Experience",
+        name: otherExperiences.value[i].name,
+        description: otherExperiences.value[i].description,
+        points: otherExperiences.value[i].points,
+        reflection: n.reflection,
+        category: myCategory,
+        approvalState: n.approvalState, 
+        submissionDate: n.submissionDate, 
+        completionDate: n.completionDate,
+    }
+  }
+  }
+  return{}
+});
+
+console.log("events list: ", todoTaskItems.value);
+}
+
 
 
   const fetchCategories = () => {
@@ -101,6 +191,7 @@ const todoTaskItems = ref(
     .then((response) => {
       otherExperiences.value = response.data; // Assuming the backend returns an array of tasks
       console.log("Fetched experiences:", otherExperiences.value);
+      fetchStudentEagleExperiences();
     })
     .catch((error) => {
       console.error("Error fetching tasks:", error);
@@ -113,7 +204,7 @@ const todoTaskItems = ref(
     .then((response) => {
       otherTasks.value = response.data; // Assuming the backend returns an array of tasks
       console.log("Fetched tasks:", otherTasks.value);
-      convertTasks();
+      fetchStudentEagleTasks();
     })
     .catch((error) => {
       console.error("Error fetching tasks:", error);
@@ -122,11 +213,24 @@ const todoTaskItems = ref(
   };
 
   const fetchStudentEagleTasks = () => {
-  studentEagleTaskServices.getAllStudentEagleTasks(user.value.studentId)
+  studentEagleTaskServices.getAllStudentEagleTasks(user.value.studentId, 1)
     .then((response) => {
       studentTasks.value = response.data; // Assuming the backend returns an array of tasks
       console.log("Fetched tasks:", studentTasks.value);
-      //convertStudentTasks?
+      convertStudentTasks();
+    })
+    .catch((error) => {
+      console.error("Error fetching student tasks:", error);
+    });
+    
+  };
+
+  const fetchStudentEagleExperiences = () => {
+  studentEagleExperienceServices.getAllStudentEagleExperiences(user.value.studentId, 1)
+    .then((response) => {
+      studentExperiences.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched Experiences:", studentExperiences.value);
+      convertStudentExperiences();
     })
     .catch((error) => {
       console.error("Error fetching student tasks:", error);
@@ -138,7 +242,6 @@ onMounted(() => {
   user.value = Utils.getStore('user')
   console.log(user.value)
   fetchCategories();
-  fetchStudentEagleTasks();
 })
 </script>
 
