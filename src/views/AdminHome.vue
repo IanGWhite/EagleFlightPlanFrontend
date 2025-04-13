@@ -3,6 +3,7 @@ import { useRouter } from 'vue-router';
 import { ref } from 'vue';
 import MenuBar from "../components/MenuBar.vue";
 
+
 const router = useRouter();
 
 const goToResume = () => {
