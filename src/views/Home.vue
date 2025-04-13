@@ -3,10 +3,12 @@ import { useRouter } from 'vue-router';
 import { ref, onMounted } from 'vue';
 import MenuBar from "../components/MenuBar.vue";
 import { useDate } from 'vuetify';
+import studentEagleTaskServices from '../services/studentEagleTaskServices';
 import eagleTaskServices from '../services/eagleTaskServices';
 import Utils from "../config/utils.js";
 import categoryServices from '../services/categoryServices';
 import eagleExperienceServices from '../services/eagleExperienceServices.js';
+
 
 const router = useRouter();
 const user = ref({});
@@ -119,10 +121,24 @@ const todoTaskItems = ref(
     
   };
 
+  const fetchStudentEagleTasks = () => {
+  studentEagleTaskServices.getAllStudentEagleTasks(user.value.studentId)
+    .then((response) => {
+      studentTasks.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched tasks:", studentTasks.value);
+      //convertStudentTasks?
+    })
+    .catch((error) => {
+      console.error("Error fetching student tasks:", error);
+    });
+    
+  };
+
 onMounted(() => {
   user.value = Utils.getStore('user')
   console.log(user.value)
   fetchCategories();
+  fetchStudentEagleTasks();
 })
 </script>
 
