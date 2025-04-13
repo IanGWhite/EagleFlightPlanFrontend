@@ -1,9 +1,12 @@
 <script setup>
-import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { useRouter, useRoute } from "vue-router";
+import { ref,onMounted } from "vue";
 import MenuBar from "../components/MenuBar.vue";
+import eagleTaskServices from "../services/eagleTaskServices";
+import studentEagleTaskServices from "../services/studentEagleTaskServices.js";
+import Utils from "../config/utils.js";
 
-
+const user = ref({});
 const router = useRouter();
 
 const goToResume = () => {
@@ -32,6 +35,8 @@ const events = ref(
   { type: "Task 3", name: "This is the task 2", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"New Student", reflection:"hfjdskhjfkds", submissionDate: '2020-02-01'},
   ]);
 
+  const allTasks = ref([{}]);
+
   //cols for the completed tasks table
   const headers = ref([
           { key: 'name', title: 'Name', align: 'start', width:'33%' },
@@ -50,6 +55,23 @@ const events = ref(
   { name: "Badges", location: "/Home" },
   ]);
 
+onMounted(() => {
+  user.value = Utils.getStore('user')
+  // console.log(user.value)
+  fetchEagleTasks();
+})
+
+const fetchEagleTasks = () => {
+  studentEagleTaskServices.getAllEagleTasks()
+    .then((response) => {
+      allTasks.value = response.data;
+      console.log("Fetched tasks:", allTasks.value);
+    })
+    .catch((error) => {
+      console.error("Error fetching tasks:", error);
+    });
+    
+};
 </script>
 
 <template>

@@ -2,7 +2,7 @@ import apiClient from "./services.js";
 
 export default {
   getAllEagleTasks() {
-    return apiClient.get(`/eagleTasks`);
+    return apiClient.get(`/studentEagleTasks`);
   },
   getEagleTasks(id) {
     return apiClient.get(`/eagleTasks/${id}`);
