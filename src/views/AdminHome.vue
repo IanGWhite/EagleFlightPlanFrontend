@@ -1,9 +1,9 @@
 <script setup>
 import { useRouter, useRoute } from "vue-router";
-import { ref,onMounted } from "vue";
+import { ref,onMounted, hydrate } from "vue";
 import MenuBar from "../components/MenuBar.vue";
 import eagleTaskServices from "../services/eagleTaskServices";
-import studentEagleTaskServices from "../services/studentEagleTaskServices.js";
+import studentEagleTaskServices from "../services/studentEagleTaskServices";
 import Utils from "../config/utils.js";
 
 const user = ref({});
@@ -13,8 +13,8 @@ const goToResume = () => {
   router.push({ name: 'ResumeListStudents' });
 };
 
-const goToInfo = () => {
-  router.push({ name: 'StudentInfo' });
+const goToPage = (pageName) => {
+  router.push({ name: pageName });
 };
 const dialog = ref(false);
 const currentItem = ref(0);
@@ -29,13 +29,43 @@ const events = ref(
 
   const sortBy= ref([{ key: 'submissionDate', order: 'asc' }])
   const completedTasks = ref(
-  [{ type: "Task 1", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Chandler Hurt", reflection: "This made me think about lots of things like where to look for a job or whatever.", submissionDate: '2021-05-13' },
-  { type: "Task 2", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true, student:"Ian White", reflection: "This made me think about lots of things like where to look for a job or whatever.", submissionDate: '2025-02-16' },
-  { type: "Task 3", name: "This is the task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Samantha Wiggs", reflection:"", submissionDate: '2023-02-01'},
-  { type: "Task 3", name: "This is the task 2", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"New Student", reflection:"hfjdskhjfkds", submissionDate: '2020-02-01'},
+  [
+    { type: "Task 1", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Chandler Hurt", reflection: "This made me think about lots of things like where to look for a job or whatever.", submissionDate: '2021-05-13' },
+  // { type: "Task 2", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true, student:"Ian White", reflection: "This made me think about lots of things like where to look for a job or whatever.", submissionDate: '2025-02-16' },
+  // { type: "Task 3", name: "This is the task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Samantha Wiggs", reflection:"", submissionDate: '2023-02-01'},
+  // { type: "Task 3", name: "This is the task 2", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"New Student", reflection:"hfjdskhjfkds", submissionDate: '2020-02-01'},
+  // {
+  //   name: "", 
+  //   points: "", 
+  //   description: "", 
+  //   rationale:"", 
+  //   canUpload:false, 
+  //   hyperLink:"", 
+  //   reflectionReq:false, 
+  //   student:"", 
+  //   reflection: "", 
+  //   submissionDate: '',
+  //   completionDate: new Date()
+  // }
   ]);
 
-  const allTasks = ref([{}]);
+  const toBeAddedTask = ref({
+    name: "", 
+    points: "", 
+    description: "", 
+    rationale:"", 
+    canUpload:false, 
+    hyperLink:"", 
+    reflectionReq:false, 
+    student:"", 
+    reflection: "", 
+    submissionDate: '',
+    completionDate: new Date(),
+    id: 0,
+    studentTaskId: 0
+  })
+
+  const allTasks = ref([{approvalState: 0, eagleTaskId: 0, Reflection:""}]);
 
   //cols for the completed tasks table
   const headers = ref([
@@ -47,31 +77,74 @@ const events = ref(
 
   // The quick access buttons with their page links
   const quickAccess = ref( 
-  [{ name: "Students", location: "/viewAllStudents" },
-  { name: "Tasks", location: "/AddTask" },
-  { name: "Experiences", location: "/AddEagleExperience" },
-  { name: "Events", location: "/AddEvent" },
-  { name: "Shop", location: "/StudentShop" }, //change to admin shop when done
-  { name: "Badges", location: "/Home" },
+  [{ name: "Students", location: "viewAllStudents" },
+  { name: "Tasks", location: "AddTask" },
+  { name: "Experiences", location: "AddEagleExperience" },
+  { name: "Events", location: "AddEvent" },
+  { name: "Shop", location: "StudentShop" }, //change to admin shop when done
+  { name: "Badges", location: "Home" },
   ]);
 
 onMounted(() => {
   user.value = Utils.getStore('user')
   // console.log(user.value)
-  fetchEagleTasks();
+  fetchStudentEagleTasks();
 })
 
-const fetchEagleTasks = () => {
+const fetchStudentEagleTasks = () => {
   studentEagleTaskServices.getAllEagleTasks()
     .then((response) => {
       allTasks.value = response.data;
       console.log("Fetched tasks:", allTasks.value);
+      // console.log(response.data.reflection)
+      sortEagleTasks(response.data.reflection);
     })
     .catch((error) => {
       console.error("Error fetching tasks:", error);
     });
     
 };
+
+const sortEagleTasks = ()  => {
+for(let i=0; i< allTasks.value.length; i++)
+{
+  if (allTasks.value[i].approvalState == 1)
+  {
+    fetchOneTask(allTasks.value[i].eagleTaskId, i)
+    
+  }
+}
+};
+
+const fetchOneTask = (taskId, allTaskIndex) => {
+  eagleTaskServices.getEagleTasks(taskId)
+    .then((response) => {
+      var data = response.data
+      let task = {
+        name: data.name,
+        points: data.points,
+        description: data.description,
+        rationale: data.rationale,
+        canUpload: data.canUpload,
+        hyperLink: data.hyperLink,
+        reflectionReq: data.reflectionReq,
+        reflection: allTasks.value[allTaskIndex].Reflection,
+        submissionDate: data.submissionDate,
+        completionDate: data.completionDate,
+        id: data.id,
+        studentTaskId: taskId
+      };
+      console.log("my data",data)
+      console.log("Fetched one task here:", task);
+      completedTasks.value.push(task); // Now pushing a unique object
+    })
+    .catch((error) => {
+      console.error("Error fetching single task:", error);
+    });
+    
+};
+
+
 </script>
 
 <template>
@@ -134,7 +207,10 @@ const fetchEagleTasks = () => {
               <div class="ma-2">
                 <v-btn 
                 v-for="(item) in quickAccess"
-                class="quick-btn" block rounded="0" append-icon="mdi-arrow-right" :href="item.location">
+                class="quick-btn" block rounded="0" append-icon="mdi-arrow-right"
+                @click="goToPage(item.location)"
+                >
+
                   {{ item.name }}
                 </v-btn>
               </div>
