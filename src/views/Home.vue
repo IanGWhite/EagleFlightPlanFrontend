@@ -9,6 +9,9 @@ import eagleTaskServices from '../services/eagleTaskServices';
 import Utils from "../config/utils.js";
 import categoryServices from '../services/categoryServices';
 import eagleExperienceServices from '../services/eagleExperienceServices.js';
+import eagleFlightPlanServices from '../services/eagleFlightPlanServices.js';
+import semesterServices from '../services/semesterServices.js';
+import { year } from 'vue-cal/dist/i18n/ar.es.js';
 
 
 const router = useRouter();
@@ -22,11 +25,14 @@ const goToInfo = () => {
   router.push({ name: 'StudentInfo' });
 };
 
+const currentFlightPlan = ref({});
 const otherTasks = ref([]);
 const otherExperiences = ref([]);
 const studentTasks = ref({});
 const studentExperiences = ref({});
 const categories = ref([]);
+const eagleFlightPlans = ref([]);
+const semesters = ref([]);
 
 const dialog = ref(false);
 const currentItem = ref(0);
@@ -104,13 +110,14 @@ const todoTaskItems = ref([]);
       return{}
     });
 
-    console.log("events list: ", todoTaskItems.value);
+    console.log("todo tasks list: ", todoTaskItems.value);
+    console.log("done tasks list: ", doneTaskItems.value);
   }
     
 //convert experiences
   const convertStudentExperiences = () => {
 
-//todo tasks
+//todo experiences
 todoExperienceItems.value = studentExperiences.value.filter(n => 
   n.approvalState == 0
 ).map((n) => {
@@ -135,6 +142,7 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
   }
   }
   return{}
+  
 });
 
     //done tasks
@@ -167,7 +175,8 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
   return{}
 });
 
-console.log("events list: ", todoTaskItems.value);
+console.log("todo Experiences list: ", todoExperienceItems.value);
+console.log("done Experiences list: ", doneExperienceItems.value);
 }
 
 
@@ -213,10 +222,10 @@ console.log("events list: ", todoTaskItems.value);
   };
 
   const fetchStudentEagleTasks = () => {
-  studentEagleTaskServices.getAllStudentEagleTasks(user.value.studentId, 1)
+  studentEagleTaskServices.getAllStudentEagleTasksForStudent(user.value.studentId, 1)
     .then((response) => {
       studentTasks.value = response.data; // Assuming the backend returns an array of tasks
-      console.log("Fetched tasks:", studentTasks.value);
+      console.log("Fetched Student tasks:", studentTasks.value);
       convertStudentTasks();
     })
     .catch((error) => {
@@ -226,10 +235,10 @@ console.log("events list: ", todoTaskItems.value);
   };
 
   const fetchStudentEagleExperiences = () => {
-  studentEagleExperienceServices.getAllStudentEagleExperiences(user.value.studentId, 1)
+  studentEagleExperienceServices.getAllStudentEagleExperiencesForStudent(user.value.studentId, 1)
     .then((response) => {
       studentExperiences.value = response.data; // Assuming the backend returns an array of tasks
-      console.log("Fetched Experiences:", studentExperiences.value);
+      console.log("Fetched Student Experiences:", studentExperiences.value);
       convertStudentExperiences();
     })
     .catch((error) => {
@@ -238,10 +247,66 @@ console.log("events list: ", todoTaskItems.value);
     
   };
 
+  // after june = the name will be fall and then the year
+  // after new years but before june, it will be spring
+
+  const fetchCurrentFlightPlan = () => {
+    let currentDate = new Date();
+    let currentYear = new Date().getFullYear();
+    let semesterTitle = '';
+    console.log(currentYear);
+    console.log(new Date(currentYear+'-06-01'));
+    let june = new Date(currentYear+'-06-01');
+    if(currentDate >= june ){
+      semesterTitle = 'Fall '+currentYear;
+    }else{
+      semesterTitle = 'Spring '+currentYear;
+    }
+    for(let i = 0; i <eagleFlightPlans.value.length; i++){
+      for(let j = 0; j <semesters.value.length; j++){
+        if(semesters.value[j].id == eagleFlightPlans.value[i].semesterId){
+          if(semesterTitle == semesters.value[j].name){
+            currentFlightPlan.value = eagleFlightPlans.value[i];
+            fetchCategories();
+          }
+
+        }
+      }
+
+    }
+
+  }
+
+  const fetchSemesters = () => {
+    semesterServices.getAllSemesters()
+    .then((response) => {
+      semesters.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched semesters:", semesters.value);
+      fetchCurrentFlightPlan();
+    })
+    .catch((error) => {
+      console.error("Error fetching flight plans tasks:", error);
+    });
+    
+  }
+
+  const fetchEagleFlightPlans = () => {
+    eagleFlightPlanServices.getAllEagleFlightPlansForStudent(user.value.studentId)
+    .then((response) => {
+      eagleFlightPlans.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched flight plans:", eagleFlightPlans.value);
+      fetchSemesters();
+    })
+    .catch((error) => {
+      console.error("Error fetching flight plans tasks:", error);
+    });
+    
+  }
+
 onMounted(() => {
   user.value = Utils.getStore('user')
   console.log(user.value)
-  fetchCategories();
+  fetchEagleFlightPlans();
 })
 </script>
 

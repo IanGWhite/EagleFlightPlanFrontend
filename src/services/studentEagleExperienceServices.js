@@ -1,19 +1,19 @@
 import apiClient from "./services.js";
 
 export default {
-  getAllStudentEagleExperiences(studentId, eagleFlightPlanId) {
+  getAllStudentEagleExperiencesForStudent(studentId, eagleFlightPlanId) {
     return apiClient.get(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleExperiences/`);
   },
-  getStudentEagleExperiences(studentId, eagleFlightPlanId,id) {
+  getStudentEagleExperiencesForStudent(studentId, eagleFlightPlanId,id) {
     return apiClient.get(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleExperiences/${id}`);
   },
-  createStudentEagleExperience(studentId, eagleFlightPlanId,data) {
+  createStudentEagleExperienceForStudent(studentId, eagleFlightPlanId,data) {
     return apiClient.post(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleExperiences/`, data);
   },
-  updateStudentEagleExperience(studentId, eagleFlightPlanId,id, data) {
+  updateStudentEagleExperienceForStudent(studentId, eagleFlightPlanId,id, data) {
     return apiClient.put(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleExperiences/${id}`, data);
   },
-  deleteStudentEagleExperience(studentId, eagleFlightPlanId,id) {
+  deleteStudentEagleExperienceForStudent(studentId, eagleFlightPlanId,id) {
     return apiClient.delete(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleExperiences/${id}`);
   },
 };
