@@ -268,7 +268,7 @@ const getRoles = async () => {
     const response = await roleServices.getAllRoles();
     console.log("roles:"+ response.data);
     roles.value = response.data;
-    console.log(roles.value[0]);
+    console.log("Roles: "+roles.value);
   } catch (e) {
     message.value = "An error occurred: " + e.message;
     console.error("Error fetching Roles:", e);
@@ -308,7 +308,7 @@ const savePermissions = () => {
   );
 
   const userRolePayload = {
-    roleId: match.id
+    roleId: match.id ?? 1
   };
   console.log("Userid: " + user.value.id);
   console.log("UserRoleId: "+ userRole.value.id);
