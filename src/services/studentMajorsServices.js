@@ -4,8 +4,8 @@ export default {
   getStudentMajor(studentId) {
     return apiClient.get(`/students/${studentId}/studentMajors/`);
   },
-  createStudentMajor(studentId, data) {
-    return apiClient.post(`/students/${studentId}/studentMajors`, data);
+  createStudentMajor(studentId, majorId) {
+    return apiClient.post(`/students/${studentId}/studentMajors/${majorId}`);
   },
   updateStudentMajor(studentId, id, data) {
     return apiClient.put(`/students/${studentId}/studentMajors/${id}`, data);
