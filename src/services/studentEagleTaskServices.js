@@ -5,16 +5,16 @@ export default {
     return apiClient.get(`/studentEagleTasks`);
   },
   getEagleTasks(id) {
-    return apiClient.get(`/eagleTasks/${id}`);
+    return apiClient.get(`/studentEagleTasks/${id}`);
   },
   createEagleTask(data) {
-    return apiClient.post(`/eagleTasks`, data);
+    return apiClient.post(`/studentEagleTasks`, data);
   },
   updateEagleTask(id, data) {
-    return apiClient.put(`/eagleTasks/${id}`, data);
+    return apiClient.put(`/studentEagleTasks/${id}`, data);
   },
   deleteEagleTask(id) {
-    return apiClient.delete(`/eagleTasks/${id}`);
+    return apiClient.delete(`/studentEagleTasks/${id}`);
   },
 };
 

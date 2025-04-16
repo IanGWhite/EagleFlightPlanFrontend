@@ -4,6 +4,7 @@ import { ref,onMounted, hydrate } from "vue";
 import MenuBar from "../components/MenuBar.vue";
 import eagleTaskServices from "../services/eagleTaskServices";
 import studentEagleTaskServices from "../services/studentEagleTaskServices";
+
 import Utils from "../config/utils.js";
 
 const user = ref({});
@@ -61,7 +62,7 @@ const events = ref(
     reflection: "", 
     submissionDate: '',
     completionDate: new Date(),
-    id: 0,
+    taskId: 0,
     studentTaskId: 0
   })
 
@@ -110,13 +111,13 @@ for(let i=0; i< allTasks.value.length; i++)
 {
   if (allTasks.value[i].approvalState == 1)
   {
-    fetchOneTask(allTasks.value[i].eagleTaskId, i)
-    
+    fetchOneTask(allTasks.value[i].eagleTaskId, i, allTasks.value[i].id)
   }
+  fetchStudentNames();
 }
 };
 
-const fetchOneTask = (taskId, allTaskIndex) => {
+const fetchOneTask = (taskId, allTaskIndex, studentTaskId) => {
   eagleTaskServices.getEagleTasks(taskId)
     .then((response) => {
       var data = response.data
@@ -131,12 +132,13 @@ const fetchOneTask = (taskId, allTaskIndex) => {
         reflection: allTasks.value[allTaskIndex].Reflection,
         submissionDate: data.submissionDate,
         completionDate: data.completionDate,
-        id: data.id,
-        studentTaskId: taskId
+        myTaskId: data.id,
+        studentTaskId: studentTaskId
       };
-      console.log("my data",data)
-      console.log("Fetched one task here:", task);
+      // console.log("my data",data)
+      // console.log("Fetched one task here:", task);
       completedTasks.value.push(task); // Now pushing a unique object
+      // console.log(completedTasks.value)
     })
     .catch((error) => {
       console.error("Error fetching single task:", error);
@@ -144,6 +146,25 @@ const fetchOneTask = (taskId, allTaskIndex) => {
     
 };
 
+const fetchStudentNames = () => {
+  // for each task in completed tasks
+  // use the student task id to find the flight plan (eagleFlightPlanId)
+  // then find the student id from flight plan
+  // then the student's first and last name
+};
+
+const UpdateStudentTaskApproval = (status) => {
+  var newState = 0
+  if (status) newState = 2
+  console.log(currentItemObj.value.studentTaskId)
+  studentEagleTaskServices.updateEagleTask(currentItemObj.value.studentTaskId, {'approvalState': newState})
+  .then((response) => {
+    console.log("updated correctly:", response.data)
+  })
+  .catch((error) => {
+    console.error("Error updating task:", error);
+  })
+};
 
 </script>
 
@@ -297,8 +318,8 @@ const fetchOneTask = (taskId, allTaskIndex) => {
       
         <template v-slot:actions>
           <v-btn class="ms-auto" text="Cancel" @click="dialog = false" style="width: auto;"></v-btn>
-          <v-btn class="quick-btn decline" text="Decline" @click=""></v-btn>
-          <v-btn class="quick-btn" text="Approve" @click=""></v-btn>
+          <v-btn class="quick-btn decline" text="Decline" @click="UpdateStudentTaskApproval(false)"></v-btn>
+          <v-btn class="quick-btn" text="Approve" @click="UpdateStudentTaskApproval(true)"></v-btn>
         </template>
       </v-card>
     </v-dialog>
