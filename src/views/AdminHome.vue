@@ -31,7 +31,7 @@ const events = ref(
   const sortBy= ref([{ key: 'submissionDate', order: 'asc' }])
   const completedTasks = ref(
   [
-    { type: "Task 1", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Chandler Hurt", reflection: "This made me think about lots of things like where to look for a job or whatever.", submissionDate: '2021-05-13' },
+    // { type: "Task 1", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Chandler Hurt", reflection: "This made me think about lots of things like where to look for a job or whatever.", submissionDate: '2021-05-13' },
   // { type: "Task 2", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true, student:"Ian White", reflection: "This made me think about lots of things like where to look for a job or whatever.", submissionDate: '2025-02-16' },
   // { type: "Task 3", name: "This is the task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Samantha Wiggs", reflection:"", submissionDate: '2023-02-01'},
   // { type: "Task 3", name: "This is the task 2", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"New Student", reflection:"hfjdskhjfkds", submissionDate: '2020-02-01'},
@@ -160,10 +160,18 @@ const UpdateStudentTaskApproval = (status) => {
   studentEagleTaskServices.updateEagleTask(currentItemObj.value.studentTaskId, {'approvalState': newState})
   .then((response) => {
     console.log("updated correctly:", response.data)
+    // completedTasks.value.splice(currentItemObj, 1)
+    var lookingForIndex = completedTasks.value.findIndex(obj => obj.myTaskId === currentItemObj.value.myTaskId)
+    completedTasks.value.splice(lookingForIndex, 1)
+    dialog.value = false
   })
   .catch((error) => {
     console.error("Error updating task:", error);
   })
+};
+
+const logPoints = () => {
+  //update students points to correct values and create point log item
 };
 
 </script>
@@ -247,7 +255,6 @@ const UpdateStudentTaskApproval = (status) => {
         <v-list-item></v-list-item><!-- SPACE ABOVE TIMELINE -->
         <v-card-title class="page-title">Completed Tasks</v-card-title>
         <v-card variant="tonal" style="margin-left: 5%; margin-right: 5%;">
-          
           <v-text-field
             v-model="search"
             label=""
@@ -265,13 +272,14 @@ const UpdateStudentTaskApproval = (status) => {
             :search="search"
             :sort-by.sync="sortBy"
             hide-default-footer
+            no-data-text="No tasks to be found"
             style="padding: 12px; padding-top: 0%; font-size: 17px;"
           >
           <template v-slot:item.button="{ item }" >
             <v-btn class="quick-btn"
              rounded="0"
              append-icon="mdi-arrow-right"
-             @click="dialog=true; currentItemObj=item"
+             @click="dialog=true; currentItemObj=item;"
             >Approve</v-btn>
           </template>
         </v-data-table>
