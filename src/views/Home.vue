@@ -10,12 +10,14 @@ import Utils from "../config/utils.js";
 import categoryServices from '../services/categoryServices';
 import eagleExperienceServices from '../services/eagleExperienceServices.js';
 import eagleFlightPlanServices from '../services/eagleFlightPlanServices.js';
+import studentServices from '../services/studentServices.js';
 import semesterServices from '../services/semesterServices.js';
 import { year } from 'vue-cal/dist/i18n/ar.es.js';
 
 
 const router = useRouter();
 const user = ref({});
+const student = ref({});
 
 const goToResume = () => {
   router.push({ name: 'ResumeListStudents' });
@@ -50,7 +52,6 @@ const todoTaskItems = ref([]);
 
 
   const convertStudentTasks = () => {
-
     //todo tasks
     todoTaskItems.value = studentTasks.value.filter(n => 
       n.approvalState == 0 && (n.eagleFlightPlanId == currentFlightPlan.value.id)
@@ -304,9 +305,37 @@ console.log("done Experiences list: ", doneExperienceItems.value);
     
   }
 
+  const convertTexts = () => {
+    
+  var titleText = document.getElementById("myTitle");
+  var newTitle = user.value.fName;
+  titleText.innerHTML = newTitle+"'s To-do List";
+
+  studentServices.getStudentForUser(user.value.userId)
+    .then((response) => {
+      student.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched student:", student.value);
+      var pointText = document.getElementById("myPoints");
+      var newPoints = student.value[0].points;
+      pointText.innerHTML = ""+newPoints;
+    })
+    .catch((error) => {
+      console.error("Error fetching flight plans tasks:", error);
+    });
+
+
+  }
+
+
 onMounted(() => {
   user.value = Utils.getStore('user')
+  if(user.value != null){
+    convertTexts();
+  }
+
   console.log(user.value)
+
+  //convertTexts();
   fetchEagleFlightPlans();
 })
 </script>
@@ -410,8 +439,8 @@ onMounted(() => {
            <!-- POINTS CARD -->
             <v-card variant="tonal">
             <v-card-title class="text-center">Your Points</v-card-title>
-          <v-card-text class="points-text">
-            500
+          <v-card-text id="myPoints"class="points-text">
+            
           </v-card-text>
 
           <v-card-text class="card-link-text-wrapper">
@@ -450,7 +479,7 @@ onMounted(() => {
 
       <v-main> <!--            MAIN            -->
         <v-list-item></v-list-item><!-- SPACE ABOVE TIMELINE -->
-        <v-card-title class="page-title">To-do</v-card-title>
+        <v-card-title id="myTitle" class="page-title">To-do</v-card-title>
         <v-card class="main-tasks" variant="tonal">
           <!-- TIMELINES -->
           <v-timeline density="compact" align-start style="padding-left: 5%; padding-right: 5%;" line-thickness="7" >
