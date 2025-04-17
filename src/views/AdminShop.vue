@@ -17,11 +17,20 @@ const getShopItems = async () => {
   console.log("shopitems" + shopItems);
 }
 
+const addShopItem = () => {
+  router.push({ name: 'AddShopItem' });
+};
+
+const editShopItem = (itemId) => router.push({ name: 'EditShopItem', params: { id: itemId } });
+
+const deleteShopItem = async (itemId) => {
+  await shopItemServices.deleteShopItem(itemId);
+  console.log("deleted shop item " + itemId);
+  getShopItems();
+}
 
 onMounted(() => {
   getShopItems();
-
-
 })
 </script>
 
@@ -30,6 +39,9 @@ onMounted(() => {
       <v-main> <!--            MAIN            -->
         <v-list-item></v-list-item><!-- SPACE ABOVE TIMELINE -->
         <v-card-title class="page-title">Shop</v-card-title>
+        <div class="buttons">
+          <v-btn color="red" @click="addShopItem()">add Shop Item</v-btn> <!-- EDIT BUTTON -->
+        </div>
         <!-- <v-card > -->
           <v-container width="70%" fluid style="background: lightgray; height:100%;">
             
@@ -54,7 +66,11 @@ onMounted(() => {
                     <v-card-title>{{shopItem.name}}</v-card-title>
                       <v-card-subtitle >{{shopItem.points}} pts.</v-card-subtitle>
                       <v-card-text >{{shopItem.description}}</v-card-text>
-                    
+                      <v-card-text>{{shopItem.id }}</v-card-text>
+                      <div class="buttons">
+                        <v-btn color="red" @click="editShopItem(shopItem.id)">Edit</v-btn> <!-- EDIT BUTTON -->
+                        <v-btn color="red" @click="deleteShopItem(shopItem.id)">Delete</v-btn> <!-- EDIT BUTTON -->
+                      </div>
                   </v-card>
                     
                     
@@ -116,6 +132,11 @@ onMounted(() => {
 }
 .badge-image{
   max-height:10%;
+}
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
 }
 
 

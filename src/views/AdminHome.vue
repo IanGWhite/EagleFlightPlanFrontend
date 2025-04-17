@@ -45,7 +45,7 @@ const events = ref(
   { name: "Tasks", location: "/AddTask" },
   { name: "Experiences", location: "/AddEagleExperience" },
   { name: "Events", location: "/AddEvent" },
-  { name: "Shop", location: "/StudentShop" }, //change to admin shop when done
+  { name: "Shop", location: "/AdminShop" }, //change to admin shop when done
   { name: "Badges", location: "/Home" },
   ]);
 

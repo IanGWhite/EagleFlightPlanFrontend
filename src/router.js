@@ -33,6 +33,8 @@ import AddEvent from "./views/AddEvent.vue";
 import AddTransaction from "./views/AddTransaction.vue";
 import AddEagleExperience from "./views/AddEagleExperience.vue";
 import AddShopItem from "./views/AddShopItem.vue";
+import AdminShop from "./views/AdminShop.vue";
+import EditShopItem from "./views/EditShopItem.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -175,9 +177,20 @@ const router = createRouter({
       props: true,
     },
     {
+      path: "/AdminShop",
+      name: "AdminShop",
+      component: AdminShop,
+      props: true,
+    },
+    {
       path: "/AddShopItem",
       name: "AddShopItem",
       component: AddShopItem,
+    },
+    {
+      path: "/EditShopItem/:id",
+      name: "EditShopItem",
+      component: EditShopItem,
     },
     {
       path: "/Calendar",
