@@ -111,11 +111,12 @@ const pointLogHeaders = [
   { title: "Appoved By:", key: "approvedBy"},
   { title: "Date", key: "date"},
 ];
-
+// POINT LOG ⓫⓫⓫⓫⓫⓫⓫⓫⓫⓫⓫
 const getPointLog = async () => {
   try {
     const response = await pointLogServices.getAllPointLogs(studentId.value);
-    
+    console.clear()
+    console.log(studentId.value)
     if (response && response.data) {
       pointLogList.value = response.data;
 
@@ -293,7 +294,7 @@ onMounted(() => {
   getGradSemester();
   getSemesters();
   getStudentStrenghs();
-  getUserRole();
+  // getUserRole();
 })
 
 const savePermissions = () => {
