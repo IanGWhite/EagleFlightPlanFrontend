@@ -4,7 +4,10 @@ import { useRouter, useRoute } from "vue-router";
 import studentServices from "../services/studentServices.js";
 import semesterServices from "../services/semesterServices.js";
 import userServices from "../services/userServices.js";
+import studentMajorsServices from "../services/studentMajorsServices.js";
+import userRoleServices from "../services/userRoleServices.js";
 import Utils from "../config/utils.js";
+import studentStrengthsServices from "../services/studentStrengthsServices.js";
 
 const router = useRouter();
 const route = useRoute();
@@ -151,10 +154,16 @@ const saveStudents = async () => {
       console.log("User Response:", userResponse.data.id);
       const userID = userResponse.data.id;
 
-      await studentServices.createStudent(userID, student);
-      console.log("Successfully saved student:", student);
-    }
+      const studentResponse = await studentServices.createStudent(userID, student);
+      console.log("Successfully saved student:", studentResponse.data);
+      await userRoleServices.createUserRole(userID, 1);
 
+      await studentMajorsServices.createStudentMajor(studentResponse.data.id,1);
+
+      for(let i =0; i< 5; i++){
+        await studentStrengthsServices.createStudentStrength(studentResponse.data.id,1);
+      }
+    }
     // After all students are created, reload the page
     getStudents();
   } catch (error) {
