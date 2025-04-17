@@ -66,10 +66,9 @@ onMounted(() => {
                     <v-card-title>{{shopItem.name}}</v-card-title>
                       <v-card-subtitle >{{shopItem.points}} pts.</v-card-subtitle>
                       <v-card-text >{{shopItem.description}}</v-card-text>
-                      <v-card-text>{{shopItem.id }}</v-card-text>
                       <div class="buttons">
-                        <v-btn color="red" @click="editShopItem(shopItem.id)">Edit</v-btn> <!-- EDIT BUTTON -->
-                        <v-btn color="red" @click="deleteShopItem(shopItem.id)">Delete</v-btn> <!-- EDIT BUTTON -->
+                        <v-btn color="red" @click="editShopItem(shopItem.id)" width = auto>Edit</v-btn> <!-- EDIT BUTTON -->
+                        <v-btn color="red" @click="deleteShopItem(shopItem.id)" width = auto>Delete</v-btn> <!-- EDIT BUTTON -->
                       </div>
                   </v-card>
                     
