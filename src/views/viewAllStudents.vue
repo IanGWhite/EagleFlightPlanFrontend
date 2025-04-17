@@ -5,6 +5,7 @@ import studentServices from "../services/studentServices.js";
 import semesterServices from "../services/semesterServices.js";
 import userServices from "../services/userServices.js";
 import studentMajorsServices from "../services/studentMajorsServices.js";
+import userRoleServices from "../services/userRoleServices.js";
 import Utils from "../config/utils.js";
 import studentStrengthsServices from "../services/studentStrengthsServices.js";
 
@@ -155,7 +156,7 @@ const saveStudents = async () => {
 
       const studentResponse = await studentServices.createStudent(userID, student);
       console.log("Successfully saved student:", studentResponse.data);
-      //await userRoleServices.createUserRole(userID, 1);
+      await userRoleServices.createUserRole(userID, 1);
 
       await studentMajorsServices.createStudentMajor(studentResponse.data.id,1);
 
