@@ -53,7 +53,7 @@ const todoTaskItems = ref([]);
 
     //todo tasks
     todoTaskItems.value = studentTasks.value.filter(n => 
-      n.approvalState == 0
+      n.approvalState == 0 && (n.eagleFlightPlanId == currentFlightPlan.value.id)
     ).map((n) => {
       for(let i = 0; i < otherTasks.value.length; i++){
         if(otherTasks.value[i].id == n.eagleTaskId){
@@ -73,7 +73,7 @@ const todoTaskItems = ref([]);
             rationale: otherTasks.value[i].rationale,
             category: myCategory,
            canUpload: otherTasks.value[i].canUpload, 
-            hyperLink: otherTasks.value[i].hyperLink, 
+            hyperLink: otherTasks.value[i].hyperLink ?? "", 
             reflectionReq: otherTasks.value[i].reflectionReq,
         }
       }
@@ -83,7 +83,7 @@ const todoTaskItems = ref([]);
 
         //done tasks
         doneTaskItems.value = studentTasks.value.filter(n => 
-      n.approvalState == 1 || n.approvalState == 2
+      (n.approvalState == 1 || n.approvalState == 2) && (n.eagleFlightPlanId == currentFlightPlan.value.id)
     ).map((n) => {
       for(let i = 0; i < otherTasks.value.length; i++){
         if(otherTasks.value[i].id == n.eagleTaskId){
@@ -100,7 +100,7 @@ const todoTaskItems = ref([]);
             name: otherTasks.value[i].name,
             description: otherTasks.value[i].description,
             points: otherTasks.value[i].points,
-            reflection: n.Reflection,
+            reflection: n.Reflection ?? "",
             approvalState: n.approvalState, 
             submissionDate: n.submissionDate, 
             completionDate: n.completionDate,
@@ -119,7 +119,7 @@ const todoTaskItems = ref([]);
 
 //todo experiences
 todoExperienceItems.value = studentExperiences.value.filter(n => 
-  n.approvalState == 0
+  n.approvalState == 0 && (n.eagleFlightPlanId == currentFlightPlan.value.id)
 ).map((n) => {
   for(let i = 0; i < otherExperiences.value.length; i++){
     if(otherExperiences.value[i].id == n.eagleExperienceId){
@@ -147,7 +147,7 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
 
     //done tasks
     doneExperienceItems.value = studentExperiences.value.filter(n => 
-  n.approvalState == 1 || n.approvalState == 2
+  (n.approvalState == 1 || n.approvalState == 2) && (n.eagleFlightPlanId == currentFlightPlan.value.id)
 ).map((n) => {
   for(let i = 0; i < otherExperiences.value.length; i++){
     if(otherExperiences.value[i].id == n.eagleExperienceId){
@@ -164,7 +164,7 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
         name: otherExperiences.value[i].name,
         description: otherExperiences.value[i].description,
         points: otherExperiences.value[i].points,
-        reflection: n.reflection,
+        reflection: n.reflection ?? "",
         category: myCategory,
         approvalState: n.approvalState, 
         submissionDate: n.submissionDate, 
@@ -222,7 +222,7 @@ console.log("done Experiences list: ", doneExperienceItems.value);
   };
 
   const fetchStudentEagleTasks = () => {
-  studentEagleTaskServices.getAllStudentEagleTasksForStudent(user.value.studentId, 1)
+  studentEagleTaskServices.getAllStudentEagleTasksForStudent(user.value.studentId, currentFlightPlan.value.id)
     .then((response) => {
       studentTasks.value = response.data; // Assuming the backend returns an array of tasks
       console.log("Fetched Student tasks:", studentTasks.value);
@@ -235,7 +235,7 @@ console.log("done Experiences list: ", doneExperienceItems.value);
   };
 
   const fetchStudentEagleExperiences = () => {
-  studentEagleExperienceServices.getAllStudentEagleExperiencesForStudent(user.value.studentId, 1)
+  studentEagleExperienceServices.getAllStudentEagleExperiencesForStudent(user.value.studentId, currentFlightPlan.value.id)
     .then((response) => {
       studentExperiences.value = response.data; // Assuming the backend returns an array of tasks
       console.log("Fetched Student Experiences:", studentExperiences.value);
@@ -267,6 +267,7 @@ console.log("done Experiences list: ", doneExperienceItems.value);
         if(semesters.value[j].id == eagleFlightPlans.value[i].semesterId){
           if(semesterTitle == semesters.value[j].name){
             currentFlightPlan.value = eagleFlightPlans.value[i];
+            console.log("current flight plan: ", currentFlightPlan.value);
             fetchCategories();
           }
 
