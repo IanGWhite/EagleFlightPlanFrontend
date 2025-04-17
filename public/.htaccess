@@ -9,4 +9,5 @@ RewriteRule ^index\.html$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . /2025/flight-plan/t5/index.html [L]
+
 </IfModule>
