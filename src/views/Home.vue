@@ -302,10 +302,11 @@ console.log("done Experiences list: ", doneExperienceItems.value);
     eventList.value = newEvents.value.filter(n => 
     new Date(n.date.substring(0,10)+', '+n.startTime+':00') >= new Date() &&
     new Date(n.date.substring(0,10)+', '+n.startTime+':00') <= futureDate
-    ).sort((a,b) => {return new Date(a.date.substring(0,10)+', '+a.startTime+':00') - new Date(b.date.substring(0,10)+', '+b.startTime+':00') })
+    ).sort((a,b) => {return new Date(a.date.substring(0,10)+', '+a.startTime+':00') - new Date(b.date.substring(0,10)+', '+b.startTime+':00') 
+
+    }).slice(0,3)
     .map((n) => {
       for(let i = 0; i < newEvents.value.length; i++){
-        
           var eventDate = new Date(n.date.substring(0,10)+', '+n.startTime+':00');
           console.log("event date",eventDate);
           var newDay = eventDate.getDate();
@@ -314,7 +315,6 @@ console.log("done Experiences list: ", doneExperienceItems.value);
           return {
             name: n.name,
             date: newDate,
-        
       }
       }
       return{}
