@@ -12,6 +12,7 @@ import eagleExperienceServices from '../services/eagleExperienceServices.js';
 import eagleFlightPlanServices from '../services/eagleFlightPlanServices.js';
 import studentServices from '../services/studentServices.js';
 import semesterServices from '../services/semesterServices.js';
+import eventServices from '../services/eventServices.js';
 import { year } from 'vue-cal/dist/i18n/ar.es.js';
 
 
@@ -26,7 +27,8 @@ const goToResume = () => {
 const goToInfo = () => {
   router.push({ name: 'StudentInfo' });
 };
-
+const eventList = ref([]);
+const newEvents = ref([]);
 const currentFlightPlan = ref({});
 const otherTasks = ref([]);
 const otherExperiences = ref([]);
@@ -292,6 +294,47 @@ console.log("done Experiences list: ", doneExperienceItems.value);
     
   }
 
+  const convertEvents = () => {
+    //convert events
+    var futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() +10 );
+    console.log("future date",futureDate);
+    eventList.value = newEvents.value.filter(n => 
+    new Date(n.date.substring(0,10)+', '+n.startTime+':00') >= new Date() &&
+    new Date(n.date.substring(0,10)+', '+n.startTime+':00') <= futureDate
+    ).sort((a,b) => {return new Date(a.date.substring(0,10)+', '+a.startTime+':00') - new Date(b.date.substring(0,10)+', '+b.startTime+':00') })
+    .map((n) => {
+      for(let i = 0; i < newEvents.value.length; i++){
+        
+          var eventDate = new Date(n.date.substring(0,10)+', '+n.startTime+':00');
+          console.log("event date",eventDate);
+          var newDay = eventDate.getDate();
+          var newMonth = eventDate.getMonth();
+          var newDate = ""+newMonth+"/"+newDay;
+          return {
+            name: n.name,
+            date: newDate,
+        
+      }
+      }
+      return{}
+    });
+    console.log("events list: ", eventList.value);
+  }
+
+  const fetchEvents = () => {
+    eventServices.getAllEvents()
+    .then((response) => {
+      newEvents.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched events:", newEvents.value);
+      convertEvents();
+    })
+    .catch((error) => {
+      console.error("Error fetching flight plans tasks:", error);
+    });
+    
+  }
+
   const fetchEagleFlightPlans = () => {
     eagleFlightPlanServices.getAllEagleFlightPlansForStudent(user.value.studentId)
     .then((response) => {
@@ -335,7 +378,7 @@ onMounted(() => {
 
   console.log(user.value)
 
-  //convertTexts();
+  fetchEvents();
   fetchEagleFlightPlans();
 })
 </script>
@@ -348,38 +391,28 @@ onMounted(() => {
           <v-list-item></v-list-item>
             <v-card variant="tonal">
             <v-card-title class="text-center">Upcoming Events</v-card-title>
-          <v-list-item class="card-list-item">
+          <v-list-item
+              v-for="(item, index) in eventList"
+              :key="item.type"
+              style="width: 100%;"
+              @click="dialog = true; currentItem = index; dialogIsTask=true; dialogIsComplete=false"
+              class="card-list-item"
+              dot-color="#ed6e13"
+            >
+              
+              <!-- {{ item.name }}  -->
+              <v-spacer></v-spacer>
+              
             <v-row no-gutters >
               <v-col>
-                Event 1
+                {{ item.name }}
               </v-col>
               <v-col class="text-right">
-                1/19
+                {{ item.date }}
               </v-col>
             </v-row>
           </v-list-item>
 
-          <v-list-item class="card-list-item">
-            <v-row no-gutters >
-              <v-col>
-                Event 2
-              </v-col>
-              <v-col class="text-right">
-                2/1
-              </v-col>
-            </v-row>
-          </v-list-item>
-
-          <v-list-item class="card-list-item">
-            <v-row no-gutters>
-              <v-col>
-                Event 3
-              </v-col>
-              <v-col class="text-right">
-                2/11
-              </v-col>
-            </v-row>
-          </v-list-item>
 
           <v-card-text class="card-link-text-wrapper">
             <a href="Calendar" class="card-link-text">See full calendar</a>
