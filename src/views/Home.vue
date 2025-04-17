@@ -420,48 +420,6 @@ onMounted(() => {
 
           </v-card>
           <v-list-item></v-list-item> <!-- SPACE IN BETWEEN CARDS -->
-
-          <!--              EXPERIENCES CARD               -->
-          <v-card variant="tonal">
-            <v-card-title class="text-center">Experiences</v-card-title>
-            <v-list-item class="card-list-item">
-              <v-row no-gutters >
-                <v-col>
-                  Experience 1
-                </v-col>
-                <v-col class="text-right">
-                  1/19
-                </v-col>
-              </v-row>
-            </v-list-item>
-  
-            <v-list-item class="card-list-item">
-              <v-row no-gutters >
-                <v-col>
-                  Experience 2
-                </v-col>
-                <v-col class="text-right">
-                  2/1
-                </v-col>
-              </v-row>
-            </v-list-item>
-  
-            <v-list-item class="card-list-item">
-              <v-row no-gutters>
-                <v-col>
-                  Experience 3
-                </v-col>
-                <v-col class="text-right">
-                  2/11
-                </v-col>
-              </v-row>
-            </v-list-item>
-            
-            <v-card-text class="card-link-text-wrapper">
-              <a href="www.google.com/" class="card-link-text">See all</a>
-            </v-card-text>
-  
-            </v-card>
           
         </v-list>
       </v-navigation-drawer>
