@@ -18,7 +18,7 @@ const route = useRoute();
 const user = ref({});
 
 const studentId = ref({});
-const student = ref({});
+const student = ref({fName:"", lName:"", points:0});
 const tab = ref('option-1');
 
 const majors = ref([]);
@@ -111,11 +111,12 @@ const pointLogHeaders = [
   { title: "Appoved By:", key: "approvedBy"},
   { title: "Date", key: "date"},
 ];
-
+// POINT LOG ⓫⓫⓫⓫⓫⓫⓫⓫⓫⓫⓫
 const getPointLog = async () => {
   try {
     const response = await pointLogServices.getAllPointLogs(studentId.value);
-    
+    console.clear()
+    console.log(studentId.value)
     if (response && response.data) {
       pointLogList.value = response.data;
 
@@ -139,6 +140,20 @@ const getPointLog = async () => {
     message.value = "An error occurred: " + e.message;
     console.error("Error fetching point logs:", e);
   }
+};
+
+const fetchStudent = (id) => {
+  console.log("studentId:", id)
+  studentServices.getStudent(id)
+    .then((response) => {
+      student.value = response.data; // Assuming the backend returns an array of tasks
+      // console.log("Fetched student:", student.value);
+      // console.log("Fetched student points:", student.value.points);
+    })
+    .catch((error) => {
+      console.error("Error fetching student:", error);
+    });
+    
 };
 
 
@@ -272,13 +287,14 @@ const getUserRole = async () => {
 onMounted(() => {
   studentId.value = route.params.id;
   console.log(studentId.value);
+  fetchStudent(studentId.value);
   getPointLog();
   getMajors();
   getStudentMajor();
   getGradSemester();
   getSemesters();
   getStudentStrenghs();
-  getUserRole();
+  // getUserRole();
 })
 
 const savePermissions = () => {
@@ -309,6 +325,10 @@ const saveStudent = async () => {
     console.error("Error saving data:", error);
     alert("Failed to save major or graduation date.");
   }
+};
+
+const goToTransaction = () => {
+  router.push({ name: 'AddTransaction', params: { id: studentId.value } }); 
 };
 
 const loadCurrentTasks = (semester) => {
@@ -342,7 +362,7 @@ const loadCurrentTasks = (semester) => {
 <template>
   <v-app>
     <v-container>
-      <p class="page-title">Student Name</p>
+      <p class="page-title">{{ student.fName }} {{ student.lName }}</p>
       <v-card>
         
       <v-tabs v-model="tab">
@@ -477,7 +497,7 @@ const loadCurrentTasks = (semester) => {
           <v-row justify="space-between" align="center">
             <v-col>
               <v-card variant="tonal text-center" class="pa-2 text-h6" >
-                Points: 250
+                Points: {{ student.points }}
               </v-card>
             </v-col>
 
@@ -485,7 +505,7 @@ const loadCurrentTasks = (semester) => {
             <v-col></v-col>
 
             <v-col>
-              <v-btn @click="" rounded="0" class="alt-btn">New Transaction</v-btn>
+              <v-btn @click="goToTransaction" rounded="0" class="alt-btn">New Transaction</v-btn>
             </v-col>
           </v-row>
           <v-data-table :headers="pointLogHeaders"

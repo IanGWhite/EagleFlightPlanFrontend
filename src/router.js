@@ -203,7 +203,7 @@ const router = createRouter({
       props: true,
     },
     {
-      path: "/AddTransaction",
+      path: "/AddTransaction/:id",
       name: "AddTransaction",
       component: AddTransaction,
       props: true,
