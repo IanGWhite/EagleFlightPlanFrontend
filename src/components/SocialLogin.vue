@@ -45,9 +45,32 @@ const handleCredentialResponse = async (response) => {
     });
 };
 
+const logout = async () => {
+  const token = localStorage.getItem('userToken');
+  if (token) {
+    await AuthServices.logoutUser(token);  // Invalidate session
+    localStorage.removeItem('userToken');  // Clear token from storage
+    router.push({ name: "login" });  // Redirect to login page
+  }
+};
+
+defineExpose({ logout });  // Expose the logout function
+
 onMounted(() => {
-  loginWithGoogle();
+  const storedToken = localStorage.getItem('userToken');
+  if (storedToken) {
+    isLoggedIn.value = true;  // User is logged in, show logout button instead
+  } else {
+    loginWithGoogle(); // Otherwise, show the Google login button
+  }
 });
+</script>
+<script>
+
+export const getLogoutToken = () => {
+  const logoutToken = localStorage.getItem('userToken');
+  return logoutToken;
+};
 </script>
 
 <template>

@@ -1,8 +1,9 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
+import { getLogoutToken } from "./SocialLogin.vue";
 
-import logoutUser from "../services/authServices";
+//import logout from "./SocialLogin.vue";
 import Utils from "../config/utils.js";
 import store from "../store/store.js";
 import AuthServices from "../services/authServices";
@@ -15,20 +16,7 @@ const user = ref(null)
 const userService = ref([{ id: "", admin: 0 }]);
 const isAdmin = ref(userService.value.admin);
 
-
-
-const logout = async (response) => {
-  let token = {
-    credential: response.credential,
-  };
-  await AuthServices.logoutUser(token)
-    .then(() => {
-      router.push({ name: "login" });
-    })
-    .catch((error) => {
-      console.log("error", error);
-    });
-};
+const logoutToken = ref(getLogoutToken());
 
 const navigateTo = (routeName) => {
   if(user.value != null)
@@ -36,6 +24,21 @@ const navigateTo = (routeName) => {
     router.push({ name: routeName });
   }
   drawer.value = false; //Close drawer after navigation
+};
+
+
+
+
+const logout = async () => {
+  const token = logoutToken;
+  console.log("attempting log out" + logoutToken);
+  if (token) {
+    console.log("log out 1");
+    await AuthServices.logoutUser(token);  // Invalidate session
+    console.log("logout 2")
+    console.log("log out 3");
+    router.push({ name: "login" });  // Redirect to login page
+  }
 };
 
 onMounted(() => {
@@ -91,9 +94,7 @@ const fetchUser= () => {
           <v-btn v-if="isAdmin"  class="drop-btn" @click="navigateTo('AdminHome')">Admin Home</v-btn>
           <v-btn class="drop-btn" @click="navigateTo('StudentProfile')">Profile</v-btn>
           <v-btn v-if="user" class="drop-btn" @click="logout">Sign Out</v-btn>
-
-            
-          
+          <SocialLogin ref="socialLoginRef" />
         </v-list-item-content>
       </v-list-item>
       </v-list>
