@@ -64,12 +64,13 @@ onMounted(() => {
                 <v-card variant="text" elevation="5" class="d-flex ga-4" style="padding: 5%; background: white">
                   <v-card variant="outlined" style="background: white;">
                     <v-img
-                      :src="resolveFrontendImage(shopItem.imageLink)"
+                      lazy-src="../assets/shop/image_placeholder.jpg"
+                      :src="shopItem.imageLink"
                       width="110"
                       height="120"
                       cover
                     />
-
+                    
                   </v-card>
                   <v-card variant="text" style="padding: 0%;">
                     <v-card-title>{{shopItem.name}}</v-card-title>
