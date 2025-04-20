@@ -4,6 +4,7 @@ import { ref,onMounted, hydrate } from "vue";
 import MenuBar from "../components/MenuBar.vue";
 import eagleTaskServices from "../services/eagleTaskServices";
 import studentEagleTaskServices from "../services/studentEagleTaskServices";
+import pointLogServices from "../services/pointLogServices.js";
 
 import Utils from "../config/utils.js";
 
@@ -31,23 +32,6 @@ const events = ref(
   const sortBy= ref([{ key: 'submissionDate', order: 'asc' }])
   const completedTasks = ref(
   [
-    // { type: "Task 1", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Chandler Hurt", reflection: "This made me think about lots of things like where to look for a job or whatever.", submissionDate: '2021-05-13' },
-  // { type: "Task 2", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true, student:"Ian White", reflection: "This made me think about lots of things like where to look for a job or whatever.", submissionDate: '2025-02-16' },
-  // { type: "Task 3", name: "This is the task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Samantha Wiggs", reflection:"", submissionDate: '2023-02-01'},
-  // { type: "Task 3", name: "This is the task 2", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"New Student", reflection:"hfjdskhjfkds", submissionDate: '2020-02-01'},
-  // {
-  //   name: "", 
-  //   points: "", 
-  //   description: "", 
-  //   rationale:"", 
-  //   canUpload:false, 
-  //   hyperLink:"", 
-  //   reflectionReq:false, 
-  //   student:"", 
-  //   reflection: "", 
-  //   submissionDate: '',
-  //   completionDate: new Date()
-  // }
   ]);
 
   const toBeAddedTask = ref({
@@ -85,6 +69,13 @@ const events = ref(
   { name: "Shop", location: "StudentShop" }, //change to admin shop when done
   { name: "Badges", location: "Home" },
   ]);
+
+  const pointLog = ref({
+    approvedBy: "",
+    name: "",
+    date: new Date(),
+    studentId: 0,
+  })
 
 onMounted(() => {
   user.value = Utils.getStore('user')
@@ -164,6 +155,7 @@ const UpdateStudentTaskApproval = (status) => {
     var lookingForIndex = completedTasks.value.findIndex(obj => obj.myTaskId === currentItemObj.value.myTaskId)
     completedTasks.value.splice(lookingForIndex, 1)
     dialog.value = false
+    logPoints()
   })
   .catch((error) => {
     console.error("Error updating task:", error);
@@ -172,6 +164,8 @@ const UpdateStudentTaskApproval = (status) => {
 
 const logPoints = () => {
   //update students points to correct values and create point log item
+  // pointLog.value.approvedBy = user.value.fName 
+  console.log(user.value.fName)
 };
 
 </script>
