@@ -35,6 +35,7 @@ import AddEagleExperience from "./views/AddEagleExperience.vue";
 import AddShopItem from "./views/AddShopItem.vue";
 import AdminShop from "./views/AdminShop.vue";
 import EditShopItem from "./views/EditShopItem.vue";
+import FlightPlanner from "./views/FlightPlanner.vue";
 
 
 import EditEagleExperience from "./views/editEagleExperience.vue";
@@ -241,6 +242,11 @@ const router = createRouter({
       path: "/ViewAllEagleExperience",
       name: "ViewAllEagleExperience",
       component: ViewAllEagleExperience,
+    },
+    {
+      path: "/FlightPlanner",
+      name: "FlightPlanner",
+      component: FlightPlanner,
     },
   ],
 });
