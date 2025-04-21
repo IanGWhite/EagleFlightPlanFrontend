@@ -161,8 +161,6 @@ const onFileChange = (file)  => {
                       append-inner-icon="mdi-camera"
                       variant="solo"
                       accept="image/png, image/jpeg"
-                      required
-                      :rules="[rules.required]"
                     >
                   </v-file-input>
                   </v-card-text>

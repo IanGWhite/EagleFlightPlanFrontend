@@ -1,12 +1,13 @@
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
-import EagleExperienceServices from "../services/eagleExperienceServices";
-import CategoryServices from "../services/categoryServices";
+import EagleExperienceServices from "../services/eagleExperienceServices.js";
+import CategoryServices from "../services/categoryServices.js";
 import MenuBar from "../components/MenuBar.vue";
 import Utils from "../config/utils.js";
 
 const router = useRouter();
+const route = useRoute();
 const user = ref({});
 
 const dialog = ref(false);
@@ -14,6 +15,8 @@ const currentItem = ref(0);
 
 const categories = ref([]);
 const categoryNames = ref([]);
+
+const experienceId = ref('');
 
 const message = ref("");
 
@@ -28,6 +31,16 @@ const experience = ref({
   reflectionReq: false,
 });
 
+
+const getEagleExperience = async () => {
+  const response = await EagleExperienceServices.getEagleExperiences(experienceId.value);
+  experience.value = response.data;
+
+  const category = categories.value.find(
+    (cat) => cat.id === experience.value.categoryId
+  );
+  if (category) experienceCategoryName.value.name = category.name;
+};
 
 const getCategoryNames = () => {
   for(let i = 0; i < categories.value.length; i++){
@@ -60,7 +73,7 @@ const saveEagleExperience = () => {
     }
 
   }
-  EagleExperienceServices.createEagleExperiences(experience.value)
+  EagleExperienceServices.updateEagleExperiences(experienceId.value, experience.value)
     .then(() => {
       message.value = "Experience saved successfully";
       router.push({ name: "ViewAllEagleExperience" }); // hypothetical route name for education list
@@ -77,8 +90,10 @@ const cancel = () => {
 
 onMounted(() => {
   user.value = Utils.getStore('user')
+  experienceId.value = route.params.id;
   console.log(user.value)
   fetchCategories();
+  getEagleExperience();
 })
 
 </script>
@@ -137,7 +152,7 @@ onMounted(() => {
                                 <p color="red">{{ message }}</p>
                                 <div class="buttons">
                                 <v-btn color="error" @click="cancel">Cancel</v-btn>
-                                <v-btn color="red" @click="saveEagleExperience">confirm</v-btn>
+                                <v-btn color="red" @click="saveEagleExperience">Save</v-btn>
                                 </div>
                     </v-form>
               </v-col>
