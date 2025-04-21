@@ -73,9 +73,9 @@ const todoTaskItems = ref([]);
             name: otherTasks.value[i].name,
             description: otherTasks.value[i].description,
             points: otherTasks.value[i].points,
-            rationale: otherTasks.value[i].rationale,
+            rationale: otherTasks.value[i].rationale ?? "",
             category: myCategory,
-           canUpload: otherTasks.value[i].canUpload, 
+           canUpload: otherTasks.value[i].canUpload ?? "", 
             hyperLink: otherTasks.value[i].hyperLink ?? "", 
             reflectionReq: otherTasks.value[i].reflectionReq,
         }
@@ -105,8 +105,8 @@ const todoTaskItems = ref([]);
             points: otherTasks.value[i].points,
             reflection: n.Reflection ?? "",
             approvalState: n.approvalState, 
-            submissionDate: n.submissionDate, 
-            completionDate: n.completionDate,
+            submissionDate: n.submissionDate ?? "", 
+            completionDate: n.completionDate ?? "",
         }
       }
       }
@@ -170,8 +170,8 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
         reflection: n.reflection ?? "",
         category: myCategory,
         approvalState: n.approvalState, 
-        submissionDate: n.submissionDate, 
-        completionDate: n.completionDate,
+        submissionDate: n.submissionDate ?? "", 
+        completionDate: n.completionDate ?? "",
     }
   }
   }
