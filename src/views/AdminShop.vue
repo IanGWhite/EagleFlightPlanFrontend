@@ -29,6 +29,15 @@ const deleteShopItem = async (itemId) => {
   getShopItems();
 }
 
+const resolveFrontendImage = (path) => {
+  try {
+    return new URL(`../assets/${path}`, import.meta.url).href;
+  } catch {
+    return new URL('../assets/shop/image_placeholder.jpg', import.meta.url).href;
+  }
+};
+
+
 onMounted(() => {
   getShopItems();
 })
@@ -55,12 +64,13 @@ onMounted(() => {
                 <v-card variant="text" elevation="5" class="d-flex ga-4" style="padding: 5%; background: white">
                   <v-card variant="outlined" style="background: white;">
                     <v-img
-                    :src="`${shopItem.imageLink}`"
-                    width="110"
-                    height="120"
-                    cover
+                      lazy-src="../assets/shop/image_placeholder.jpg"
+                      :src="shopItem.imageLink"
+                      width="110"
+                      height="120"
+                      cover
+                    />
                     
-                    ></v-img>
                   </v-card>
                   <v-card variant="text" style="padding: 0%;">
                     <v-card-title>{{shopItem.name}}</v-card-title>
