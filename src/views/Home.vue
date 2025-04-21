@@ -63,9 +63,9 @@ const todoTaskItems = ref([]);
           //grabbing category
           console.log("categoryId:", otherTasks.value[i].categoryId);
           var myCategory = ''; //default category
-          for(let i = 0; i < categories.value.length; i++){
-          if(categories.value[i].id == otherTasks.value[i].categoryId){
-           myCategory = categories.value[i].name;
+          for(let j = 0; j < categories.value.length; j++){
+          if(categories.value[j].id == otherTasks.value[i].categoryId){
+           myCategory = categories.value[j].name;
           }
       }
           return {
@@ -93,9 +93,9 @@ const todoTaskItems = ref([]);
           //grabbing category
           console.log("categoryId:", otherTasks.value[i].categoryId);
           var myCategory = ''; //default category
-          for(let i = 0; i < categories.value.length; i++){
-          if(categories.value[i].id == otherTasks.value[i].categoryId){
-           myCategory = categories.value[i].name;
+          for(let j = 0; j < categories.value.length; j++){
+          if(categories.value[j].id == otherTasks.value[i].categoryId){
+           myCategory = categories.value[j].name;
           }
       }
           return {
@@ -129,9 +129,9 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
       //grabbing category
       console.log("categoryId:", otherExperiences.value[i].categoryId);
       var myCategory = ''; //default category
-      for(let i = 0; i < categories.value.length; i++){
-      if(categories.value[i].id == otherExperiences.value[i].categoryId){
-       myCategory = categories.value[i].name;
+      for(let j = 0; j < categories.value.length; j++){
+      if(categories.value[j].id == otherExperiences.value[i].categoryId){
+       myCategory = categories.value[j].name;
       }
   }
       return {
@@ -157,9 +157,9 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
       //grabbing category
       console.log("categoryId:", otherExperiences.value[i].categoryId);
       var myCategory = ''; //default category
-      for(let i = 0; i < categories.value.length; i++){
-      if(categories.value[i].id == otherExperiences.value[i].categoryId){
-       myCategory = categories.value[i].name;
+      for(let j = 0; j < categories.value.length; j++){
+      if(categories.value[j].id == otherExperiences.value[i].categoryId){
+       myCategory = categories.value[j].name;
       }
   }
       return {
@@ -272,6 +272,8 @@ console.log("done Experiences list: ", doneExperienceItems.value);
             currentFlightPlan.value = eagleFlightPlans.value[i];
             console.log("current flight plan: ", currentFlightPlan.value);
             fetchCategories();
+          }else{
+            console.log("couldnt find current flight plan: ", semesterTitle, semesters.value[j].name);
           }
 
         }
