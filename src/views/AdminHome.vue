@@ -43,7 +43,7 @@ const events = ref(
   const quickAccess = ref( 
   [{ name: "Students", location: "/viewAllStudents" },
   { name: "Tasks", location: "/AddTask" },
-  { name: "Experiences", location: "/AddEagleExperience" },
+  { name: "Experiences", location: "/ViewAllEagleExperience" },
   { name: "Events", location: "/AddEvent" },
   { name: "Shop", location: "/AdminShop" }, //change to admin shop when done
   { name: "Badges", location: "/Home" },
