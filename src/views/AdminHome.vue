@@ -5,6 +5,8 @@ import MenuBar from "../components/MenuBar.vue";
 import eagleTaskServices from "../services/eagleTaskServices";
 import studentEagleTaskServices from "../services/studentEagleTaskServices";
 import pointLogServices from "../services/pointLogServices.js";
+import eagleFlightPlanServices from "../services/eagleFlightPlanServices.js";
+
 
 import Utils from "../config/utils.js";
 
@@ -138,12 +140,12 @@ const fetchOneTask = (taskId, allTaskIndex, studentTaskId) => {
     
 };
 
-const fetchStudentNames = () => {
+const fetchStudents = () => {
   // for each task in completed tasks
-  // for (task in completedTasks)
-  // {
-  //   task.value.studentId = 
-  // }
+  for (task in completedTasks)
+  {
+    task.value.studentId = eagleFlightPlanServices
+  }
   // // use the student task id to find the flight plan (eagleFlightPlanId)
   // then find the student id from flight plan
   // then the student's first and last name
@@ -176,7 +178,6 @@ const logPoints = () => {
   //update students points to correct values and create point log item
   pointLog.value.approvedBy = user.value.fName + " " + user.value.lName
   // pointLogServices.createPointLog()
-  console.log(user.value.fName)
 };
 
 </script>
