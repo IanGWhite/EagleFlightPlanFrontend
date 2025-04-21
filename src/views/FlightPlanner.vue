@@ -23,12 +23,8 @@ const gradSemesters = ref([]);
 
 // * * * F L I G H T   P L A N  * * *
 const semesters = ref([{ semestersLeft: 8, semesterNormalized: "Freshman 1" },
-{ semestersLeft: 7, semesterNormalized: "Freshman 2" },
-{ semestersLeft: 6, semesterNormalized: "Sophomore 1" }, { semestersLeft: 5, semesterNormalized: "Sophomore 2" },
-{ semestersLeft: 4, semesterNormalized: "Junior 1" }, { semestersLeft: 3, semesterNormalized: "Junior 2" },
-{ semestersLeft: 2, semesterNormalized: "Senior 1" }, { semestersLeft: 1, semesterNormalized: "Senior 2" }
 ]);
-const selectedSemestersLeft = ref(8);
+const selectedSemestersLeft = ref(1);
 //tasks
 //list of all tasks that the admin can choose from
 const allTasks = ref(
@@ -51,78 +47,23 @@ const message = ref("test");
 const fetchSemesters = () => {
   semesterServices.getAllSemesters()
   .then((response) => {
-
+    semesters.value = response.data.map((semester) =>({
+      semestersLeft: semester.id,
+      semesterNormalized: semester.name,
+    }));
+  })
+  .catch((error) =>{
+    console.error(error);
   })
 };
 
-onMounted(async () => {
-  studentId.value = route.params.id;
-  console.log("Student ID:", studentId.value);
+onMounted(() => {
+  user.value = Utils.getStore('user');
+  //console.log(user.value)
+  fetchSemesters()
+})
 
-  await fetchSemesters();
-});
 
-const savePermissions = () => {
-  try{ 
-  const userPayload = {
-    admin: user.value.admin 
-  };
-  userServices.updateUser(user.value.id, userPayload);
-  console.log("is admin.1: "+user.value.admin);
-  console.log("is admin.2: "+userPayload.admin);
-
-  // userRole saving AHHHHHHHH!!!!!!!!
-
-  const match = roles.value.find(role =>
-    role.canEditPoints === userRole.value.canEditPoints &&
-    role.canAddEvents === userRole.value.canAddEvents &&
-    role.canMarkAttendance === userRole.value.canMarkAttendance
-  );
-
-  const userRolePayload = {
-    roleId: match.id ?? 1
-  };
-  console.log("Userid: " + user.value.id);
-  console.log("UserRoleId: "+ userRole.value.id);
-  console.log("RoleId: "+ match.id)
-
-  userRoleServices.updateUserRole(user.value.id,userRoleId.value.id,userRolePayload);
-
-  } catch (error) {
-    console.error("Error saving data:", error);
-    alert("Failed to save user/userRole date.");
-  }
-};
-
-const saveStudent = async () => {
-  try {
-    // Save Major
-    const majorPayload = {
-      majorId: studentmajorIdNo.value.studentMajorId,
-      studentMajorId: studentmajorIdNo.value.studentMajorId
-    };
-
-    console.log("Saving major:", majorPayload);
-    await studentMajorsServices.updateStudentMajor(studentId.value, studentmajorIdNo.value.id, majorPayload);
-
-    // Save Graduation Date
-    const gradDatePayload = {
-      estimatedGradSemester: gradSemesterIdNo.value.toString()
-    };
-
-    console.log("Saving graduation date:", gradDatePayload);
-    await studentServices.updateStudent(studentId.value, gradDatePayload);
-
-    alert("Major and Graduation Date saved successfully!");
-  } catch (error) {
-    console.error("Error saving data:", error);
-    alert("Failed to save major or graduation date.");
-  }
-};
-
-const goToTransaction = () => {
-  router.push({ name: 'AddTransaction', params: { id: studentId.value } }); 
-};
 
 const loadCurrentTasks = (semester) => {
   var myIndex = 0;
@@ -155,163 +96,12 @@ const loadCurrentTasks = (semester) => {
 <template>
   <v-app>
     <v-container>
-      <p class="page-title">{{ student.fName }} {{ student.lName }}</p>
+      
       <v-card>
-        
-      <v-tabs v-model="tab">
-        <v-tab 
-          text="Info"
-          value="option-1"
-        ></v-tab>
-        <v-tab 
-          text="Badges" 
-          value="option-2"
-          ></v-tab>
-        <v-tab 
-          text="Points"
-          value="option-3"
-        ></v-tab>
-        <v-tab 
-          text="Flight Plan"
-          value="option-4"
-          @click="loadCurrentTasks(selectedSemestersLeft)"
-        ></v-tab>
-        <v-tab 
-          text="Resumes"
-          value="option-5"
-        ></v-tab>
-        <v-tab 
-          text="Permissions"
-          value="option-6"
-        ></v-tab>
-      </v-tabs>
-      <v-tabs-window v-model="tab">
-        <!-- PERSONAL INFO -->
-        <v-tabs-window-item value="option-1">
-          <v-sheet class="pa-3">
-              <v-form>
-                <v-row>
-                  <v-col>
-                    <!-- add v-models to autocomplete forms to attatch them to a student info ref-->
-                    <v-sheet>
-                      <v-label>Student Id</v-label>
-                      <v-chip 
-                      class="pa-2"
-                      color="lightblue" 
-                      >
-                        {{ student.studentIdNo }} <!-- Display the student major text -->
-                      </v-chip>
-                    </v-sheet>
-                      
-                    <v-sheet>
-                      <v-label>Major</v-label> 
-                      <v-select 
-                        v-model="studentmajorIdNo.studentMajorId"
-                        :items="majors"
-                        item-title="name"
-                        item-value="id"
-                        label="Select Major"
-                        variant="solo"
-                        hide-details
-                        dense
-                        style="margin-bottom: 10px;"
-                      >
-                        <template #prepend-inner="{ item }">
-                          <!-- Only render item.name if item is defined -->
-                          {{ item ? item.name : '' }} 
-                        </template>
-                      </v-select>
-
-
-                    </v-sheet>
-
-                      
-                      <v-sheet>
-                        <v-label>Graduation Date</v-label> 
-                        <v-select 
-                        :key="gradSemesterIdNo"
-                        v-model="gradSemesterIdNo"
-                        :items="gradSemesters"
-                        item-title="dateEnd"
-                        item-value="id"
-                        label="Select Semester"
-                        variant="solo"
-                        hide-details
-                        dense
-                        style="margin-bottom: 10px;"
-                      >
-                        <template #prepend-inner>
-                          {{ gradSemesters.dateEnd }}
-                        </template>
-                      </v-select>
-                      </v-sheet>
-                  </v-col>
-                  
-                  <v-col>
-                    <v-card>
-                      <v-card-title>Top 5 Clifton Strengths</v-card-title>
-                      <v-card-text>
-                        <v-row dense>
-                          <v-col
-                            v-for="(strength, index) in studentStrengths"
-                            :key="index"
-                            cols="12"
-                          >
-                            <v-label class="text-h6 font-weight-bold">
-                              {{ index + 1 }}. {{ strength.name }}
-                            </v-label>
-                          </v-col>
-                        </v-row>
-                      </v-card-text>
-                    </v-card>
-
-                  </v-col>
-
-
-                    
-                  </v-row>
-                    <div class="buttons">
-                      <v-btn color="red" @click="saveStudent()">Save</v-btn> <!-- EDIT BUTTON -->
-                    </div>
-          
-              
-            </v-form>
-          </v-sheet>
-      </v-tabs-window-item>
-      <!--        BADGES         -->
-      <v-tabs-window-item value="option-2">
-        <v-card-text>
-          WIP
-        </v-card-text>
-      </v-tabs-window-item>
-      <!--        POINT TRANSACTION HISTORY         -->
-      <v-tabs-window-item value="option-3">
-        <v-container>
-          <v-row justify="space-between" align="center">
-            <v-col>
-              <v-card variant="tonal text-center" class="pa-2 text-h6" >
-                Points: {{ student.points }}
-              </v-card>
-            </v-col>
-
-            <v-col></v-col>
-            <v-col></v-col>
-
-            <v-col>
-              <v-btn @click="goToTransaction" rounded="0" class="alt-btn">New Transaction</v-btn>
-            </v-col>
-          </v-row>
-          <v-data-table :headers="pointLogHeaders"
-           :items="pointLogList"
-            :filter-keys="['Date']"></v-data-table>
-        </v-container>
-
-      </v-tabs-window-item>
-      <!--        FLIGHT PLAN         -->
-      <v-tabs-window-item value="option-4">
         <v-container>
           <v-row justify="space-between">
             <v-col>
+              just do it by semester
               <v-select dense
                 v-model="selectedSemestersLeft"
                 :items="semesters"
@@ -432,54 +222,7 @@ const loadCurrentTasks = (semester) => {
           </v-container>
 
         </v-container>
-      </v-tabs-window-item>
-
-      <!--        RESUMES         -->
-      <v-tabs-window-item value="option-5">
-        <v-container>
-          
-
-          <v-data-table 
-          hide-default-header
-          :items="studentResumes"
-          :headers="headers"
-          >
-          <template v-slot:item.button="{ item }" >
-            <v-btn class="alt-btn"
-             rounded="0"
-             append-icon="mdi-arrow-right"
-             @click="ViewStudentResume()"
-            >View</v-btn>
-          </template>
-          </v-data-table>
-        </v-container>
-      </v-tabs-window-item>
-
-      <!--        PERMISSIONS         -->
-      <v-tabs-window-item value="option-6">
-        <v-sheet class="pa-5">
-          <v-form class="pa-3">
-            <v-switch
-              v-model="user.admin"
-              color="blue"
-              label="Admin"
-              persistent-hint
-              hint="Is the user an admin?"
-            ></v-switch>
-   
-            <v-switch v-model="userRole.canEditPoints" color="blue" label="Points" persistent-hint="true" hint="Ability to add or remove points from a student"></v-switch>
-            <v-switch v-model="userRole.canAddEvents" color="blue" label="Events" persistent-hint="true" hint="Ability to add or remove event information"></v-switch>
-            <v-switch v-model="userRole.canMarkAttendance" color="blue" label="Attendance" persistent-hint="true" hint="Ability to upload event attendance sheets"></v-switch>
-
-            <div class="buttons">
-              <v-btn color="red" @click="savePermissions()">Save</v-btn> <!-- EDIT BUTTON -->
-            </div>
-          </v-form>
-        </v-sheet>
-      </v-tabs-window-item>
-
-
-      </v-tabs-window>
+      
      
       </v-card>
     </v-container>
