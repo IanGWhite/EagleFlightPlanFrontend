@@ -47,7 +47,8 @@ const events = ref(
     submissionDate: '',
     completionDate: new Date(),
     taskId: 0,
-    studentTaskId: 0
+    studentTaskId: 0,
+    studentId: 0
   })
 
   const allTasks = ref([{approvalState: 0, eagleTaskId: 0, Reflection:""}]);
@@ -139,16 +140,25 @@ const fetchOneTask = (taskId, allTaskIndex, studentTaskId) => {
 
 const fetchStudentNames = () => {
   // for each task in completed tasks
-  // use the student task id to find the flight plan (eagleFlightPlanId)
+  // for (task in completedTasks)
+  // {
+  //   task.value.studentId = 
+  // }
+  // // use the student task id to find the flight plan (eagleFlightPlanId)
   // then find the student id from flight plan
   // then the student's first and last name
 };
 
 const UpdateStudentTaskApproval = (status) => {
   var newState = 0
-  if (status) newState = 2
+  var usersName = ""
+  if (status) 
+  {
+    newState = 2
+    usersName = user.value.fName + " " + user.value.lName
+  }
   console.log(currentItemObj.value.studentTaskId)
-  studentEagleTaskServices.updateEagleTask(currentItemObj.value.studentTaskId, {'approvalState': newState})
+  studentEagleTaskServices.updateEagleTask(currentItemObj.value.studentTaskId, {'approvalState': newState, 'approvedBy': usersName, 'pointsAwarded': currentItemObj.value.points})
   .then((response) => {
     console.log("updated correctly:", response.data)
     // completedTasks.value.splice(currentItemObj, 1)
@@ -164,7 +174,8 @@ const UpdateStudentTaskApproval = (status) => {
 
 const logPoints = () => {
   //update students points to correct values and create point log item
-  // pointLog.value.approvedBy = user.value.fName 
+  pointLog.value.approvedBy = user.value.fName + " " + user.value.lName
+  // pointLogServices.createPointLog()
   console.log(user.value.fName)
 };
 
