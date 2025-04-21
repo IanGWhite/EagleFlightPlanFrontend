@@ -35,6 +35,9 @@ import AddEagleExperience from "./views/AddEagleExperience.vue";
 import AddShopItem from "./views/AddShopItem.vue";
 import AdminShop from "./views/AdminShop.vue";
 import EditShopItem from "./views/EditShopItem.vue";
+import EditTask from "./views/editTask.vue";
+import viewAllTasks from "./views/viewAllTasks.vue";
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -203,6 +206,16 @@ const router = createRouter({
       name: "AddTask",
       component: AddTask,
       props: true,
+    },
+    {
+      path: "/EditTask/:id",
+      name: "EditTask",
+      component: EditTask,
+    },
+    {
+      path: "/viewAllTasks",
+      name: "viewAllTasks",
+      component: viewAllTasks,
     },
     {
       path: "/viewAllStudents",
