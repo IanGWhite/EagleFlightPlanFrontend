@@ -4,6 +4,9 @@ export default {
   getRole(roleId) {
     return apiClient.get(`/roles/${roleId}`);
   },
+  getAllRoles() {
+    return apiClient.get(`/roles/`);
+  },
   createRole(data) {
     return apiClient.post(`/users/`, data);
   },
