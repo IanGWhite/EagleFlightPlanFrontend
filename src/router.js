@@ -36,6 +36,11 @@ import AddShopItem from "./views/AddShopItem.vue";
 import AdminShop from "./views/AdminShop.vue";
 import EditShopItem from "./views/EditShopItem.vue";
 
+
+import EditEagleExperience from "./views/editEagleExperience.vue";
+import ViewAllEagleExperience from "./views/viewAllEagleExperience.vue";
+
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -226,6 +231,16 @@ const router = createRouter({
       name: "AddEagleExperience",
       component: AddEagleExperience,
       props: true,
+    },
+    {
+      path: "/EditEagleExperience/:id",
+      name: "EditEagleExperience",
+      component: EditEagleExperience,
+    },
+    {
+      path: "/ViewAllEagleExperience",
+      name: "ViewAllEagleExperience",
+      component: ViewAllEagleExperience,
     },
   ],
 });
