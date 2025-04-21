@@ -84,7 +84,11 @@ const saveTask = () => {
     task.value.categoryId = category.id;
   }
 
-  TaskServices.updateEagleTask(taskId.value,task.value)
+  if(task.value.name == "" || task.value.description == "" || task.value.semestersFromGrad == "" ){
+    message.value = "Please enter correct data for all fields";
+  }else {
+
+    TaskServices.updateEagleTask(taskId.value,task.value)
     .then(() => {
       message.value = "Task saved successfully";
       router.push({ name: "viewAllTasks" });
@@ -92,6 +96,9 @@ const saveTask = () => {
     .catch(() => {
       message.value = "Please enter correct data for all fields";
     });
+
+  }
+
 };
 
 const cancel = () => {
