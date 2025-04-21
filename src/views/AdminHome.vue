@@ -6,9 +6,10 @@ import eagleTaskServices from "../services/eagleTaskServices";
 import studentEagleTaskServices from "../services/studentEagleTaskServices";
 import pointLogServices from "../services/pointLogServices.js";
 import eagleFlightPlanServices from "../services/eagleFlightPlanServices.js";
-
+import studentServices from "../services/studentServices.js";
 
 import Utils from "../config/utils.js";
+import { mdiConsoleNetwork } from "@mdi/js";
 
 const user = ref({});
 const router = useRouter();
@@ -53,12 +54,12 @@ const events = ref(
     studentId: 0
   })
 
-  const allTasks = ref([{approvalState: 0, eagleTaskId: 0, Reflection:""}]);
+  const allTasks = ref([{approvalState: 0, eagleTaskId: 0, Reflection:"", eagleFlightPlanId:0}]);
 
   //cols for the completed tasks table
   const headers = ref([
           { key: 'name', title: 'Name', align: 'start', width:'33%' },
-          { key: 'student', title: 'Student', align:'center', width:'33%' },
+          { key: 'studentName', title: 'Student', align:'center', width:'33%' },
           { key: 'button', title: '', align: 'end', width:'33%' },
         ]
   )
@@ -78,6 +79,7 @@ const events = ref(
     name: "",
     date: new Date(),
     studentId: 0,
+    pointDifference: 0
   })
 
 onMounted(() => {
@@ -90,7 +92,7 @@ const fetchStudentEagleTasks = () => {
   studentEagleTaskServices.getAllEagleTasks()
     .then((response) => {
       allTasks.value = response.data;
-      console.log("Fetched tasks:", allTasks.value);
+      console.log("Fetched student tasks:", allTasks.value);
       // console.log(response.data.reflection)
       sortEagleTasks(response.data.reflection);
     })
@@ -105,13 +107,14 @@ for(let i=0; i< allTasks.value.length; i++)
 {
   if (allTasks.value[i].approvalState == 1)
   {
-    fetchOneTask(allTasks.value[i].eagleTaskId, i, allTasks.value[i].id)
+    fetchOneTask(allTasks.value[i].eagleTaskId, i, allTasks.value[i].id, allTasks.value[i].eagleFlightPlanId)
+    // fetchStudents(allTasks.value[i].eagleFlightPlanId);
   }
-  fetchStudentNames();
+  
 }
 };
 
-const fetchOneTask = (taskId, allTaskIndex, studentTaskId) => {
+const fetchOneTask = async (taskId, allTaskIndex, studentTaskId, flightPlanId) => {
   eagleTaskServices.getEagleTasks(taskId)
     .then((response) => {
       var data = response.data
@@ -127,11 +130,17 @@ const fetchOneTask = (taskId, allTaskIndex, studentTaskId) => {
         submissionDate: data.submissionDate,
         completionDate: data.completionDate,
         myTaskId: data.id,
-        studentTaskId: studentTaskId
+        studentTaskId: studentTaskId,
+        studentId: -1
       };
+      
+
       // console.log("my data",data)
       // console.log("Fetched one task here:", task);
-      completedTasks.value.push(task); // Now pushing a unique object
+      var index = completedTasks.value.push(task); // Now pushing a unique object
+      fetchStudents(flightPlanId, index-1)
+      // console.log("Flgith plan id:", response.data.flightPlanId)
+      // fetchStudents(response.data.flightPlanId)
       // console.log(completedTasks.value)
     })
     .catch((error) => {
@@ -140,16 +149,47 @@ const fetchOneTask = (taskId, allTaskIndex, studentTaskId) => {
     
 };
 
-const fetchStudents = () => {
+const fetchStudents = (flightPlanId, completedArrayIndex) => {
   // for each task in completed tasks
-  for (task in completedTasks)
-  {
-    task.value.studentId = eagleFlightPlanServices
-  }
+  // var studentId
+  // console.log("Heres all the tasks: ", completedTasks.value)
+    var studentId
+    eagleFlightPlanServices.getEagleFlightPlan(flightPlanId)
+    .then((response) => {
+      // completedTasks.value[i].studentId = response.data
+      // console.log("index array:", completedArrayIndex)
+      completedTasks.value[completedArrayIndex].studentId = response.data.id
+      studentId = response.data.id
+
+      // console.log("student id",studentId)
+      studentServices.getStudent(studentId)
+      .then((response) => {
+        completedTasks.value[completedArrayIndex].studentName = response.data.fName + " " + response.data.lName
+      })
+      .catch((error) => {
+        console.error("error getting student information: ", error);
+      })
+    })
+    .catch((error) => {
+      console.error("error getting student information: ", error);
+      return 0
+    });
+    // allTasks.value[i].studentId = await eagleFlightPlanServices.getEagleFlightPlan(flightPlanId).data
+  
+          // console.log("student id",studentId)
+          // studentServices.getStudent(studentId)
+          // .then((response) => {
+          //   completedTasks.value[completedArrayIndex].studentName = response.data.fName
+          // })
+          // .catch((error) => {
+          //   console.error("error getting student information: ", error);
+          // })
   // // use the student task id to find the flight plan (eagleFlightPlanId)
   // then find the student id from flight plan
   // then the student's first and last name
 };
+
+
 
 const UpdateStudentTaskApproval = (status) => {
   var newState = 0
@@ -164,21 +204,49 @@ const UpdateStudentTaskApproval = (status) => {
   .then((response) => {
     console.log("updated correctly:", response.data)
     // completedTasks.value.splice(currentItemObj, 1)
-    var lookingForIndex = completedTasks.value.findIndex(obj => obj.myTaskId === currentItemObj.value.myTaskId)
+    var lookingForIndex = completedTasks.value.findIndex(obj => obj.myTaskId === currentItemObj.value.myTaskId && obj.studentId === currentItemObj.value.studentId)
     completedTasks.value.splice(lookingForIndex, 1)
     dialog.value = false
-    logPoints()
+    if (status) {logPoints(currentItemObj.value.studentId)}
+    
   })
   .catch((error) => {
     console.error("Error updating task:", error);
   })
 };
 
-const logPoints = () => {
+const logPoints = (studentId) => {
   //update students points to correct values and create point log item
   pointLog.value.approvedBy = user.value.fName + " " + user.value.lName
-  // pointLogServices.createPointLog()
+  pointLog.value.pointDifference = currentItemObj.value.points
+  pointLog.value.date = new Date();
+  pointLog.value.name = currentItemObj.value.name
+  pointLogServices.createPointLog(studentId, pointLog.value)
+  .then((response) => {
+    
+    // studentServices.updateStudent(studentId, {points: newPoints})
+    updateStudentPoints(studentId)
+    console.log("Point log created successfully")
+
+  })
+  .catch((error) => {
+    console.error("Error creating point log:", error);
+  })
 };
+
+const updateStudentPoints = (studentId) => {
+  studentServices.getStudent(studentId)
+  .then((response) => {
+    console.log("Points for student:", response.data.points)
+    console.log("Pointlog points:", pointLog.value.pointDifference)
+    var newPoints = parseInt(response.data.points, 10) + parseInt(pointLog.value.pointDifference, 10)
+    console.log("new points:", newPoints)
+    studentServices.updateStudent(studentId, {points: newPoints})
+    .catch((error) => {
+      console.error("error setting students points")
+    })
+  })
+}
 
 </script>
 
@@ -337,7 +405,7 @@ const logPoints = () => {
         </template>
       </v-card>
     </v-dialog>
-
+    
       </v-main>
 
       

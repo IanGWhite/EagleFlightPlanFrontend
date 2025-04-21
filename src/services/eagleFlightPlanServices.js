@@ -16,6 +16,10 @@ export default {
   deleteEagleFlightPlanForStudent(studentId,id) {
     return apiClient.delete(`/students/${studentId}/eagleFlightPlans/${id}`);
   },
+  getEagleFlightPlan(id)
+  {
+    return apiClient.get(`/eagleFlightPlans/${id}`);
+  }
 };
 
 //in the controller for experience
