@@ -27,7 +27,7 @@ const deleteEvent = async (eventId) => {
     const response = await eventServices.deleteEvent(eventId);
     console.log(`event ${eventId} deleted`, response);
     // Refresh the task list after deletion
-    getAllTasks();
+    getAllevents();
   } catch (error) {
     console.error("Error deleting event:", error);
   }
