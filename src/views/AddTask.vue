@@ -88,7 +88,7 @@ const saveTask = () => {
   TaskServices.createEagleTask(task.value)
     .then(() => {
       message.value = "Task saved successfully";
-      router.push({ name: "AdminHome" }); // hypothetical route name for education list
+      router.push({ name: "viewAllTasks" }); // hypothetical route name for education list
     })
     .catch((e) => {
       message.value =  "Please enter correct data for all fields";
@@ -97,7 +97,7 @@ const saveTask = () => {
 
 
 const cancel = () => {
-  router.push({ name: "Home" }); // hypothetical route for cancel action
+  router.push({ name: "viewAllTasks" }); // hypothetical route for cancel action
 };
 
 onMounted(() => {

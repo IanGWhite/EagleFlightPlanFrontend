@@ -73,6 +73,9 @@ const saveEagleExperience = () => {
     }
 
   }
+  if(experience.value.name == "" || experience.value.description == "" || experience.value.semesterFromGrad == "" ){
+    message.value =  "Please enter correct data for all fields";
+  }else {
   EagleExperienceServices.updateEagleExperiences(experienceId.value, experience.value)
     .then(() => {
       message.value = "Experience saved successfully";
@@ -81,6 +84,8 @@ const saveEagleExperience = () => {
     .catch((e) => {
       message.value =  "Please enter correct data for all fields";
     });
+
+  }
 };
 
 
