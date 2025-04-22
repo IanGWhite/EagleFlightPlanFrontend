@@ -63,7 +63,7 @@ const saveEagleExperience = () => {
   EagleExperienceServices.createEagleExperiences(experience.value)
     .then(() => {
       message.value = "Experience saved successfully";
-      router.push({ name: "AdminHome" }); // hypothetical route name for education list
+      router.push({ name: "ViewAllEagleExperience" }); // hypothetical route name for education list
     })
     .catch((e) => {
       message.value =  "Please enter correct data for all fields";
@@ -72,7 +72,7 @@ const saveEagleExperience = () => {
 
 
 const cancel = () => {
-  router.push({ name: "Home" }); // hypothetical route for cancel action
+  router.push({ name: "ViewAllEagleExperience" }); // hypothetical route for cancel action
 };
 
 onMounted(() => {
@@ -196,9 +196,6 @@ onMounted(() => {
 }
 .badge-image{
   max-height:10%;
-}
-.main-tasks{
-  
 }
 
 .check-row{

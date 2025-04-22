@@ -1,20 +1,20 @@
 import apiClient from "./services.js";
 
 export default {
-  getAllEagleTasks() {
-    return apiClient.get(`/studentEagleTasks`);
+  getAllStudentEagleTasksForStudent(studentId, eagleFlightPlanId) {
+    return apiClient.get(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleTasks/`);
   },
-  getEagleTasks(id) {
-    return apiClient.get(`/studentEagleTasks/${id}`);
+  getStudentEagleTasksForStudent(studentId, eagleFlightPlanId,id) {
+    return apiClient.get(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleTasks/${id}`);
   },
-  createEagleTask(data) {
-    return apiClient.post(`/studentEagleTasks`, data);
+  createStudentEagleTaskForStudent(studentId, eagleFlightPlanId,data) {
+    return apiClient.post(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleTasks/`, data);
   },
-  updateEagleTask(id, data) {
-    return apiClient.put(`/studentEagleTasks/${id}`, data);
+  updateStudentEagleTaskForStudent(studentId, eagleFlightPlanId,id, data) {
+    return apiClient.put(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleTasks/${id}`, data);
   },
-  deleteEagleTask(id) {
-    return apiClient.delete(`/studentEagleTasks/${id}`);
+  deleteStudentEagleTaskForStudent(studentId, eagleFlightPlanId,id) {
+    return apiClient.delete(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleTasks/${id}`);
   },
 };
 
