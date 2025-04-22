@@ -76,6 +76,7 @@ const todoTaskItems = ref([]);
             points: otherTasks.value[i].points,
             rationale: otherTasks.value[i].rationale ?? "",
             category: myCategory,
+            categoryId: otherTasks.value[i].categoryId,
            canUpload: otherTasks.value[i].canUpload ?? "", 
             hyperLink: otherTasks.value[i].hyperLink ?? "", 
             reflectionReq: otherTasks.value[i].reflectionReq,
@@ -142,6 +143,7 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
         description: otherExperiences.value[i].description,
         points: otherExperiences.value[i].points,
         category: myCategory,
+        categoryId: otherExperiences.value[i].categoryId,
         reflectionReq: otherExperiences.value[i].reflectionReq,
         id: n.id
     }
@@ -175,6 +177,7 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
         approvalState: n.approvalState, 
         submissionDate: n.submissionDate ?? "", 
         completionDate: n.completionDate ?? "",
+        id: n.id
     }
   }
   }
@@ -183,6 +186,8 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
 
 console.log("todo Experiences list: ", todoExperienceItems.value);
 console.log("done Experiences list: ", doneExperienceItems.value);
+checkForExperienceCompletion();
+
 }
 
 
@@ -327,8 +332,8 @@ console.log("done Experiences list: ", doneExperienceItems.value);
     console.log("events list: ", eventList.value);
   }
 
-  const fetchEvents = () => {
-    eventServices.getAllEvents()
+  const fetchEvents = async() => {
+    await eventServices.getAllEvents()
     .then((response) => {
       newEvents.value = response.data; // Assuming the backend returns an array of tasks
       console.log("Fetched events:", newEvents.value);
@@ -340,8 +345,8 @@ console.log("done Experiences list: ", doneExperienceItems.value);
     
   }
 
-  const fetchEagleFlightPlans = () => {
-    eagleFlightPlanServices.getAllEagleFlightPlansForStudent(user.value.studentId)
+  const fetchEagleFlightPlans = async() => {
+    await eagleFlightPlanServices.getAllEagleFlightPlansForStudent(user.value.studentId)
     .then((response) => {
       eagleFlightPlans.value = response.data; // Assuming the backend returns an array of tasks
       console.log("Fetched flight plans:", eagleFlightPlans.value);
@@ -392,6 +397,7 @@ const checkForExperienceCompletion = async () => {
     // Get event attendance data
     const response = await eventAttendServices.getAllEventAttend(user.value.studentId);
     const eventAttended = response.data;
+    console.log("eventAttended ", eventAttended);
     
     // Get all events for each attended event
     const eventPromises = eventAttended.map((e) => eventServices.getEvents(e.eventId));
@@ -399,17 +405,28 @@ const checkForExperienceCompletion = async () => {
     // Await all events to be fetched
     const events = await Promise.all(eventPromises);
     const Attendedevents = events.map(event => event.data);  // Assuming the response has 'data' field
-
+    console.log("attededevent: ", Attendedevents);
     // Extract categories from the attended events
     const attendCategories = Attendedevents.map(e => e.categoryId);
-
+    console.log("attendCategories:", attendCategories);
+    console.log("todoExperienceItems:", todoExperienceItems.value);
     // Check for matching categories in todo experience items
     todoExperienceItems.value.forEach((toDo) => {
-      if (attendCategories.find((cat) => cat === toDo.category)) {
-        studentEagleExperienceServices.submitStudentEagleExperienceForStudent(user.value.studentId, 1, toDo.id);
+      console.log("toDo category:", toDo.categoryId);
+      
+      // Fix: Ensure category types are the same (number/strings)
+      const matchingCategory = attendCategories.find((cat) => {
+        console.log("Checking category:", cat);  // Debug log for each category
+        return cat === toDo.categoryId;
+      });
+      
+      if (matchingCategory) {
+        console.log("todo experience id", toDo.id)
+        studentEagleExperienceServices.updateStudentEagleExperienceForStudent(user.value.studentId, 1, toDo.id, {approvalState: 2});
         console.log("Matching category found:", toDo);
       }
     });
+
 
   } catch (error) {
     console.error("Error checking for experience completion:", error);
@@ -419,18 +436,26 @@ const checkForExperienceCompletion = async () => {
 
 
 
-onMounted(() => {
-  user.value = Utils.getStore('user')
-  if(user.value != null){
-    convertTexts();
+onMounted(async () => {
+  try {
+    user.value = Utils.getStore('user');
+    if (user.value != null) {
+      convertTexts();
+    }
+
+    console.log("User data:", user.value);
+
+    // Fetch events and eagle flight plans in parallel
+    console.log("Fetching events and flight plans in parallel...");
+    await Promise.all([fetchEvents(), fetchEagleFlightPlans()]);
+
+    // Now, check experience completion
+    console.log("Checking for experience completion...");
+  } catch (error) {
+    console.error("Error during onMounted:", error);
   }
+});
 
-  console.log(user.value)
-
-  fetchEvents();
-  fetchEagleFlightPlans();
-  checkForExperienceCompletion();
-})
 </script>
 
 <template>

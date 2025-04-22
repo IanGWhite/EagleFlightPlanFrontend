@@ -16,7 +16,7 @@ export default {
   submitStudentEagleExperienceForStudent(studentId, eagleFlightPlanId, studentEagleExperinceId) {
     return apiClient.put(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleTasks/${studentEagleExperinceId}`, {
       approvalState: 2,
-      Reflection: "Finshed",
+      reflection: "Finshed",
       completionDate: new Date().toISOString(), // optional
     });
   },
