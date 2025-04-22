@@ -13,6 +13,13 @@ export default {
   updateStudentEagleExperienceForStudent(studentId, eagleFlightPlanId,id, data) {
     return apiClient.put(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleExperiences/${id}`, data);
   },
+  submitStudentEagleExperienceForStudent(studentId, eagleFlightPlanId, studentEagleExperinceId) {
+    return apiClient.put(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleTasks/${studentEagleExperinceId}`, {
+      approvalState: 2,
+      Reflection: "Finshed",
+      completionDate: new Date().toISOString(), // optional
+    });
+  },
   deleteStudentEagleExperienceForStudent(studentId, eagleFlightPlanId,id) {
     return apiClient.delete(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleExperiences/${id}`);
   },

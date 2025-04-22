@@ -128,7 +128,7 @@ const getEventName = async () => {
 };
 
 const getAttend = async () => {
-  const responce = await eventAttendServices.getEventAttends(eventId);
+  const responce = await eventAttendServices.getEventAttends(eventId.value);
   AttendList.value = responce.data;
 };
 
@@ -147,7 +147,7 @@ const getStudentAttends = async () => {
   }
 
   studentAttendList.value = AttendList.value.map((attend) => {
-    const student = studentList.value.find(s => s.id === attend.studentId); // Adjust field names if needed
+    const student = studentList.value.find(s => Number(s.id) === attend.studentId);
     return {
       id: attend.id,
       StudentName: student ? `${student.fName} ${student.lName}` : "Unknown Student",

@@ -13,6 +13,7 @@ import eagleFlightPlanServices from '../services/eagleFlightPlanServices.js';
 import studentServices from '../services/studentServices.js';
 import semesterServices from '../services/semesterServices.js';
 import eventServices from '../services/eventServices.js';
+import eventAttendServices from '../services/eventAttendServices.js';
 import { year } from 'vue-cal/dist/i18n/ar.es.js';
 
 
@@ -78,6 +79,7 @@ const todoTaskItems = ref([]);
            canUpload: otherTasks.value[i].canUpload ?? "", 
             hyperLink: otherTasks.value[i].hyperLink ?? "", 
             reflectionReq: otherTasks.value[i].reflectionReq,
+            id: n.id
         }
       }
       }
@@ -141,6 +143,7 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
         points: otherExperiences.value[i].points,
         category: myCategory,
         reflectionReq: otherExperiences.value[i].reflectionReq,
+        id: n.id
     }
   }
   }
@@ -224,8 +227,8 @@ console.log("done Experiences list: ", doneExperienceItems.value);
     
   };
 
-  const fetchStudentEagleTasks = () => {
-  studentEagleTaskServices.getAllStudentEagleTasksForStudent(user.value.studentId, currentFlightPlan.value.id)
+  const fetchStudentEagleTasks  = async () => {
+  await studentEagleTaskServices.getAllStudentEagleTasksForStudent(user.value.studentId, currentFlightPlan.value.id)
     .then((response) => {
       studentTasks.value = response.data; // Assuming the backend returns an array of tasks
       console.log("Fetched Student tasks:", studentTasks.value);
@@ -371,6 +374,50 @@ console.log("done Experiences list: ", doneExperienceItems.value);
 
   }
 
+  const submitTask = (studentEagleTaskId) => {
+  studentEagleTaskServices
+    .submitStudentEagleTaskForStudent(user.value.studentId, 1, studentEagleTaskId)
+    .then(() => {
+      console.log("Submitted task:", studentEagleTaskId);
+      fetchStudentEagleTasks(); // re-fetch updated list
+    })
+    .catch((error) => {
+      console.error("Error submitting task:", error);
+    });
+    window.location.reload();
+};
+
+const checkForExperienceCompletion = async () => {
+  try {
+    // Get event attendance data
+    const response = await eventAttendServices.getAllEventAttend(user.value.studentId);
+    const eventAttended = response.data;
+    
+    // Get all events for each attended event
+    const eventPromises = eventAttended.map((e) => eventServices.getEvents(e.eventId));
+    
+    // Await all events to be fetched
+    const events = await Promise.all(eventPromises);
+    const Attendedevents = events.map(event => event.data);  // Assuming the response has 'data' field
+
+    // Extract categories from the attended events
+    const attendCategories = Attendedevents.map(e => e.categoryId);
+
+    // Check for matching categories in todo experience items
+    todoExperienceItems.value.forEach((toDo) => {
+      if (attendCategories.find((cat) => cat === toDo.category)) {
+        studentEagleExperienceServices.submitStudentEagleExperienceForStudent(user.value.studentId, 1, toDo.id);
+        console.log("Matching category found:", toDo);
+      }
+    });
+
+  } catch (error) {
+    console.error("Error checking for experience completion:", error);
+  }
+};
+
+
+
 
 onMounted(() => {
   user.value = Utils.getStore('user')
@@ -382,6 +429,7 @@ onMounted(() => {
 
   fetchEvents();
   fetchEagleFlightPlans();
+  checkForExperienceCompletion();
 })
 </script>
 
@@ -585,8 +633,8 @@ onMounted(() => {
           
             <template v-slot:actions>
               <v-btn class="ms-auto" text="Cancel" @click="dialog = false"></v-btn>
-              <v-btn v-if="todoTaskItems[currentItem].reflectionReq"
-              class="ms-auto" text="Submit" @click="SubmitReflection()"></v-btn>
+              <v-btn 
+              class="ms-auto" text="Submit" @click="submitTask(todoTaskItems[currentItem].id)"></v-btn>
             </template>
       </v-card>
 

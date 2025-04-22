@@ -20,7 +20,7 @@ const headers = [
 
 const editEvent = (eventId) => router.push({ name: 'EditEvent', params: { id: eventId } });
 const addEvent = () => router.push('addEvent');
-const EventAttendance = (eventId) => router.push({ name: 'viewEventAttendance', params: { id: eventId } });
+const EventAttendance = (eventId) => router.push({ name: 'ViewEventAttendance', params: { id: eventId } });
 
 const deleteEvent = async (eventId) => {
   try {

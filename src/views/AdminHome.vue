@@ -19,7 +19,8 @@ const goToResume = () => {
 };
 
 const goToPage = (pageName) => {
-  router.push({ name: pageName });
+  console.log(pageName);
+  router.push({name: pageName });
 };
 const dialog = ref(false);
 const currentItem = ref(0);
@@ -66,12 +67,12 @@ const events = ref(
 
   // The quick access buttons with their page links
   const quickAccess = ref( 
-  [{ name: "Students", location: "/viewAllStudents" },
-  { name: "Tasks", location: "/viewAllTasks" },
-  { name: "Experiences", location: "/AddEagleExperience" },
-  { name: "Events", location: "/AddEvent" },
-  { name: "Shop", location: "/AdminShop" }, //change to admin shop when done
-  { name: "Badges", location: "/Home" },
+  [{ name: "Students", location: "viewAllStudents" },
+  { name: "Tasks", location: "viewAllTasks" },
+  { name: "Experiences", location: "ViewAllEagleExperience" },
+  { name: "Events", location: "ViewAllEvents" },
+  { name: "Shop", location: "AdminShop" }, //change to admin shop when done
+  { name: "Badges", location: "Home" },
   ]);
 
   const pointLog = ref({

@@ -266,11 +266,12 @@ const router = createRouter({
       props: true,
     },
     {
-      path: "/viewEventAttendance/:id",
-      name: "viewEventAttendance",
+      path: "/ViewEventAttendance/:id",
+      name: "ViewEventAttendance",
       component: viewEventAttendance,
       props: true,
-
+    },
+    {
       path: "/EditEagleExperience/:id",
       name: "EditEagleExperience",
       component: EditEagleExperience,
