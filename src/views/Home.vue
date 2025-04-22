@@ -14,7 +14,7 @@ import studentServices from '../services/studentServices.js';
 import semesterServices from '../services/semesterServices.js';
 import eventServices from '../services/eventServices.js';
 import { year } from 'vue-cal/dist/i18n/ar.es.js';
-
+import flightPlanLoader from '../services/flightPlanLoader.js';
 
 const router = useRouter();
 const user = ref({});
@@ -61,7 +61,7 @@ const todoTaskItems = ref([]);
       for(let i = 0; i < otherTasks.value.length; i++){
         if(otherTasks.value[i].id == n.eagleTaskId){
           //grabbing category
-          console.log("categoryId:", otherTasks.value[i].categoryId);
+          //console.log("categoryId:", otherTasks.value[i].categoryId);
           var myCategory = ''; //default category
           for(let j = 0; j < categories.value.length; j++){
           if(categories.value[j].id == otherTasks.value[i].categoryId){
@@ -91,7 +91,7 @@ const todoTaskItems = ref([]);
       for(let i = 0; i < otherTasks.value.length; i++){
         if(otherTasks.value[i].id == n.eagleTaskId){
           //grabbing category
-          console.log("categoryId:", otherTasks.value[i].categoryId);
+          //console.log("categoryId:", otherTasks.value[i].categoryId);
           var myCategory = ''; //default category
           for(let j = 0; j < categories.value.length; j++){
           if(categories.value[j].id == otherTasks.value[i].categoryId){
@@ -112,9 +112,14 @@ const todoTaskItems = ref([]);
       }
       return{}
     });
-
-    console.log("todo tasks list: ", todoTaskItems.value);
-    console.log("done tasks list: ", doneTaskItems.value);
+    if(todoTaskItems.value.length == 0 && doneTaskItems.value.length == 0)
+    {
+      console.error("No tasks loaded. attempting to create student tasks.")
+      //console.log(" Current flight plan", currentFlightPlan.value)
+      flightPlanLoader.copyTasksFromFlightPlan(user.value.studentId, currentFlightPlan.value.id)
+    }
+    //console.log("todo tasks list: ", todoTaskItems.value);
+    //console.log("done tasks list: ", doneTaskItems.value);
   }
     
 //convert experiences
@@ -127,7 +132,7 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
   for(let i = 0; i < otherExperiences.value.length; i++){
     if(otherExperiences.value[i].id == n.eagleExperienceId){
       //grabbing category
-      console.log("categoryId:", otherExperiences.value[i].categoryId);
+      //console.log("categoryId:", otherExperiences.value[i].categoryId);
       var myCategory = ''; //default category
       for(let j = 0; j < categories.value.length; j++){
       if(categories.value[j].id == otherExperiences.value[i].categoryId){
@@ -155,7 +160,7 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
   for(let i = 0; i < otherExperiences.value.length; i++){
     if(otherExperiences.value[i].id == n.eagleExperienceId){
       //grabbing category
-      console.log("categoryId:", otherExperiences.value[i].categoryId);
+      //console.log("categoryId:", otherExperiences.value[i].categoryId);
       var myCategory = ''; //default category
       for(let j = 0; j < categories.value.length; j++){
       if(categories.value[j].id == otherExperiences.value[i].categoryId){
@@ -178,8 +183,8 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
   return{}
 });
 
-console.log("todo Experiences list: ", todoExperienceItems.value);
-console.log("done Experiences list: ", doneExperienceItems.value);
+//console.log("todo Experiences list: ", todoExperienceItems.value);
+//console.log("done Experiences list: ", doneExperienceItems.value);
 }
 
 
@@ -188,7 +193,7 @@ console.log("done Experiences list: ", doneExperienceItems.value);
   categoryServices.getAllCategories()
     .then((response) => {
       categories.value = response.data; // Assuming the backend returns an array of tasks
-      console.log("Fetched categories:", categories.value);
+      //console.log("Fetched categories:", categories.value);
       fetchEagleTasks();
       fetchEagleExperiences();
     })
@@ -202,7 +207,7 @@ console.log("done Experiences list: ", doneExperienceItems.value);
   eagleExperienceServices.getAllEagleExperiences()
     .then((response) => {
       otherExperiences.value = response.data; // Assuming the backend returns an array of tasks
-      console.log("Fetched experiences:", otherExperiences.value);
+      //console.log("Fetched experiences:", otherExperiences.value);
       fetchStudentEagleExperiences();
     })
     .catch((error) => {
@@ -215,7 +220,7 @@ console.log("done Experiences list: ", doneExperienceItems.value);
   eagleTaskServices.getAllEagleTasks()
     .then((response) => {
       otherTasks.value = response.data; // Assuming the backend returns an array of tasks
-      console.log("Fetched tasks:", otherTasks.value);
+      //console.log("Fetched tasks:", otherTasks.value);
       fetchStudentEagleTasks();
     })
     .catch((error) => {
@@ -228,7 +233,7 @@ console.log("done Experiences list: ", doneExperienceItems.value);
   studentEagleTaskServices.getAllStudentEagleTasksForStudent(user.value.studentId, currentFlightPlan.value.id)
     .then((response) => {
       studentTasks.value = response.data; // Assuming the backend returns an array of tasks
-      console.log("Fetched Student tasks:", studentTasks.value);
+      //console.log("Fetched Student tasks:", studentTasks.value);
       convertStudentTasks();
     })
     .catch((error) => {
@@ -241,7 +246,7 @@ console.log("done Experiences list: ", doneExperienceItems.value);
   studentEagleExperienceServices.getAllStudentEagleExperiencesForStudent(user.value.studentId, currentFlightPlan.value.id)
     .then((response) => {
       studentExperiences.value = response.data; // Assuming the backend returns an array of tasks
-      console.log("Fetched Student Experiences:", studentExperiences.value);
+      //console.log("Fetched Student Experiences:", studentExperiences.value);
       convertStudentExperiences();
     })
     .catch((error) => {
@@ -257,8 +262,8 @@ console.log("done Experiences list: ", doneExperienceItems.value);
     let currentDate = new Date();
     let currentYear = new Date().getFullYear();
     let semesterTitle = '';
-    console.log(currentYear);
-    console.log(new Date(currentYear+'-06-01'));
+    //console.log(currentYear);
+    //console.log(new Date(currentYear+'-06-01'));
     let june = new Date(currentYear+'-06-01');
     if(currentDate >= june ){
       semesterTitle = 'Fall '+currentYear;
@@ -270,10 +275,19 @@ console.log("done Experiences list: ", doneExperienceItems.value);
         if(semesters.value[j].id == eagleFlightPlans.value[i].semesterId){
           if(semesterTitle == semesters.value[j].name){
             currentFlightPlan.value = eagleFlightPlans.value[i];
-            console.log("current flight plan: ", currentFlightPlan.value);
+            //console.log("current flight plan: ", currentFlightPlan.value);
             fetchCategories();
+
+
+            // if(todoTaskItems.value.length == 0 && doneTaskItems.value.length == 0)
+            // {
+            //   console.error("No tasks loaded. attempting to create student tasks.")
+            //   //console.log(" Current flight plan", currentFlightPlan.value)
+            //   flightPlanLoader.copyTasksFromFlightPlan(user.value.studentId, currentFlightPlan.value.id)
+            // }
+
           }else{
-            console.log("couldnt find current flight plan: ", semesterTitle, semesters.value[j].name);
+            //console.log("couldnt find current flight plan: ", semesterTitle, semesters.value[j].name);
           }
 
         }
@@ -287,7 +301,7 @@ console.log("done Experiences list: ", doneExperienceItems.value);
     semesterServices.getAllSemesters()
     .then((response) => {
       semesters.value = response.data; // Assuming the backend returns an array of tasks
-      console.log("Fetched semesters:", semesters.value);
+      //console.log("Fetched semesters:", semesters.value);
       fetchCurrentFlightPlan();
     })
     .catch((error) => {
@@ -300,7 +314,7 @@ console.log("done Experiences list: ", doneExperienceItems.value);
     //convert events
     var futureDate = new Date();
     futureDate.setDate(futureDate.getDate() +10 );
-    console.log("future date",futureDate);
+    //console.log("future date",futureDate);
     eventList.value = newEvents.value.filter(n => 
     new Date(n.date.substring(0,10)+', '+n.startTime+':00') >= new Date() &&
     new Date(n.date.substring(0,10)+', '+n.startTime+':00') <= futureDate
@@ -310,7 +324,7 @@ console.log("done Experiences list: ", doneExperienceItems.value);
     .map((n) => {
       for(let i = 0; i < newEvents.value.length; i++){
           var eventDate = new Date(n.date.substring(0,10)+', '+n.startTime+':00');
-          console.log("event date",eventDate);
+          //console.log("event date",eventDate);
           var newDay = eventDate.getDate();
           var newMonth = eventDate.getMonth();
           var newDate = ""+newMonth+"/"+newDay;
@@ -321,14 +335,14 @@ console.log("done Experiences list: ", doneExperienceItems.value);
       }
       return{}
     });
-    console.log("events list: ", eventList.value);
+    //console.log("events list: ", eventList.value);
   }
 
   const fetchEvents = () => {
     eventServices.getAllEvents()
     .then((response) => {
       newEvents.value = response.data; // Assuming the backend returns an array of tasks
-      console.log("Fetched events:", newEvents.value);
+      //console.log("Fetched events:", newEvents.value);
       convertEvents();
     })
     .catch((error) => {
@@ -341,7 +355,7 @@ console.log("done Experiences list: ", doneExperienceItems.value);
     eagleFlightPlanServices.getAllEagleFlightPlansForStudent(user.value.studentId)
     .then((response) => {
       eagleFlightPlans.value = response.data; // Assuming the backend returns an array of tasks
-      console.log("Fetched flight plans:", eagleFlightPlans.value);
+      //console.log("Fetched flight plans:", eagleFlightPlans.value);
       fetchSemesters();
     })
     .catch((error) => {
@@ -359,7 +373,7 @@ console.log("done Experiences list: ", doneExperienceItems.value);
   studentServices.getStudentForUser(user.value.userId)
     .then((response) => {
       student.value = response.data; // Assuming the backend returns an array of tasks
-      console.log("Fetched student:", student.value);
+      //console.log("Fetched student:", student.value);
       var pointText = document.getElementById("myPoints");
       var newPoints = student.value[0].points;
       pointText.innerHTML = ""+newPoints;
@@ -373,15 +387,23 @@ console.log("done Experiences list: ", doneExperienceItems.value);
 
 
 onMounted(() => {
+  // flightPlanLoader.testFunction();
   user.value = Utils.getStore('user')
   if(user.value != null){
     convertTexts();
   }
-
-  console.log(user.value)
+  
+  //console.log(user.value)
 
   fetchEvents();
   fetchEagleFlightPlans();
+  // if(todoTaskItems.value.length == 0 && doneTaskItems.value.length == 0)
+  // {
+  //   console.error("No tasks loaded. attempting to create student tasks.")
+  //   //console.log(" Current flight plan", currentFlightPlan.value)
+  //   flightPlanLoader.copyTasksFromFlightPlan(user.value.studentId, currentFlightPlan.value.id)
+  // }
+    
 })
 </script>
 
