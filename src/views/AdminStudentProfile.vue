@@ -29,6 +29,7 @@ const roles = ref([]);
 
 const majors = ref([]);
 const studentmajorIdNo = ref({});
+const adminStudentIdNo = ref({});
 
 const gradSemesterIdNo = ref({});
 const gradSemesters = ref([]);
@@ -339,6 +340,13 @@ const savePermissions = () => {
 
 const saveStudent = async () => {
   try {
+    //save studentIdNo 
+    const idNoPayload = {
+      studentIdNo: student.value.studentIdNo
+    }
+    console.log("saving studentIdNo:", student.value.studentIdNo)
+    await studentServices.updateStudent(studentId.value, idNoPayload);
+
     // Save Major
     const majorPayload = {
       majorId: studentmajorIdNo.value.studentMajorId,
@@ -437,14 +445,16 @@ const loadCurrentTasks = (semester) => {
                   <v-col>
                     <!-- add v-models to autocomplete forms to attatch them to a student info ref-->
                     <v-sheet>
-                      <v-label>Student Id</v-label>
-                      <v-chip 
-                      class="pa-2"
-                      color="lightblue" 
-                      >
-                        {{ student.studentIdNo }} <!-- Display the student major text -->
-                      </v-chip>
+                      <v-label>Student ID</v-label>
+                      <v-text-field
+                        v-model="student.studentIdNo"
+                        label="Student ID"
+                        variant="outlined"
+                        color="primary"
+                        class="mt-2"
+                      ></v-text-field>
                     </v-sheet>
+
                       
                     <v-sheet>
                       <v-label>Major</v-label> 
