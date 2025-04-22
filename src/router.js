@@ -35,6 +35,14 @@ import AddEagleExperience from "./views/AddEagleExperience.vue";
 import AddShopItem from "./views/AddShopItem.vue";
 import AdminShop from "./views/AdminShop.vue";
 import EditShopItem from "./views/EditShopItem.vue";
+import EditTask from "./views/editTask.vue";
+import viewAllTasks from "./views/viewAllTasks.vue";
+
+
+
+import EditEagleExperience from "./views/editEagleExperience.vue";
+import ViewAllEagleExperience from "./views/viewAllEagleExperience.vue";
+
 
 
 
@@ -213,6 +221,16 @@ const router = createRouter({
       props: true,
     },
     {
+      path: "/EditTask/:id",
+      name: "EditTask",
+      component: EditTask,
+    },
+    {
+      path: "/viewAllTasks",
+      name: "viewAllTasks",
+      component: viewAllTasks,
+    },
+    {
       path: "/viewAllStudents",
       name: "viewAllStudents",
       component: viewAllStudents,
@@ -236,6 +254,7 @@ const router = createRouter({
       props: true,
     },
     {
+
       path: "/ViewAllEvents",
       name: "ViewAllEvents",
       component: ViewAllEvents,
@@ -251,6 +270,15 @@ const router = createRouter({
       name: "viewEventAttendance",
       component: viewEventAttendance,
       props: true,
+
+      path: "/EditEagleExperience/:id",
+      name: "EditEagleExperience",
+      component: EditEagleExperience,
+    },
+    {
+      path: "/ViewAllEagleExperience",
+      name: "ViewAllEagleExperience",
+      component: ViewAllEagleExperience,
     },
   ],
 });

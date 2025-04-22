@@ -1,10 +1,24 @@
 <script setup>
 import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import MenuBar from "../components/MenuBar.vue";
 import { useDate } from 'vuetify';
+import studentEagleTaskServices from '../services/studentEagleTaskServices';
+import studentEagleExperienceServices from '../services/studentEagleExperienceServices';
+import eagleTaskServices from '../services/eagleTaskServices';
+import Utils from "../config/utils.js";
+import categoryServices from '../services/categoryServices';
+import eagleExperienceServices from '../services/eagleExperienceServices.js';
+import eagleFlightPlanServices from '../services/eagleFlightPlanServices.js';
+import studentServices from '../services/studentServices.js';
+import semesterServices from '../services/semesterServices.js';
+import eventServices from '../services/eventServices.js';
+import { year } from 'vue-cal/dist/i18n/ar.es.js';
+
 
 const router = useRouter();
+const user = ref({});
+const student = ref({});
 
 const goToResume = () => {
   router.push({ name: 'ResumeListStudents' });
@@ -13,35 +27,362 @@ const goToResume = () => {
 const goToInfo = () => {
   router.push({ name: 'StudentInfo' });
 };
+const eventList = ref([]);
+const newEvents = ref([]);
+const currentFlightPlan = ref({});
+const otherTasks = ref([]);
+const otherExperiences = ref([]);
+const studentTasks = ref({});
+const studentExperiences = ref({});
+const categories = ref([]);
+const eagleFlightPlans = ref([]);
+const semesters = ref([]);
+
 const dialog = ref(false);
 const currentItem = ref(0);
 const dialogIsTask = ref(false);
 //if the dialog should be the completed variant, otherwise is submittable version
 const dialogIsComplete = ref(false);
 
-const todoTaskItems = ref(
-  [{ type: "Task", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"", reflectionReq:false },
-  { type: "Task", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true },
-  { type: "Task", name: "This is the task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"https://www.google.com", reflectionReq:false },
-  ]);
+const todoTaskItems = ref([]);
 
-  const todoExperienceItems = ref(
-  [{ type: "Experience", name: "Job Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:false, category:"Math" },
-  { type: "Experience", name: "Career Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:true, category:"Career Fair" },
-  ]);
+  const todoExperienceItems = ref([]);
 
-  const doneTaskItems = ref(
-  [{ type: "Task 5", name: "Completed Task", points: "10", description: "blah blah blah description", reflection:"This helped me become a better person", approvalState:1, submissionDate:new Date('Apr 1, 2025'), completionDate:new Date('Apr 2, 2025') },
-  { type: "Task 5", name: "Completed Task 2", points: "30", description: "blah blah blah description", reflection:"", approvalState:2, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
-  { type: "Task 5", name: "Radical new task", points: "60", description: "Go To a Job Fair to get a really cool job and have fun", reflection:"I am awesome and swaggy", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
+  const doneTaskItems = ref([]);
+
+  const doneExperienceItems = ref([]);
+
+
+  const convertStudentTasks = () => {
+    //todo tasks
+    todoTaskItems.value = studentTasks.value.filter(n => 
+      n.approvalState == 0 && (n.eagleFlightPlanId == currentFlightPlan.value.id)
+    ).map((n) => {
+      for(let i = 0; i < otherTasks.value.length; i++){
+        if(otherTasks.value[i].id == n.eagleTaskId){
+          //grabbing category
+          console.log("categoryId:", otherTasks.value[i].categoryId);
+          var myCategory = ''; //default category
+          for(let j = 0; j < categories.value.length; j++){
+          if(categories.value[j].id == otherTasks.value[i].categoryId){
+           myCategory = categories.value[j].name;
+          }
+      }
+          return {
+            type: "Task",
+            name: otherTasks.value[i].name,
+            description: otherTasks.value[i].description,
+            points: otherTasks.value[i].points,
+            rationale: otherTasks.value[i].rationale ?? "",
+            category: myCategory,
+           canUpload: otherTasks.value[i].canUpload ?? "", 
+            hyperLink: otherTasks.value[i].hyperLink ?? "", 
+            reflectionReq: otherTasks.value[i].reflectionReq,
+        }
+      }
+      }
+      return{}
+    });
+
+        //done tasks
+        doneTaskItems.value = studentTasks.value.filter(n => 
+      (n.approvalState == 1 || n.approvalState == 2) && (n.eagleFlightPlanId == currentFlightPlan.value.id)
+    ).map((n) => {
+      for(let i = 0; i < otherTasks.value.length; i++){
+        if(otherTasks.value[i].id == n.eagleTaskId){
+          //grabbing category
+          console.log("categoryId:", otherTasks.value[i].categoryId);
+          var myCategory = ''; //default category
+          for(let j = 0; j < categories.value.length; j++){
+          if(categories.value[j].id == otherTasks.value[i].categoryId){
+           myCategory = categories.value[j].name;
+          }
+      }
+          return {
+            type: "Task 5",
+            name: otherTasks.value[i].name,
+            description: otherTasks.value[i].description,
+            points: otherTasks.value[i].points,
+            reflection: n.Reflection ?? "",
+            approvalState: n.approvalState, 
+            submissionDate: n.submissionDate ?? "", 
+            completionDate: n.completionDate ?? "",
+        }
+      }
+      }
+      return{}
+    });
+
+    console.log("todo tasks list: ", todoTaskItems.value);
+    console.log("done tasks list: ", doneTaskItems.value);
+  }
+    
+//convert experiences
+  const convertStudentExperiences = () => {
+
+//todo experiences
+todoExperienceItems.value = studentExperiences.value.filter(n => 
+  n.approvalState == 0 && (n.eagleFlightPlanId == currentFlightPlan.value.id)
+).map((n) => {
+  for(let i = 0; i < otherExperiences.value.length; i++){
+    if(otherExperiences.value[i].id == n.eagleExperienceId){
+      //grabbing category
+      console.log("categoryId:", otherExperiences.value[i].categoryId);
+      var myCategory = ''; //default category
+      for(let j = 0; j < categories.value.length; j++){
+      if(categories.value[j].id == otherExperiences.value[i].categoryId){
+       myCategory = categories.value[j].name;
+      }
+  }
+      return {
+        type: "Experience",
+        name: otherExperiences.value[i].name,
+        description: otherExperiences.value[i].description,
+        points: otherExperiences.value[i].points,
+        category: myCategory,
+        reflectionReq: otherExperiences.value[i].reflectionReq,
+    }
+  }
+  }
+  return{}
   
-  ]);
+});
 
-  const doneExperienceItems = ref(
-  [{ type: "Experience", name: "Job Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:false, category:"Math", reflection:"This helped me become a better person", approvalState:2, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
-  { type: "Experience", name: "Career Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:true, category:"Career Fair", reflection:"", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
-  { type: "Experience", name: "Career Fair", points: "50", description: "Go To a Job Fair to get a really cool job and have fun", reflectionReq:true, category:"", reflection:"fhjskhfjsdk", approvalState:1, submissionDate:new Date('Apr 5, 2025'), completionDate:new Date('Apr 10, 2025') },
-  ]);
+    //done tasks
+    doneExperienceItems.value = studentExperiences.value.filter(n => 
+  (n.approvalState == 1 || n.approvalState == 2) && (n.eagleFlightPlanId == currentFlightPlan.value.id)
+).map((n) => {
+  for(let i = 0; i < otherExperiences.value.length; i++){
+    if(otherExperiences.value[i].id == n.eagleExperienceId){
+      //grabbing category
+      console.log("categoryId:", otherExperiences.value[i].categoryId);
+      var myCategory = ''; //default category
+      for(let j = 0; j < categories.value.length; j++){
+      if(categories.value[j].id == otherExperiences.value[i].categoryId){
+       myCategory = categories.value[j].name;
+      }
+  }
+      return {
+        type: "Experience",
+        name: otherExperiences.value[i].name,
+        description: otherExperiences.value[i].description,
+        points: otherExperiences.value[i].points,
+        reflection: n.reflection ?? "",
+        category: myCategory,
+        approvalState: n.approvalState, 
+        submissionDate: n.submissionDate ?? "", 
+        completionDate: n.completionDate ?? "",
+    }
+  }
+  }
+  return{}
+});
+
+console.log("todo Experiences list: ", todoExperienceItems.value);
+console.log("done Experiences list: ", doneExperienceItems.value);
+}
+
+
+
+  const fetchCategories = () => {
+  categoryServices.getAllCategories()
+    .then((response) => {
+      categories.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched categories:", categories.value);
+      fetchEagleTasks();
+      fetchEagleExperiences();
+    })
+    .catch((error) => {
+      console.error("Error fetching categories:", error);
+    });
+    
+  };
+
+  const fetchEagleExperiences = () => {
+  eagleExperienceServices.getAllEagleExperiences()
+    .then((response) => {
+      otherExperiences.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched experiences:", otherExperiences.value);
+      fetchStudentEagleExperiences();
+    })
+    .catch((error) => {
+      console.error("Error fetching tasks:", error);
+    });
+    
+  };
+
+  const fetchEagleTasks = () => {
+  eagleTaskServices.getAllEagleTasks()
+    .then((response) => {
+      otherTasks.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched tasks:", otherTasks.value);
+      fetchStudentEagleTasks();
+    })
+    .catch((error) => {
+      console.error("Error fetching tasks:", error);
+    });
+    
+  };
+
+  const fetchStudentEagleTasks = () => {
+  studentEagleTaskServices.getAllStudentEagleTasksForStudent(user.value.studentId, currentFlightPlan.value.id)
+    .then((response) => {
+      studentTasks.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched Student tasks:", studentTasks.value);
+      convertStudentTasks();
+    })
+    .catch((error) => {
+      console.error("Error fetching student tasks:", error);
+    });
+    
+  };
+
+  const fetchStudentEagleExperiences = () => {
+  studentEagleExperienceServices.getAllStudentEagleExperiencesForStudent(user.value.studentId, currentFlightPlan.value.id)
+    .then((response) => {
+      studentExperiences.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched Student Experiences:", studentExperiences.value);
+      convertStudentExperiences();
+    })
+    .catch((error) => {
+      console.error("Error fetching student tasks:", error);
+    });
+    
+  };
+
+  // after june = the name will be fall and then the year
+  // after new years but before june, it will be spring
+
+  const fetchCurrentFlightPlan = () => {
+    let currentDate = new Date();
+    let currentYear = new Date().getFullYear();
+    let semesterTitle = '';
+    console.log(currentYear);
+    console.log(new Date(currentYear+'-06-01'));
+    let june = new Date(currentYear+'-06-01');
+    if(currentDate >= june ){
+      semesterTitle = 'Fall '+currentYear;
+    }else{
+      semesterTitle = 'Spring '+currentYear;
+    }
+    for(let i = 0; i <eagleFlightPlans.value.length; i++){
+      for(let j = 0; j <semesters.value.length; j++){
+        if(semesters.value[j].id == eagleFlightPlans.value[i].semesterId){
+          if(semesterTitle == semesters.value[j].name){
+            currentFlightPlan.value = eagleFlightPlans.value[i];
+            console.log("current flight plan: ", currentFlightPlan.value);
+            fetchCategories();
+          }else{
+            console.log("couldnt find current flight plan: ", semesterTitle, semesters.value[j].name);
+          }
+
+        }
+      }
+
+    }
+
+  }
+
+  const fetchSemesters = () => {
+    semesterServices.getAllSemesters()
+    .then((response) => {
+      semesters.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched semesters:", semesters.value);
+      fetchCurrentFlightPlan();
+    })
+    .catch((error) => {
+      console.error("Error fetching flight plans tasks:", error);
+    });
+    
+  }
+
+  const convertEvents = () => {
+    //convert events
+    var futureDate = new Date();
+    futureDate.setDate(futureDate.getDate() +10 );
+    console.log("future date",futureDate);
+    eventList.value = newEvents.value.filter(n => 
+    new Date(n.date.substring(0,10)+', '+n.startTime+':00') >= new Date() &&
+    new Date(n.date.substring(0,10)+', '+n.startTime+':00') <= futureDate
+    ).sort((a,b) => {return new Date(a.date.substring(0,10)+', '+a.startTime+':00') - new Date(b.date.substring(0,10)+', '+b.startTime+':00') 
+
+    }).slice(0,3)
+    .map((n) => {
+      for(let i = 0; i < newEvents.value.length; i++){
+          var eventDate = new Date(n.date.substring(0,10)+', '+n.startTime+':00');
+          console.log("event date",eventDate);
+          var newDay = eventDate.getDate();
+          var newMonth = eventDate.getMonth();
+          var newDate = ""+newMonth+"/"+newDay;
+          return {
+            name: n.name,
+            date: newDate,
+      }
+      }
+      return{}
+    });
+    console.log("events list: ", eventList.value);
+  }
+
+  const fetchEvents = () => {
+    eventServices.getAllEvents()
+    .then((response) => {
+      newEvents.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched events:", newEvents.value);
+      convertEvents();
+    })
+    .catch((error) => {
+      console.error("Error fetching flight plans tasks:", error);
+    });
+    
+  }
+
+  const fetchEagleFlightPlans = () => {
+    eagleFlightPlanServices.getAllEagleFlightPlansForStudent(user.value.studentId)
+    .then((response) => {
+      eagleFlightPlans.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched flight plans:", eagleFlightPlans.value);
+      fetchSemesters();
+    })
+    .catch((error) => {
+      console.error("Error fetching flight plans tasks:", error);
+    });
+    
+  }
+
+  const convertTexts = () => {
+    
+  var titleText = document.getElementById("myTitle");
+  var newTitle = user.value.fName;
+  titleText.innerHTML = newTitle+"'s To-do List";
+
+  studentServices.getStudentForUser(user.value.userId)
+    .then((response) => {
+      student.value = response.data; // Assuming the backend returns an array of tasks
+      console.log("Fetched student:", student.value);
+      var pointText = document.getElementById("myPoints");
+      var newPoints = student.value[0].points;
+      pointText.innerHTML = ""+newPoints;
+    })
+    .catch((error) => {
+      console.error("Error fetching flight plans tasks:", error);
+    });
+
+
+  }
+
+
+onMounted(() => {
+  user.value = Utils.getStore('user')
+  if(user.value != null){
+    convertTexts();
+  }
+
+  console.log(user.value)
+
+  fetchEvents();
+  fetchEagleFlightPlans();
+})
 </script>
 
 <template>
@@ -52,38 +393,28 @@ const todoTaskItems = ref(
           <v-list-item></v-list-item>
             <v-card variant="tonal">
             <v-card-title class="text-center">Upcoming Events</v-card-title>
-          <v-list-item class="card-list-item">
+          <v-list-item
+              v-for="(item, index) in eventList"
+              :key="item.type"
+              style="width: 100%;"
+              @click="dialog = true; currentItem = index; dialogIsTask=true; dialogIsComplete=false"
+              class="card-list-item"
+              dot-color="#ed6e13"
+            >
+              
+              <!-- {{ item.name }}  -->
+              <v-spacer></v-spacer>
+              
             <v-row no-gutters >
               <v-col>
-                Event 1
+                {{ item.name }}
               </v-col>
               <v-col class="text-right">
-                1/19
+                {{ item.date }}
               </v-col>
             </v-row>
           </v-list-item>
 
-          <v-list-item class="card-list-item">
-            <v-row no-gutters >
-              <v-col>
-                Event 2
-              </v-col>
-              <v-col class="text-right">
-                2/1
-              </v-col>
-            </v-row>
-          </v-list-item>
-
-          <v-list-item class="card-list-item">
-            <v-row no-gutters>
-              <v-col>
-                Event 3
-              </v-col>
-              <v-col class="text-right">
-                2/11
-              </v-col>
-            </v-row>
-          </v-list-item>
 
           <v-card-text class="card-link-text-wrapper">
             <a href="Calendar" class="card-link-text">See full calendar</a>
@@ -91,48 +422,6 @@ const todoTaskItems = ref(
 
           </v-card>
           <v-list-item></v-list-item> <!-- SPACE IN BETWEEN CARDS -->
-
-          <!--              EXPERIENCES CARD               -->
-          <v-card variant="tonal">
-            <v-card-title class="text-center">Experiences</v-card-title>
-            <v-list-item class="card-list-item">
-              <v-row no-gutters >
-                <v-col>
-                  Experience 1
-                </v-col>
-                <v-col class="text-right">
-                  1/19
-                </v-col>
-              </v-row>
-            </v-list-item>
-  
-            <v-list-item class="card-list-item">
-              <v-row no-gutters >
-                <v-col>
-                  Experience 2
-                </v-col>
-                <v-col class="text-right">
-                  2/1
-                </v-col>
-              </v-row>
-            </v-list-item>
-  
-            <v-list-item class="card-list-item">
-              <v-row no-gutters>
-                <v-col>
-                  Experience 3
-                </v-col>
-                <v-col class="text-right">
-                  2/11
-                </v-col>
-              </v-row>
-            </v-list-item>
-            
-            <v-card-text class="card-link-text-wrapper">
-              <a href="www.google.com/" class="card-link-text">See all</a>
-            </v-card-text>
-  
-            </v-card>
           
         </v-list>
       </v-navigation-drawer>
@@ -143,8 +432,8 @@ const todoTaskItems = ref(
            <!-- POINTS CARD -->
             <v-card variant="tonal">
             <v-card-title class="text-center">Your Points</v-card-title>
-          <v-card-text class="points-text">
-            500
+          <v-card-text id="myPoints"class="points-text">
+            
           </v-card-text>
 
           <v-card-text class="card-link-text-wrapper">
@@ -183,7 +472,7 @@ const todoTaskItems = ref(
 
       <v-main> <!--            MAIN            -->
         <v-list-item></v-list-item><!-- SPACE ABOVE TIMELINE -->
-        <v-card-title class="page-title">To-do</v-card-title>
+        <v-card-title id="myTitle" class="page-title">To-do</v-card-title>
         <v-card class="main-tasks" variant="tonal">
           <!-- TIMELINES -->
           <v-timeline density="compact" align-start style="padding-left: 5%; padding-right: 5%;" line-thickness="7" >
