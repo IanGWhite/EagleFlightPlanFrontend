@@ -42,6 +42,7 @@ const events = ref(
   // The quick access buttons with their page links
   const quickAccess = ref( 
   [{ name: "Students", location: "/viewAllStudents" },
+  { name: "Flight planner", location: "/flightPlanner" },
   { name: "Tasks", location: "/viewAllTasks" },
   { name: "Experiences", location: "/AddEagleExperience" },
   { name: "Events", location: "/AddEvent" },
