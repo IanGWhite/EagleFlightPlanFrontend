@@ -5,6 +5,7 @@ export default {
     return apiClient.get(`/students/${studentId}/eventAttended`);
   },
   getEventAttends(eventId) {
+
     return apiClient.get(`/eventAttended/${eventId}`);
   },
   createEventAttends(studentId, eventId) {
