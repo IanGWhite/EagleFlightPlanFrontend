@@ -7,8 +7,8 @@ export default {
   getEagleFlightPlansForStudent(studentId,id) {
     return apiClient.get(`/students/${studentId}/eagleFlightPlans/${id}`);
   },
-  createEagleFlightPlanForStudent(studentId,data) {
-    return apiClient.post(`/students/${studentId}/eagleFlightPlans/`, data);
+  createStudentEagleTaskForStudent(studentId, eagleFlightPlanId,taskId,data) {
+    return apiClient.post(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleTasks/${taskId}`, data);
   },
   updateEagleFlightPlanForStudent(studentId, id, data) {
     return apiClient.put(`/students/${studentId}/eagleFlightPlans/${id}`, data);
