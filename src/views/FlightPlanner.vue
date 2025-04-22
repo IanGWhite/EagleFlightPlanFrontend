@@ -223,7 +223,7 @@ const RemoveExperienceFromPlan = (experienceId) =>
 
             <v-col cols="" justify-start>
               <v-btn @click="router.push('AddTask')" rounded="0" class="alt-btn" justify-end="true">New Task</v-btn>
-              <v-btn @click="router.push('AddExperience')" rounded="0" class="alt-btn" justify-end="true">New Experience</v-btn>
+              <v-btn @click="router.push('AddEagleExperience')" rounded="0" class="alt-btn" justify-end="true">New Experience</v-btn>
             </v-col>
           </v-row>
 
