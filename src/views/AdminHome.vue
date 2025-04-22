@@ -1,16 +1,25 @@
 <script setup>
-import { useRouter } from 'vue-router';
-import { ref } from 'vue';
+import { useRouter, useRoute } from "vue-router";
+import { ref,onMounted, hydrate } from "vue";
 import MenuBar from "../components/MenuBar.vue";
+import eagleTaskServices from "../services/eagleTaskServices";
+import studentEagleTaskServices from "../services/studentEagleTaskServices";
+import pointLogServices from "../services/pointLogServices.js";
+import eagleFlightPlanServices from "../services/eagleFlightPlanServices.js";
+import studentServices from "../services/studentServices.js";
 
+import Utils from "../config/utils.js";
+import { mdiConsoleNetwork } from "@mdi/js";
+
+const user = ref({});
 const router = useRouter();
 
 const goToResume = () => {
   router.push({ name: 'ResumeListStudents' });
 };
 
-const goToInfo = () => {
-  router.push({ name: 'StudentInfo' });
+const goToPage = (pageName) => {
+  router.push({ name: pageName });
 };
 const dialog = ref(false);
 const currentItem = ref(0);
@@ -25,16 +34,32 @@ const events = ref(
 
   const sortBy= ref([{ key: 'submissionDate', order: 'asc' }])
   const completedTasks = ref(
-  [{ type: "Task 1", name: "Make a resume", points: "30", description: "blah blah blah description", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Chandler Hurt", reflection: "This made me think about lots of things like where to look for a job or whatever.", submissionDate: '2021-05-13' },
-  { type: "Task 2", name: "Make a cover letter", points: "20", description: "Task 2 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:false, hyperLink:"", reflectionReq:true, student:"Ian White", reflection: "This made me think about lots of things like where to look for a job or whatever.", submissionDate: '2025-02-16' },
-  { type: "Task 3", name: "This is the task", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"Samantha Wiggs", reflection:"", submissionDate: '2023-02-01'},
-  { type: "Task 3", name: "This is the task 2", points: "40", description: "Task 3 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false, student:"New Student", reflection:"hfjdskhjfkds", submissionDate: '2020-02-01'},
+  [
   ]);
+
+  const toBeAddedTask = ref({
+    name: "", 
+    points: "", 
+    description: "", 
+    rationale:"", 
+    canUpload:false, 
+    hyperLink:"", 
+    reflectionReq:false, 
+    student:"", 
+    reflection: "", 
+    submissionDate: '',
+    completionDate: new Date(),
+    taskId: 0,
+    studentTaskId: 0,
+    studentId: 0
+  })
+
+  const allTasks = ref([{approvalState: 0, eagleTaskId: 0, Reflection:"", eagleFlightPlanId:0}]);
 
   //cols for the completed tasks table
   const headers = ref([
           { key: 'name', title: 'Name', align: 'start', width:'33%' },
-          { key: 'student', title: 'Student', align:'center', width:'33%' },
+          { key: 'studentName', title: 'Student', align:'center', width:'33%' },
           { key: 'button', title: '', align: 'end', width:'33%' },
         ]
   )
@@ -48,6 +73,180 @@ const events = ref(
   { name: "Shop", location: "/AdminShop" }, //change to admin shop when done
   { name: "Badges", location: "/Home" },
   ]);
+
+  const pointLog = ref({
+    approvedBy: "",
+    name: "",
+    date: new Date(),
+    studentId: 0,
+    pointDifference: 0
+  })
+
+onMounted(() => {
+  user.value = Utils.getStore('user')
+  // console.log(user.value)
+  fetchStudentEagleTasks();
+})
+
+const fetchStudentEagleTasks = () => {
+  studentEagleTaskServices.getAllEagleTasks()
+    .then((response) => {
+      allTasks.value = response.data;
+      console.log("Fetched student tasks:", allTasks.value);
+      // console.log(response.data.reflection)
+      sortEagleTasks(response.data.reflection);
+    })
+    .catch((error) => {
+      console.error("Error fetching tasks:", error);
+    });
+    
+};
+
+const sortEagleTasks = ()  => {
+for(let i=0; i< allTasks.value.length; i++)
+{
+  if (allTasks.value[i].approvalState == 1)
+  {
+    fetchOneTask(allTasks.value[i].eagleTaskId, i, allTasks.value[i].id, allTasks.value[i].eagleFlightPlanId)
+    // fetchStudents(allTasks.value[i].eagleFlightPlanId);
+  }
+  
+}
+};
+
+const fetchOneTask = async (taskId, allTaskIndex, studentTaskId, flightPlanId) => {
+  eagleTaskServices.getEagleTasks(taskId)
+    .then((response) => {
+      var data = response.data
+      let task = {
+        name: data.name,
+        points: data.points,
+        description: data.description,
+        rationale: data.rationale,
+        canUpload: data.canUpload,
+        hyperLink: data.hyperLink,
+        reflectionReq: data.reflectionReq,
+        reflection: allTasks.value[allTaskIndex].Reflection,
+        submissionDate: data.submissionDate,
+        completionDate: data.completionDate,
+        myTaskId: data.id,
+        studentTaskId: studentTaskId,
+        studentId: -1
+      };
+      
+
+      // console.log("my data",data)
+      // console.log("Fetched one task here:", task);
+      var index = completedTasks.value.push(task); // Now pushing a unique object
+      fetchStudents(flightPlanId, index-1)
+      // console.log("Flgith plan id:", response.data.flightPlanId)
+      // fetchStudents(response.data.flightPlanId)
+      // console.log(completedTasks.value)
+    })
+    .catch((error) => {
+      console.error("Error fetching single task:", error);
+    });
+    
+};
+
+const fetchStudents = (flightPlanId, completedArrayIndex) => {
+  // for each task in completed tasks
+  // var studentId
+  // console.log("Heres all the tasks: ", completedTasks.value)
+    var studentId
+    eagleFlightPlanServices.getEagleFlightPlan(flightPlanId)
+    .then((response) => {
+      // completedTasks.value[i].studentId = response.data
+      // console.log("index array:", completedArrayIndex)
+      completedTasks.value[completedArrayIndex].studentId = response.data.id
+      studentId = response.data.id
+
+      // console.log("student id",studentId)
+      studentServices.getStudent(studentId)
+      .then((response) => {
+        completedTasks.value[completedArrayIndex].studentName = response.data.fName + " " + response.data.lName
+      })
+      .catch((error) => {
+        console.error("error getting student information: ", error);
+      })
+    })
+    .catch((error) => {
+      console.error("error getting student information: ", error);
+      return 0
+    });
+    // allTasks.value[i].studentId = await eagleFlightPlanServices.getEagleFlightPlan(flightPlanId).data
+  
+          // console.log("student id",studentId)
+          // studentServices.getStudent(studentId)
+          // .then((response) => {
+          //   completedTasks.value[completedArrayIndex].studentName = response.data.fName
+          // })
+          // .catch((error) => {
+          //   console.error("error getting student information: ", error);
+          // })
+  // // use the student task id to find the flight plan (eagleFlightPlanId)
+  // then find the student id from flight plan
+  // then the student's first and last name
+};
+
+
+
+const UpdateStudentTaskApproval = (status) => {
+  var newState = 0
+  var usersName = ""
+  if (status) 
+  {
+    newState = 2
+    usersName = user.value.fName + " " + user.value.lName
+  }
+  console.log(currentItemObj.value.studentTaskId)
+  studentEagleTaskServices.updateEagleTask(currentItemObj.value.studentTaskId, {'approvalState': newState, 'approvedBy': usersName, 'pointsAwarded': currentItemObj.value.points})
+  .then((response) => {
+    console.log("updated correctly:", response.data)
+    // completedTasks.value.splice(currentItemObj, 1)
+    var lookingForIndex = completedTasks.value.findIndex(obj => obj.myTaskId === currentItemObj.value.myTaskId && obj.studentId === currentItemObj.value.studentId)
+    completedTasks.value.splice(lookingForIndex, 1)
+    dialog.value = false
+    if (status) {logPoints(currentItemObj.value.studentId)}
+    
+  })
+  .catch((error) => {
+    console.error("Error updating task:", error);
+  })
+};
+
+const logPoints = (studentId) => {
+  //update students points to correct values and create point log item
+  pointLog.value.approvedBy = user.value.fName + " " + user.value.lName
+  pointLog.value.pointDifference = currentItemObj.value.points
+  pointLog.value.date = new Date();
+  pointLog.value.name = currentItemObj.value.name
+  pointLogServices.createPointLog(studentId, pointLog.value)
+  .then((response) => {
+    
+    // studentServices.updateStudent(studentId, {points: newPoints})
+    updateStudentPoints(studentId)
+    console.log("Point log created successfully")
+
+  })
+  .catch((error) => {
+    console.error("Error creating point log:", error);
+  })
+};
+
+const updateStudentPoints = (studentId) => {
+  studentServices.getStudent(studentId)
+  .then((response) => {
+    console.log("Points for student:", response.data.points)
+    console.log("Pointlog points:", pointLog.value.pointDifference)
+    var newPoints = parseInt(response.data.points, 10) + parseInt(pointLog.value.pointDifference, 10)
+    console.log("new points:", newPoints)
+    studentServices.updateStudent(studentId, {points: newPoints})
+    .catch((error) => {
+      console.error("error setting students points")
+    })
+  })
+}
 
 </script>
 
@@ -111,7 +310,10 @@ const events = ref(
               <div class="ma-2">
                 <v-btn 
                 v-for="(item) in quickAccess"
-                class="quick-btn" block rounded="0" append-icon="mdi-arrow-right" :href="item.location">
+                class="quick-btn" block rounded="0" append-icon="mdi-arrow-right"
+                @click="goToPage(item.location)"
+                >
+
                   {{ item.name }}
                 </v-btn>
               </div>
@@ -127,7 +329,6 @@ const events = ref(
         <v-list-item></v-list-item><!-- SPACE ABOVE TIMELINE -->
         <v-card-title class="page-title">Completed Tasks</v-card-title>
         <v-card variant="tonal" style="margin-left: 5%; margin-right: 5%;">
-          
           <v-text-field
             v-model="search"
             label=""
@@ -145,13 +346,14 @@ const events = ref(
             :search="search"
             :sort-by.sync="sortBy"
             hide-default-footer
+            no-data-text="No tasks to be found"
             style="padding: 12px; padding-top: 0%; font-size: 17px;"
           >
           <template v-slot:item.button="{ item }" >
             <v-btn class="quick-btn"
              rounded="0"
              append-icon="mdi-arrow-right"
-             @click="dialog=true; currentItemObj=item"
+             @click="dialog=true; currentItemObj=item;"
             >Approve</v-btn>
           </template>
         </v-data-table>
@@ -198,12 +400,12 @@ const events = ref(
       
         <template v-slot:actions>
           <v-btn class="ms-auto" text="Cancel" @click="dialog = false" style="width: auto;"></v-btn>
-          <v-btn class="quick-btn decline" text="Decline" @click=""></v-btn>
-          <v-btn class="quick-btn" text="Approve" @click=""></v-btn>
+          <v-btn class="quick-btn decline" text="Decline" @click="UpdateStudentTaskApproval(false)"></v-btn>
+          <v-btn class="quick-btn" text="Approve" @click="UpdateStudentTaskApproval(true)"></v-btn>
         </template>
       </v-card>
     </v-dialog>
-
+    
       </v-main>
 
       
