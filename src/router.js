@@ -44,6 +44,14 @@ import EditEagleExperience from "./views/editEagleExperience.vue";
 import ViewAllEagleExperience from "./views/viewAllEagleExperience.vue";
 
 
+
+
+
+import ViewAllEvents from "./views/viewAllEvents.vue";
+import EditEvent from "./views/EditEvent.vue";
+import viewEventAttendance from "./views/viewEventAttendance .vue";
+
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -243,6 +251,24 @@ const router = createRouter({
       path: "/AddEagleExperience",
       name: "AddEagleExperience",
       component: AddEagleExperience,
+      props: true,
+    },
+    {
+
+      path: "/ViewAllEvents",
+      name: "ViewAllEvents",
+      component: ViewAllEvents,
+    },
+    {
+      path: "/EditEvent/:id",
+      name: "EditEvent",
+      component: EditEvent,
+      props: true,
+    },
+    {
+      path: "/viewEventAttendance/:id",
+      name: "viewEventAttendance",
+      component: viewEventAttendance,
       props: true,
     },
     {
