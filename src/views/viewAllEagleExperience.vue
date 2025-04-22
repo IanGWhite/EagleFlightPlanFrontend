@@ -2,7 +2,7 @@
 import { ref, onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import Utils from "../config/utils.js";
-import eagleExperienceServices from "../services/eagleExperienceservices.js";
+import eagleExperienceServices from "../services/eagleExperienceServices.js";
 
 const router = useRouter();
 const route = useRoute();
