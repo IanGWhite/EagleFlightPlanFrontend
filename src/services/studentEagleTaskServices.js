@@ -16,6 +16,19 @@ export default {
   deleteStudentEagleTaskForStudent(studentId, eagleFlightPlanId,id) {
     return apiClient.delete(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleTasks/${id}`);
   },
+  submitStudentEagleTaskForStudent(studentId, eagleFlightPlanId, studentEagleTaskId) {
+    return apiClient.put(`/students/${studentId}/eagleFlightPlans/${eagleFlightPlanId}/studentEagleTasks/${studentEagleTaskId}`, {
+      approvalState: 1,
+      Reflection: "Finshed",
+      completionDate: new Date().toISOString(), // optional
+    });
+  },
+  getAllEagleTasks() {
+    return apiClient.get(`/studentEagleTasks`);
+  },
+  updateEagleTask(id, data) {
+    return apiClient.put(`/studentEagleTasks/${id}`, data);
+  },
 };
 
 //in the controller for experience

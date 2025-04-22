@@ -13,6 +13,7 @@ import eagleFlightPlanServices from '../services/eagleFlightPlanServices.js';
 import studentServices from '../services/studentServices.js';
 import semesterServices from '../services/semesterServices.js';
 import eventServices from '../services/eventServices.js';
+import eventAttendServices from '../services/eventAttendServices.js';
 import { year } from 'vue-cal/dist/i18n/ar.es.js';
 import flightPlanLoader from '../services/flightPlanLoader.js';
 
@@ -75,9 +76,11 @@ const todoTaskItems = ref([]);
             points: otherTasks.value[i].points,
             rationale: otherTasks.value[i].rationale ?? "",
             category: myCategory,
+            categoryId: otherTasks.value[i].categoryId,
            canUpload: otherTasks.value[i].canUpload ?? "", 
             hyperLink: otherTasks.value[i].hyperLink ?? "", 
             reflectionReq: otherTasks.value[i].reflectionReq,
+            id: n.id
         }
       }
       }
@@ -145,7 +148,9 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
         description: otherExperiences.value[i].description,
         points: otherExperiences.value[i].points,
         category: myCategory,
+        categoryId: otherExperiences.value[i].categoryId,
         reflectionReq: otherExperiences.value[i].reflectionReq,
+        id: n.id
     }
   }
   }
@@ -177,14 +182,18 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
         approvalState: n.approvalState, 
         submissionDate: n.submissionDate ?? "", 
         completionDate: n.completionDate ?? "",
+        id: n.id
     }
   }
   }
   return{}
 });
 
-//console.log("todo Experiences list: ", todoExperienceItems.value);
-//console.log("done Experiences list: ", doneExperienceItems.value);
+
+console.log("todo Experiences list: ", todoExperienceItems.value);
+console.log("done Experiences list: ", doneExperienceItems.value);
+checkForExperienceCompletion();
+
 }
 
 
@@ -229,8 +238,8 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
     
   };
 
-  const fetchStudentEagleTasks = () => {
-  studentEagleTaskServices.getAllStudentEagleTasksForStudent(user.value.studentId, currentFlightPlan.value.id)
+  const fetchStudentEagleTasks  = async () => {
+  await studentEagleTaskServices.getAllStudentEagleTasksForStudent(user.value.studentId, currentFlightPlan.value.id)
     .then((response) => {
       studentTasks.value = response.data; // Assuming the backend returns an array of tasks
       //console.log("Fetched Student tasks:", studentTasks.value);
@@ -338,8 +347,8 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
     //console.log("events list: ", eventList.value);
   }
 
-  const fetchEvents = () => {
-    eventServices.getAllEvents()
+  const fetchEvents = async() => {
+    await eventServices.getAllEvents()
     .then((response) => {
       newEvents.value = response.data; // Assuming the backend returns an array of tasks
       //console.log("Fetched events:", newEvents.value);
@@ -351,8 +360,8 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
     
   }
 
-  const fetchEagleFlightPlans = () => {
-    eagleFlightPlanServices.getAllEagleFlightPlansForStudent(user.value.studentId)
+  const fetchEagleFlightPlans = async() => {
+    await eagleFlightPlanServices.getAllEagleFlightPlansForStudent(user.value.studentId)
     .then((response) => {
       eagleFlightPlans.value = response.data; // Assuming the backend returns an array of tasks
       //console.log("Fetched flight plans:", eagleFlightPlans.value);
@@ -385,26 +394,83 @@ todoExperienceItems.value = studentExperiences.value.filter(n =>
 
   }
 
+  const submitTask = (studentEagleTaskId) => {
+  studentEagleTaskServices
+    .submitStudentEagleTaskForStudent(user.value.studentId, 1, studentEagleTaskId)
+    .then(() => {
+      console.log("Submitted task:", studentEagleTaskId);
+      fetchStudentEagleTasks(); // re-fetch updated list
+    })
+    .catch((error) => {
+      console.error("Error submitting task:", error);
+    });
+    window.location.reload();
+};
 
-onMounted(() => {
-  // flightPlanLoader.testFunction();
-  user.value = Utils.getStore('user')
-  if(user.value != null){
-    convertTexts();
-  }
-  
-  //console.log(user.value)
-
-  fetchEvents();
-  fetchEagleFlightPlans();
-  // if(todoTaskItems.value.length == 0 && doneTaskItems.value.length == 0)
-  // {
-  //   console.error("No tasks loaded. attempting to create student tasks.")
-  //   //console.log(" Current flight plan", currentFlightPlan.value)
-  //   flightPlanLoader.copyTasksFromFlightPlan(user.value.studentId, currentFlightPlan.value.id)
-  // }
+const checkForExperienceCompletion = async () => {
+  try {
+    // Get event attendance data
+    const response = await eventAttendServices.getAllEventAttend(user.value.studentId);
+    const eventAttended = response.data;
+    console.log("eventAttended ", eventAttended);
     
-})
+    // Get all events for each attended event
+    const eventPromises = eventAttended.map((e) => eventServices.getEvents(e.eventId));
+    
+    // Await all events to be fetched
+    const events = await Promise.all(eventPromises);
+    const Attendedevents = events.map(event => event.data);  // Assuming the response has 'data' field
+    console.log("attededevent: ", Attendedevents);
+    // Extract categories from the attended events
+    const attendCategories = Attendedevents.map(e => e.categoryId);
+    console.log("attendCategories:", attendCategories);
+    console.log("todoExperienceItems:", todoExperienceItems.value);
+    // Check for matching categories in todo experience items
+    todoExperienceItems.value.forEach((toDo) => {
+      console.log("toDo category:", toDo.categoryId);
+      
+      // Fix: Ensure category types are the same (number/strings)
+      const matchingCategory = attendCategories.find((cat) => {
+        console.log("Checking category:", cat);  // Debug log for each category
+        return cat === toDo.categoryId;
+      });
+      
+      if (matchingCategory) {
+        console.log("todo experience id", toDo.id)
+        studentEagleExperienceServices.updateStudentEagleExperienceForStudent(user.value.studentId, 1, toDo.id, {approvalState: 2});
+        console.log("Matching category found:", toDo);
+      }
+    });
+
+
+  } catch (error) {
+    console.error("Error checking for experience completion:", error);
+  }
+};
+
+
+
+
+onMounted(async () => {
+  try {
+    user.value = Utils.getStore('user');
+    if (user.value != null) {
+      convertTexts();
+    }
+
+    console.log("User data:", user.value);
+
+    // Fetch events and eagle flight plans in parallel
+    console.log("Fetching events and flight plans in parallel...");
+    await Promise.all([fetchEvents(), fetchEagleFlightPlans()]);
+
+    // Now, check experience completion
+    console.log("Checking for experience completion...");
+  } catch (error) {
+    console.error("Error during onMounted:", error);
+  }
+});
+
 </script>
 
 <template>
@@ -607,8 +673,8 @@ onMounted(() => {
           
             <template v-slot:actions>
               <v-btn class="ms-auto" text="Cancel" @click="dialog = false"></v-btn>
-              <v-btn v-if="todoTaskItems[currentItem].reflectionReq"
-              class="ms-auto" text="Submit" @click="SubmitReflection()"></v-btn>
+              <v-btn 
+              class="ms-auto" text="Submit" @click="submitTask(todoTaskItems[currentItem].id)"></v-btn>
             </template>
       </v-card>
 

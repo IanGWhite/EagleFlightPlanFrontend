@@ -1,10 +1,11 @@
 import apiClient from "./services.js";
 
 export default {
-  getAllEventAttend() {
+  getAllEventAttend(studentId) {
     return apiClient.get(`/students/${studentId}/eventAttended`);
   },
-  getEventAttends( eventId) {
+  getEventAttends(eventId) {
+
     return apiClient.get(`/eventAttended/${eventId}`);
   },
   createEventAttends(studentId, eventId) {
