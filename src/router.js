@@ -270,7 +270,8 @@ const router = createRouter({
       name: "viewEventAttendance",
       component: viewEventAttendance,
       props: true,
-
+    },
+    {
       path: "/EditEagleExperience/:id",
       name: "EditEagleExperience",
       component: EditEagleExperience,

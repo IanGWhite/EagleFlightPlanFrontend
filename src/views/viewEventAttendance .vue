@@ -128,7 +128,7 @@ const getEventName = async () => {
 };
 
 const getAttend = async () => {
-  const responce = await eventAttendServices.getEventAttends(eventId);
+  const responce = await eventAttendServices.getEventAttends(eventId.value);
   AttendList.value = responce.data;
 };
 
@@ -145,7 +145,6 @@ const getStudentAttends = async () => {
     console.error("AttendList is not an array:", AttendList.value);
     return;
   }
-
   studentAttendList.value = AttendList.value.map((attend) => {
     const student = studentList.value.find(s => s.id === attend.studentId); // Adjust field names if needed
     return {
