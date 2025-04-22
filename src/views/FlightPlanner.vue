@@ -3,28 +3,31 @@ import { ref,onMounted } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import semesterServices from "../services/semesterServices.js";
 import eagleFlightPlanServices from "../services/eagleFlightPlanServices.js";
+import eagleTaskServices from "../services/eagleTaskServices.js";
 
 
 import Utils from "../config/utils.js";
 import userServices from "../services/userServices.js";
+import eagleExperienceServices from "../services/eagleExperienceServices.js";
 
 const router = useRouter();
 
 const route = useRoute();
 const user = ref({});
 
-const tab = ref('option-1');
-
 const studentmajorIdNo = ref({});
 
 const gradSemesterIdNo = ref({});
 const gradSemesters = ref([]);
 
+const currentNewTask = ref();
+const currentNewExperience = ref();
+
 
 // * * * F L I G H T   P L A N  * * *
 const semesters = ref([{ semestersLeft: 8, semesterNormalized: "Freshman 1" },
 ]);
-const selectedSemestersLeft = ref(1);
+const selectedSemesterId = ref(1);
 //tasks
 //list of all tasks that the admin can choose from
 const allTasks = ref(
@@ -34,6 +37,16 @@ const allTasks = ref(
   { name: "Task Tuah", points: "40", description: "Task 4 desc. this is describing", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
   { name: "Task 2ah", points: "50000", description: "Job on that thang", rationale:"This is reasoning for the task existsing", canUpload:true, hyperLink:"https://www.google.com", reflectionReq:false },
 ]);
+
+
+const thisSemestersTasks = ref(
+  [
+]);
+
+const thisSemestersExperiences= ref(
+  [
+]);
+
 
 //experiences
 const allExperiences = ref(
@@ -51,45 +64,136 @@ const fetchSemesters = () => {
       semestersLeft: semester.id,
       semesterNormalized: semester.name,
     }));
+    
   })
   .catch((error) =>{
     console.error(error);
   })
 };
 
+const fetchTasks = () => {
+  eagleTaskServices.getAllEagleTasks()
+  .then((response) => {
+    allTasks.value = response.data
+    console.log("All tasks:", allTasks.value)
+    loadCurrentTasks()
+  })
+  .catch((error) =>{
+    console.error(error);
+  })
+};
+
+const fetchExperiences = () => {
+  eagleExperienceServices.getAllEagleExperiences()
+  .then((response) => {
+    allExperiences.value = response.data
+    console.log("All experiences:", allExperiences.value)
+    loadCurrentExperiences()
+  })
+  .catch((error) =>{
+    console.error(error);
+  })
+};
+
+
 onMounted(() => {
   user.value = Utils.getStore('user');
   //console.log(user.value)
   fetchSemesters()
+  fetchTasks()
+  fetchExperiences()
+  
 })
 
 
-
-const loadCurrentTasks = (semester) => {
-  var myIndex = 0;
-  currentStudentEagleTasks.value = [];
-  //tasks
- for(let i = 0; i < allStudentEagleTasks.value.length; i++) {
-  if(allStudentEagleTasks.value[i].semesterFromGrad == semester)
+const loadCurrentTasks = () => {
+  
+console.log("semester id ", selectedSemesterId.value)
+  thisSemestersTasks.value = [];
+  for(let i=0; i<allTasks.value.length; i++)
+ {
+  if(allTasks.value[i].flightPlanId == selectedSemesterId.value)
   {
-    currentStudentEagleTasks.value[myIndex] = allStudentEagleTasks.value[i];
-    myIndex++;
+    thisSemestersTasks.value.push(allTasks.value[i])
+    console.log("push", thisSemestersTasks.value)
   }
  }
  
- //experiences
- myIndex = 0;
-  currentStudentEagleExperiences.value = [];
-  //tasks
- for(let i = 0; i < allStudentEagleExperiences.value.length; i++) {
-  if(allStudentEagleExperiences.value[i].semesterFromGrad == semester)
-  {
-    currentStudentEagleExperiences.value[myIndex] = allStudentEagleExperiences.value[i];
-    myIndex++;
-  }
- }
- console.log("experiences: ", currentStudentEagleExperiences.value);
 };
+
+const loadCurrentExperiences = () => {
+  
+    thisSemestersExperiences.value = [];
+    for(let i=0; i<allExperiences.value.length; i++)
+   {
+    if(allExperiences.value[i].flightPlanId == selectedSemesterId.value)
+    {
+      thisSemestersExperiences.value.push(allExperiences.value[i])
+      console.log("push", thisSemestersExperiences.value)
+    }
+   }
+   
+  };
+
+const AddTaskToPlan = () =>
+{
+  // console.log(currentNewTask.value)
+  console.log("bruh", allTasks.value[currentNewTask.value-1])
+  eagleTaskServices.updateEagleTask(currentNewTask.value, {"flightPlanId": selectedSemesterId.value})
+  .then((response) => {
+    fetchTasks()
+    loadCurrentTasks()
+    currentNewTask.value = null
+  })
+  .catch((error) => {
+    console.error(error);
+  })
+}
+
+const RemoveTaskFromPlan = (taskId) =>
+{
+  // console.log(currentNewTask.value)
+  console.log("removing task", taskId)
+  var myId = ref(0)
+  eagleTaskServices.updateEagleTask(taskId, {"flightPlanId": null})
+  .then((response) => {
+    fetchTasks()
+    loadCurrentTasks()
+  })
+  .catch((error) => {
+    console.error("Error removing task", error);
+  })
+}
+
+const AddExperienceToPlan = () =>
+{
+  console.log("current new experience", currentNewExperience.value)
+  // console.log("bruh", allTasks.value[currentNewTask.value-1])
+  eagleExperienceServices.updateEagleExperiences(currentNewExperience.value, {"flightPlanId": selectedSemesterId.value})
+  .then((response) => {
+    fetchExperiences()
+    loadCurrentExperiences()
+    currentNewExperience.value = null
+  })
+  .catch((error) => {
+    console.error(error);
+  })
+}
+
+const RemoveExperienceFromPlan = (experienceId) =>
+{
+  // console.log(currentNewTask.value)
+  console.log("removing experience", experienceId)
+  var myId = ref(0)
+  eagleExperienceServices.updateEagleExperiences(experienceId, {"flightPlanId": null})
+  .then((response) => {
+    fetchExperiences()
+    loadCurrentExperiences()
+  })
+  .catch((error) => {
+    console.error("Error removing experience", error);
+  })
+}
 
 </script>
 
@@ -101,14 +205,13 @@ const loadCurrentTasks = (semester) => {
         <v-container>
           <v-row justify="space-between">
             <v-col>
-              just do it by semester
               <v-select dense
-                v-model="selectedSemestersLeft"
+                v-model="selectedSemesterId"
                 :items="semesters"
                 label="Semester"
                 item-value="semestersLeft"
                 item-title="semesterNormalized"
-                @update:modelValue="loadCurrentTasks(selectedSemestersLeft)"
+                @update:modelValue="loadCurrentTasks(); loadCurrentExperiences()"
               >
               
               </v-select>
@@ -118,8 +221,9 @@ const loadCurrentTasks = (semester) => {
             <v-col></v-col>
             <v-col></v-col>
 
-            <v-col cols="auto">
-              <v-btn @click="" rounded="0" class="alt-btn" justify-end="true">Save</v-btn>
+            <v-col cols="" justify-start>
+              <v-btn @click="router.push('AddTask')" rounded="0" class="alt-btn" justify-end="true">New Task</v-btn>
+              <v-btn @click="router.push('AddExperience')" rounded="0" class="alt-btn" justify-end="true">New Experience</v-btn>
             </v-col>
           </v-row>
 
@@ -128,8 +232,8 @@ const loadCurrentTasks = (semester) => {
 
               <!-- T A S K S -->
               <v-row >
-                <v-col v-for="task in currentStudentEagleTasks" density="compact">
-                  <v-card v-if="task.semesterFromGrad == selectedSemestersLeft" class="flightPlanCard">
+                <v-col v-for="task in thisSemestersTasks" density="compact">
+                  <v-card  class="flightPlanCard">
                     <v-card-title class="">
                       {{ task.name }}
                     </v-card-title>
@@ -137,7 +241,7 @@ const loadCurrentTasks = (semester) => {
                       {{ task.description }}
                     </v-card-subtitle>
                     <v-card-actions class="font-weight-regular">
-                      <v-btn variant="tonal" class="border-md rounded remove-btn" density="compact" @click="RemoveTaskFromPlan()">
+                      <v-btn variant="tonal" class="border-md rounded remove-btn" density="compact" @click="RemoveTaskFromPlan(task.id)">
                         <v-icon icon="mdi-close"/>
                         remove
                       </v-btn>
@@ -155,9 +259,11 @@ const loadCurrentTasks = (semester) => {
                     
                       <v-select density="compact"
                       style="padding-left: 5px; padding-right: 5px; margin: 0%;"
+                      v-model="currentNewTask"
                       :items="allTasks"
                       label="Task"
                       item-title="name"
+                      item-value="id"
                       hide-details
                       >
                       </v-select>
@@ -174,8 +280,8 @@ const loadCurrentTasks = (semester) => {
 
               <!-- E X P E R I E N C E S -->
               <v-row >
-                <v-col v-for="experience in currentStudentEagleExperiences" density="compact">
-                  <v-card v-if="experience.semesterFromGrad == selectedSemestersLeft" class="flightPlanCard">
+                <v-col v-for="experience in thisSemestersExperiences" density="compact">
+                  <v-card class="flightPlanCard">
                     <v-card-title class="">
                       {{ experience.name }}
                     </v-card-title>
@@ -183,7 +289,7 @@ const loadCurrentTasks = (semester) => {
                       {{ experience.description }}
                     </v-card-subtitle>
                     <v-card-actions class="font-weight-regular">
-                      <v-btn variant="tonal" class="border-md rounded remove-btn" density="compact" @click="RemoveExperienceFromPlan()">
+                      <v-btn variant="tonal" class="border-md rounded remove-btn" density="compact" @click="RemoveExperienceFromPlan(experience.id)">
                         <v-icon icon="mdi-close"/>
                         remove
                       </v-btn>
@@ -201,9 +307,11 @@ const loadCurrentTasks = (semester) => {
                     
                       <v-select density="compact"
                       style="padding-left: 5px; padding-right: 5px; margin: 0%;"
+                      v-model="currentNewExperience"
                       :items="allExperiences"
                       label="Experience"
                       item-title="name"
+                      item-value="id"
                       hide-details
                       >
                       </v-select>
