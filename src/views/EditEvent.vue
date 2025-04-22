@@ -1,14 +1,16 @@
 <script setup>
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 import { ref, onMounted } from 'vue';
-import EventServices from "../services/eventServices";
-import CategoryServices from "../services/categoryServices";
+import EventServices from "../services/eventServices.js";
+import CategoryServices from "../services/categoryServices.js";
 import MenuBar from "../components/MenuBar.vue";
 import Utils from "../config/utils.js";
 import { VTimePicker } from 'vuetify/labs/components';
+import eventServices from '../services/eventServices.js';
 
 
 const router = useRouter();
+const route = useRoute();
 const user = ref({});
 
 const dialog = ref(false);
@@ -21,6 +23,8 @@ const categories = ref([]);
 const categoryNames = ref([]);
 
 const message = ref("");
+
+const eventId = ref(''); 
 
 const eventCategoryName = ref({name: ""});
 
@@ -91,7 +95,7 @@ const saveEvent = () => {
   if(event.value.startTime== "" || event.value.endTime == ""){
     message.value =  "Please enter correct data for all fields";
   }else{
-    EventServices.createEvent(event.value)
+    EventServices.updateEvent(eventId.value, event.value)
     .then(() => {
       message.value = "Event saved successfully";
       router.push({ name: "Calendar" }); // hypothetical route name for education list
@@ -102,6 +106,21 @@ const saveEvent = () => {
   }
 };
 
+const getEvent = async () => {
+  const response = await eventServices.getEvents(eventId.value)
+  event.value = response.data;
+
+  
+  // const formattedDate = new Date(event.value.date).toLocaleDateString("en-US", {
+  //   year: "numeric",
+  //   month: "2-digit",
+  //   day: "2-digit",
+  //   });
+  const date = new Date(event.value.date);
+  const formattedDate = date.toISOString().split('T')[0];
+  event.value.date = formattedDate; // Update GraduationDate
+};
+
 
 const cancel = () => {
   router.push({ name: "Calendar" }); // hypothetical route for cancel action
@@ -109,9 +128,11 @@ const cancel = () => {
 
 onMounted(() => {
   user.value = Utils.getStore('user')
+  eventId.value = route.params.id;
   console.log(user.value)
   fetchEagleEvents();
   fetchCategories();
+  getEvent();
 })
 
 </script>
@@ -211,7 +232,7 @@ onMounted(() => {
                                 <p color="red">{{ message }}</p>
                                 <div class="buttons">
                                 <v-btn color="error" @click="cancel">Cancel</v-btn>
-                                <v-btn color="red" @click="saveEvent">confirm</v-btn>
+                                <v-btn color="red" @click="saveEvent">Save</v-btn>
                                 </div>
                     </v-form>
               </v-col>
